@@ -2,30 +2,14 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Single Page Apps for GitHub Pages</title>
+    <title>Redirecting...</title>
     <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // MIT License
-      // https://github.com/rafgraph/spa-github-pages
-      // This script takes the current url and converts the path and query
-      // string into just a query string, and then redirects the browser
-      // to the new url with only a query string and hash fragment,
-      // e.g. https://example.com/one/two?a=b&c=d#section
-      // becomes https://example.com/?/one/two&a=b~and~c=d#section
-      // Note: this 404.html file must be at least 512 bytes for it to work
-      // with Internet Explorer (it is currently > 512 bytes)
-
-      var segmentCount = 0,
-          l = window.location;
-      setTimeout(function() {
-        var correct = false;
-        for ( var i = segmentCount; i >= 0; i-- ) {
-          l.replace(l.href.replace(/\/?$/, i === 0 ? '' : '/') + '?/' + l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') + (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') + l.hash);
-          correct = true;
-          break;
-        }
-        if ( !correct ) l.replace(l.href.replace(/\/?$/, '') + '/?redirect');
-      }, 0);
+      // Redirect to index.html for React Router to handle
+      var path = window.location.pathname;
+      // Only redirect if not already at index.html or root
+      if (!path.endsWith('index.html') && !path.endsWith('/SciHub/')) {
+        window.location.replace('/SciHub/');
+      }
     </script>
   </head>
   <body>
