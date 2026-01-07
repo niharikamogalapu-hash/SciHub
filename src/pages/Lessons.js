@@ -8,6 +8,14 @@ function Lessons() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [filteredLessons, setFilteredLessons] = useState([]);
+  const [completedLessons, setCompletedLessons] = useState([]);
+
+  // Load completed lessons from localStorage on mount
+  useEffect(() => {
+    const completed = JSON.parse(localStorage.getItem("completedLessons") || "[]");
+    setCompletedLessons(completed);
+    console.log("📚 Loaded completed lessons:", completed);
+  }, []);
 
   // All lessons data
   const allLessons = [
@@ -314,7 +322,7 @@ function Lessons() {
               {filteredLessons.map((lesson, index) => (
                 <div
                   key={lesson.id}
-                  className="lesson-card"
+                  className={`lesson-card ${completedLessons.includes(lesson.id) ? "completed" : ""}`}
                   style={{ animationDelay: `${index * 0.05}s` }}
                   onClick={() => handleLessonClick(lesson)}
                 >
@@ -325,6 +333,9 @@ function Lessons() {
                       <span className="card-subject">{lesson.subject}</span>
                       <span className="card-level">{lesson.level}</span>
                     </div>
+                    {completedLessons.includes(lesson.id) && (
+                      <div className="completed-badge">✅ Completed</div>
+                    )}
                   </div>
 
                   {/* Card Content */}
@@ -336,13 +347,13 @@ function Lessons() {
                     <div className="progress-section">
                       <div className="progress-header">
                         <span className="progress-label">Progress</span>
-                        <span className="progress-percent">{lesson.progress}%</span>
+                        <span className="progress-percent">{completedLessons.includes(lesson.id) ? "100" : lesson.progress}%</span>
                       </div>
                       <div className="progress-bar">
                         <div
                           className="progress-fill"
                           style={{
-                            width: `${lesson.progress}%`,
+                            width: `${completedLessons.includes(lesson.id) ? 100 : lesson.progress}%`,
                             backgroundColor: lesson.color
                           }}
                         ></div>
@@ -365,7 +376,7 @@ function Lessons() {
                   {/* Card Footer */}
                   <div className="card-footer">
                     <button className="continue-btn" style={{ backgroundColor: lesson.color }}>
-                      {lesson.progress > 0 ? "Continue" : "Start"} →
+                      {completedLessons.includes(lesson.id) ? "Completed ✓" : (lesson.progress > 0 ? "Continue" : "Start")} →
                     </button>
                   </div>
                 </div>

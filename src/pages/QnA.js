@@ -334,29 +334,6 @@ function QnA() {
         )}
 
         <div className="qna-content">
-          {/* Sidebar Filters */}
-          <div className="qna-filters">
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder="Search questions..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-            </div>
-
-            <div className="filter-group">
-              <label>Sort by:</label>
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                <option value="newest">Newest</option>
-                <option value="oldest">Oldest</option>
-                <option value="mostViewed">Most Viewed</option>
-                <option value="mostAnswered">Most Answered</option>
-              </select>
-            </div>
-          </div>
-
           {/* Questions List or Detail View */}
           <div className="qna-main-content">
             {selectedQuestion ? (

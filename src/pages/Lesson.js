@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import "../styles/Lesson.css";
@@ -48,6 +48,94 @@ export default function Lesson() {
   const navigate = useNavigate();
   const location = useLocation();
   
+  // Lesson database for fallback when no state is passed
+  const lessonDatabase = {
+    1: {
+      id: 1,
+      title: "Cell Structure & Function",
+      category: "biology",
+      subject: "Biology",
+      description: "Learn about cell components and their functions",
+      videos: [
+        { id: 1, title: "Introduction to Biology", url: "https://www.youtube.com/watch?v=tZE_fQFK8EY&list=PL8dPuuaLjXtPW_ofbxdHNciuLoTRLPMgB&index=2" },
+        { id: 2, title: "Scientific Method", url: "https://www.youtube.com/watch?v=xOLcZMw0hd4&list=PL8dPuuaLjXtPW_ofbxdHNciuLoTRLPMgB&index=3" },
+        { id: 3, title: "What do Biologists Do?", url: "https://www.youtube.com/watch?v=rgZhDoPgzK8&list=PL8dPuuaLjXtPW_ofbxdHNciuLoTRLPMgB&index=4" },
+        { id: 4, title: "Organized Life", url: "https://www.youtube.com/watch?v=cjR5zPrVjTc&list=PL8dPuuaLjXtPW_ofbxdHNciuLoTRLPMgB&index=5" },
+        { id: 5, title: "Introduction to Ecology", url: "https://www.youtube.com/watch?v=aO3Yp45zmw8&list=PL8dPuuaLjXtPW_ofbxdHNciuLoTRLPMgB&index=6" },
+      ]
+    },
+    2: {
+      id: 2,
+      title: "Photosynthesis",
+      category: "biology",
+      subject: "Biology",
+      description: "Understand how plants convert sunlight into energy",
+      videos: [
+        { id: 1, title: "Light Reactions", url: "https://www.youtube.com/watch?v=dQCAPalUOL0" },
+        { id: 2, title: "Dark Reactions", url: "https://www.youtube.com/watch?v=h4T8T-p-SdY" },
+        { id: 3, title: "Calvin Cycle", url: "https://www.youtube.com/watch?v=g8rZfGyR-KE" },
+        { id: 4, title: "Chloroplast Structure", url: "https://www.youtube.com/watch?v=h4T8T-p-SdY" },
+        { id: 5, title: "Energy Transfer", url: "https://www.youtube.com/watch?v=dQCAPalUOL0" },
+      ]
+    },
+    3: {
+      id: 3,
+      title: "Evolution & Natural Selection",
+      category: "biology",
+      subject: "Biology",
+      description: "Explore the mechanisms of evolution",
+      videos: [
+        { id: 1, title: "Evolution Overview", url: "https://www.youtube.com/watch?v=tZE_fQFK8EY" },
+        { id: 2, title: "Natural Selection", url: "https://www.youtube.com/watch?v=xOLcZMw0hd4" },
+        { id: 3, title: "Adaptation", url: "https://www.youtube.com/watch?v=rgZhDoPgzK8" },
+        { id: 4, title: "Evidence of Evolution", url: "https://www.youtube.com/watch?v=cjR5zPrVjTc" },
+        { id: 5, title: "Speciation", url: "https://www.youtube.com/watch?v=aO3Yp45zmw8" },
+      ]
+    },
+    4: {
+      id: 4,
+      title: "Atomic Structure",
+      category: "chemistry",
+      subject: "Chemistry",
+      description: "Master the basics of atoms and electrons",
+      videos: [
+        { id: 1, title: "Atoms Overview", url: "https://www.youtube.com/watch?v=tZE_fQFK8EY" },
+        { id: 2, title: "Protons Neutrons Electrons", url: "https://www.youtube.com/watch?v=xOLcZMw0hd4" },
+        { id: 3, title: "Electron Configuration", url: "https://www.youtube.com/watch?v=rgZhDoPgzK8" },
+        { id: 4, title: "Periodic Table", url: "https://www.youtube.com/watch?v=cjR5zPrVjTc" },
+        { id: 5, title: "Atomic Number and Mass", url: "https://www.youtube.com/watch?v=aO3Yp45zmw8" },
+      ]
+    },
+    5: {
+      id: 5,
+      title: "Chemical Bonding",
+      category: "chemistry",
+      subject: "Chemistry",
+      description: "Learn about different types of chemical bonds",
+      videos: [
+        { id: 1, title: "Ionic Bonds", url: "https://www.youtube.com/watch?v=tZE_fQFK8EY" },
+        { id: 2, title: "Covalent Bonds", url: "https://www.youtube.com/watch?v=xOLcZMw0hd4" },
+        { id: 3, title: "Metallic Bonds", url: "https://www.youtube.com/watch?v=rgZhDoPgzK8" },
+        { id: 4, title: "Hydrogen Bonds", url: "https://www.youtube.com/watch?v=cjR5zPrVjTc" },
+        { id: 5, title: "Electronegativity", url: "https://www.youtube.com/watch?v=aO3Yp45zmw8" },
+      ]
+    },
+    6: {
+      id: 6,
+      title: "Reactions & Equations",
+      category: "chemistry",
+      subject: "Chemistry",
+      description: "Understand chemical reactions and equations",
+      videos: [
+        { id: 1, title: "Types of Reactions", url: "https://www.youtube.com/watch?v=tZE_fQFK8EY" },
+        { id: 2, title: "Balancing Equations", url: "https://www.youtube.com/watch?v=xOLcZMw0hd4" },
+        { id: 3, title: "Stoichiometry", url: "https://www.youtube.com/watch?v=rgZhDoPgzK8" },
+        { id: 4, title: "Reaction Rates", url: "https://www.youtube.com/watch?v=cjR5zPrVjTc" },
+        { id: 5, title: "Equilibrium", url: "https://www.youtube.com/watch?v=aO3Yp45zmw8" },
+      ]
+    },
+  };
+  
   console.log("🔍 FULL location.state:", location.state);
   console.log("🔍 lessonId from params:", lessonId);
   
@@ -62,10 +150,10 @@ export default function Lesson() {
     console.log(`✅ Assigned lesson ID from URL params: ${lessonId}`);
   }
 
-  // Fallback lesson data if state is not passed
+  // Fallback lesson data if state is not passed - lookup from database by ID
   if (!lesson) {
-    console.log("⚠️ No lesson in state, using fallback lesson with id:", lessonId);
-    lesson = {
+    console.log("⚠️ No lesson in state, looking up lesson with id:", lessonId);
+    lesson = lessonDatabase[lessonId] || {
       id: lessonId,
       lesson_number: 1,
       title: "Introduction to Biology",
@@ -104,8 +192,10 @@ export default function Lesson() {
   const [newQuestion, setNewQuestion] = useState("");
   const [newAnswer, setNewAnswer] = useState("");
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [showCelebration, setShowCelebration] = useState(false);
-  const [lessonFullyCompleted, setLessonFullyCompleted] = useState(false);
+  const [isReviewMode, setIsReviewMode] = useState(false);
+  
+  // Track if initial mount is complete to prevent auto-navigation on load
+  const isInitialMountRef = useRef(true);
   
   // Load Q&A questions from localStorage (shared with QnA.js page)
   const QNA_STORAGE_KEY = "scihub_qna_questions";
@@ -141,12 +231,6 @@ export default function Lesson() {
     }));
     setCommunityPosts(posts);
   }, []);
-
-  // Trigger celebration animation when a step is completed
-  const triggerCelebration = () => {
-    setShowCelebration(true);
-    setTimeout(() => setShowCelebration(false), 2000);
-  };
 
   // Use videos from the lesson object if available, otherwise fallback to default Biology videos
   const defaultLessonVideos = [
@@ -1772,13 +1856,21 @@ export default function Lesson() {
   const user = JSON.parse(localStorage.getItem("user")) || null;
 
   // Timeline steps for Lesson 1
+  // Determine step completion states
+  const step1Completed = Object.keys(watchedVideos).length === 5;
+  const step2Completed = !!bookedSession;
+  
+  // Find the first incomplete step (for "current" status)
+  const stepsCompletionArray = [step1Completed, step2Completed, step3Completed, step4Completed, step5Completed];
+  const firstIncompleteStep = stepsCompletionArray.findIndex(completed => !completed) + 1;
+  
   const timelineSteps = [
-    { id: 1, title: "Watch 5 Videos", completed: Object.keys(watchedVideos).length === 5, current: Object.keys(watchedVideos).length < 5 },
-    { id: 2, title: "Book a Tutor", completed: !!bookedSession, current: Object.keys(watchedVideos).length === 5 && !bookedSession },
-    { id: 3, title: "Do 2 Worksheets", completed: step3Completed, current: !!bookedSession && !step3Completed },
-    { id: 4, title: "Q&A Post", completed: step4Completed, current: step3Completed && !step4Completed },
-    { id: 5, title: "Complete Game", completed: step5Completed, current: step4Completed && !step5Completed },
-    { id: 6, title: "Finish Lesson", completed: false, current: step5Completed },
+    { id: 1, title: "Watch 5 Videos", completed: step1Completed, current: firstIncompleteStep === 1 },
+    { id: 2, title: "Book a Tutor", completed: step2Completed, current: firstIncompleteStep === 2 },
+    { id: 3, title: "Do 2 Worksheets", completed: step3Completed, current: firstIncompleteStep === 3 },
+    { id: 4, title: "Q&A Post", completed: step4Completed, current: firstIncompleteStep === 4 },
+    { id: 5, title: "Complete Game", completed: step5Completed, current: firstIncompleteStep === 5 },
+    { id: 6, title: "Finish Lesson", completed: step5Completed, current: firstIncompleteStep === 6 },
   ];
 
   console.log("📊 Timeline state - activeStep:", activeStep, "step4Completed:", step4Completed, "Step 5 clickable:", step4Completed || activeStep === 5);
@@ -1806,24 +1898,30 @@ export default function Lesson() {
     ];
 
     // Mock sessions data for testing - One hour apart, 9 AM to 5 PM daily
-    const mockSessions = [];
-    let sessionId = 1;
-    const startDate = new Date(2026, 0, 8); // Jan 8, 2026
-    const endDate = new Date(2026, 0, 21);  // Jan 21, 2026
-    const sessionHours = [9, 10, 11, 12, 13, 14, 15, 16, 17]; // 9 AM to 5 PM, one hour apart
+    const generateMockSessions = () => {
+      const sessions = [];
+      const startDate = new Date(2026, 0, 8); // Jan 8, 2026
+      const endDate = new Date(2026, 0, 21);  // Jan 21, 2026
+      const sessionHours = [9, 10, 11, 12, 13, 14, 15, 16, 17]; // 9 AM to 5 PM, one hour apart
+      let sessionCounter = 0;
 
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-      sessionHours.forEach((hour, idx) => {
-        const tutorId = idx % 2 === 0 ? 101 : 102; // Alternate tutors
-        mockSessions.push({
-          id: sessionId++,
-          tutor_id: tutorId,
-          session_time: new Date(d.getFullYear(), d.getMonth(), d.getDate(), hour, 0).toISOString(),
-          max_spots: 5,
-          signed_up_count: Math.floor(Math.random() * 3), // 0-2 people signed up
+      for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        // eslint-disable-next-line no-loop-func
+        sessionHours.forEach((hour, idx) => {
+          const tutorId = idx % 2 === 0 ? 101 : 102; // Alternate tutors
+          sessionCounter += 1;
+          sessions.push({
+            id: sessionCounter,
+            tutor_id: tutorId,
+            session_time: new Date(d.getFullYear(), d.getMonth(), d.getDate(), hour, 0).toISOString(),
+            max_spots: 5,
+            signed_up_count: Math.floor(Math.random() * 3), // 0-2 people signed up
+          });
         });
-      });
-    }
+      }
+      return sessions;
+    };
+    const mockSessions = generateMockSessions();
 
     async function loadLessonDetails() {
       try {
@@ -1867,6 +1965,23 @@ export default function Lesson() {
     loadLessonDetails();
   }, [lessonId, lesson, navigate]);
 
+  // Reset activeStep to 1 when lesson changes - clear all progress states
+  useEffect(() => {
+    setActiveStep(1);
+    // Also clear step progress for fresh start on new lesson
+    setWorksheet1Submitted(false);
+    setWorksheet2Submitted(false);
+    setStep3Completed(false);
+    setStep4Completed(false);
+    setStep5Completed(false);
+    setBookedSession(null);
+    setWatchedVideos({});
+    setWorksheet1Answers({});
+    setWorksheet2Answers({});
+    isInitialMountRef.current = true; // Reset initial mount flag
+    console.log("🔄 Lesson loaded (ID:", lessonId, "Title:", lesson?.title, ") - resetting activeStep to 1 and clearing progress");
+  }, [lessonId, lesson?.id, lesson?.title]);
+
   // Fetch video progress and lesson progress from database
   useEffect(() => {
     // Backend API disabled - using localStorage instead
@@ -1900,6 +2015,14 @@ export default function Lesson() {
           
           if (parsed.step3Completed) {
             setStep3Completed(true);
+          }
+          
+          if (parsed.step4Completed) {
+            setStep4Completed(true);
+          }
+          
+          if (parsed.step5Completed) {
+            setStep5Completed(true);
           }
         } catch (err) {
           console.error("❌ Error loading worksheet state:", err);
@@ -1943,9 +2066,9 @@ export default function Lesson() {
     }
   }, [lesson, user]);
 
-  // Save worksheet state to localStorage whenever it changes
+  // Save worksheet and Q&A state to localStorage whenever it changes
   useEffect(() => {
-    if (lesson && lesson.id && (worksheet1Submitted || worksheet2Submitted || step3Completed)) {
+    if (lesson && lesson.id) {
       const worksheetKey = `lesson_${lesson.id}_worksheets`;
       const stateToSave = {
         worksheet1Submitted,
@@ -1953,13 +2076,15 @@ export default function Lesson() {
         worksheet2Submitted,
         worksheet2Answers,
         step3Completed,
+        step4Completed,
+        step5Completed,
         savedAt: new Date().toISOString(),
       };
       
       localStorage.setItem(worksheetKey, JSON.stringify(stateToSave));
-      console.log("💾 Saved worksheet state to localStorage:", stateToSave);
+      console.log("💾 Saved lesson progress to localStorage:", stateToSave);
     }
-  }, [worksheet1Submitted, worksheet2Submitted, step3Completed, worksheet1Answers, worksheet2Answers, lesson]);
+  }, [worksheet1Submitted, worksheet2Submitted, step3Completed, step4Completed, step5Completed, worksheet1Answers, worksheet2Answers, lesson]);
 
   // Save booked session to localStorage whenever it changes
   useEffect(() => {
@@ -1975,19 +2100,21 @@ export default function Lesson() {
     }
   }, [bookedSession, lesson, user]);
 
-  // Trigger celebration when steps are completed
+  // Auto-navigate to Step 4 when worksheets are completed (but only after initial mount)
   useEffect(() => {
-    if (step3Completed || step4Completed || step5Completed) {
-      triggerCelebration();
-    }
-  }, [step3Completed, step4Completed, step5Completed]);
-
-  // Auto-navigate to Step 4 when worksheets are completed (but allow progression to Step 5+)
-  useEffect(() => {
-    if (step3Completed && activeStep < 4) {
+    if (step3Completed && activeStep < 4 && !isInitialMountRef.current) {
+      // Only auto-advance if initial mount is complete
       setActiveStep(4);
     }
   }, [step3Completed, activeStep]);
+
+  // Mark initial mount as complete after lesson loads
+  useEffect(() => {
+    if (lesson && lesson.id) {
+      isInitialMountRef.current = false;
+      console.log("✅ Initial mount complete - auto-navigation enabled");
+    }
+  }, [lesson]);
 
   // Log activeStep changes for debugging
   useEffect(() => {
@@ -2024,6 +2151,15 @@ export default function Lesson() {
       const updatedUser = { ...user, coins: (user.coins || 0) + XP_REWARD };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       
+      // Mark lesson as completed in localStorage
+      const completedLessonsKey = "completedLessons";
+      const completedLessons = JSON.parse(localStorage.getItem(completedLessonsKey) || "[]");
+      if (!completedLessons.includes(lesson.id)) {
+        completedLessons.push(lesson.id);
+        localStorage.setItem(completedLessonsKey, JSON.stringify(completedLessons));
+        console.log("✅ Marked lesson as completed in localStorage:", lesson.id);
+      }
+      
       // Send XP award to backend
       fetch(`http://localhost:8080/lessons/${lesson.id}/complete`, {
         method: "POST",
@@ -2056,8 +2192,15 @@ export default function Lesson() {
       
       setLessonXPAwarded(true);
       console.log(`✅ Awarded ${XP_REWARD} XP for completing lesson`);
+      
+      // Navigate to next lesson after 2 seconds
+      setTimeout(() => {
+        const nextLessonId = parseInt(lesson.id) + 1;
+        console.log("📚 Navigating to next lesson:", nextLessonId);
+        navigate(`/lesson/${nextLessonId}`, { replace: false });
+      }, 2000);
     }
-  }, [step5Completed, lessonXPAwarded, user, lesson]);
+  }, [step5Completed, lessonXPAwarded, user, lesson, navigate]);
   function markVideoWatched(videoId) {
     console.log("🎬 markVideoWatched called for video ID:", videoId);
     setWatchedVideos((prev) => ({
@@ -2211,22 +2354,21 @@ export default function Lesson() {
   }
 
   function handleStepClick(stepId) {
-    // Only allow clicking on completed steps or the current step (sequential unlock)
+    // Allow clicking on completed steps or steps where all previous steps are completed
     const step = timelineSteps.find(s => s.id === stepId);
     console.log("🖱️ Step clicked:", stepId);
     console.log("  Step object:", step);
     console.log("  Completed?:", step?.completed);
     console.log("  Current?:", step?.current);
-    console.log("  Clickable:", step && (step.completed || step.current));
     
-    // Special handling for Step 5: allow clicking if Step 4 is completed
-    if (stepId === 5 && step4Completed) {
-      console.log("✅ Step 5 allowed (step4Completed is true)");
-      setActiveStep(stepId);
-      return;
-    }
+    // Check if all previous steps are completed
+    const allPreviousCompleted = timelineSteps.slice(0, stepId - 1).every(s => s.completed);
+    const isClickable = step && (step.completed || step.current || allPreviousCompleted);
     
-    if (step && (step.completed || step.current)) {
+    console.log("  All previous completed?:", allPreviousCompleted);
+    console.log("  Clickable:", isClickable);
+    
+    if (isClickable) {
       console.log("✅ Setting activeStep to:", stepId);
       setActiveStep(stepId);
     } else {
@@ -2384,6 +2526,24 @@ export default function Lesson() {
             <h1>Lesson {lesson.lesson_number}</h1>
             <p className="lesson-subtitle">{lesson.title}</p>
           </div>
+          {step5Completed && (
+            <button 
+              className="view-work-btn"
+              onClick={() => setIsReviewMode(!isReviewMode)}
+              style={{
+                padding: "0.75rem 1.5rem",
+                background: isReviewMode ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)" : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                color: "white",
+                border: "none",
+                borderRadius: "10px",
+                fontWeight: 700,
+                cursor: "pointer",
+                transition: "all 250ms ease"
+              }}
+            >
+              {isReviewMode ? "← Back to Lesson" : "📋 View Your Work"}
+            </button>
+          )}
         </header>
 
         {/* XP Bar */}
@@ -2417,7 +2577,9 @@ export default function Lesson() {
           <h3 className="timeline-title">Lesson Progress</h3>
           <div className="timeline-container">
             {timelineSteps.map((step, index) => {
-              const isClickable = step.completed || step.current; // Only allow clicking completed or current steps (sequential unlock)
+              // Check if all previous steps are completed to determine if this step is clickable
+              const allPreviousCompleted = timelineSteps.slice(0, step.id - 1).every(s => s.completed);
+              const isClickable = step.completed || step.current || allPreviousCompleted;
               return (
                 <div 
                   key={step.id} 
@@ -2457,7 +2619,133 @@ export default function Lesson() {
           </div>
         )}
 
+        {/* Review Mode - View Your Work */}
+        {isReviewMode && step5Completed && (
+          <div className="review-mode-container" style={{
+            background: "linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(30, 50, 80, 0.6) 100%)",
+            border: "1.5px solid rgba(100, 200, 255, 0.2)",
+            borderRadius: "16px",
+            padding: "2.5rem",
+            marginBottom: "2.5rem",
+            backdropFilter: "blur(20px)"
+          }}>
+            <h2 style={{ color: "#fff", marginTop: 0, marginBottom: "2rem", fontSize: "1.8rem", fontWeight: 800 }}>📋 Your Lesson Work</h2>
+            
+            {/* Step 1: Videos Watched */}
+            <div style={{ marginBottom: "2rem", paddingBottom: "1.5rem", borderBottom: "1px solid rgba(100, 200, 255, 0.1)" }}>
+              <h3 style={{ color: "#64c8ff", fontSize: "1.2rem", fontWeight: 700 }}>✅ Step 1: Watched {Object.keys(watchedVideos).length}/5 Videos</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem", marginTop: "1rem" }}>
+                {lessonVideos.map((video) => (
+                  <div key={video.id} style={{
+                    padding: "1rem",
+                    background: watchedVideos[video.id] ? "rgba(16, 185, 129, 0.2)" : "rgba(100, 200, 255, 0.1)",
+                    border: `1px solid ${watchedVideos[video.id] ? "rgba(16, 185, 129, 0.3)" : "rgba(100, 200, 255, 0.2)"}`,
+                    borderRadius: "10px",
+                    color: "#e5e7eb"
+                  }}>
+                    <div style={{ fontWeight: 700, marginBottom: "0.5rem" }}>{watchedVideos[video.id] ? "✅" : "⭕"} {video.title}</div>
+                    <div style={{ fontSize: "0.9rem", color: "#a0aec0" }}>Video {video.id}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Step 2: Tutor Booking */}
+            <div style={{ marginBottom: "2rem", paddingBottom: "1.5rem", borderBottom: "1px solid rgba(100, 200, 255, 0.1)" }}>
+              <h3 style={{ color: "#64c8ff", fontSize: "1.2rem", fontWeight: 700 }}>✅ Step 2: Booked Tutor</h3>
+              {bookedSession ? (
+                <div style={{
+                  padding: "1rem",
+                  background: "rgba(16, 185, 129, 0.2)",
+                  border: "1px solid rgba(16, 185, 129, 0.3)",
+                  borderRadius: "10px",
+                  color: "#e5e7eb",
+                  marginTop: "1rem"
+                }}>
+                  <div style={{ fontWeight: 700, marginBottom: "0.5rem" }}>📅 {new Date(bookedSession.session_time).toLocaleString()}</div>
+                  <div style={{ fontSize: "0.9rem", color: "#a0aec0" }}>Tutor: {selectedTutor?.name || "Selected Tutor"}</div>
+                </div>
+              ) : (
+                <div style={{ color: "#a0aec0", marginTop: "1rem" }}>No tutor booking recorded</div>
+              )}
+            </div>
+
+            {/* Step 3: Worksheets */}
+            <div style={{ marginBottom: "2rem", paddingBottom: "1.5rem", borderBottom: "1px solid rgba(100, 200, 255, 0.1)" }}>
+              <h3 style={{ color: "#64c8ff", fontSize: "1.2rem", fontWeight: 700 }}>✅ Step 3: Completed Worksheets</h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1rem", marginTop: "1rem" }}>
+                {worksheet1Submitted && (
+                  <div style={{
+                    padding: "1rem",
+                    background: "rgba(16, 185, 129, 0.2)",
+                    border: "1px solid rgba(16, 185, 129, 0.3)",
+                    borderRadius: "10px",
+                    color: "#e5e7eb"
+                  }}>
+                    <div style={{ fontWeight: 700, marginBottom: "0.5rem" }}>📝 Worksheet 1</div>
+                    <div style={{ fontSize: "0.9rem", color: "#a0aec0" }}>Answers submitted: {Object.keys(worksheet1Answers).length} questions</div>
+                  </div>
+                )}
+                {worksheet2Submitted && (
+                  <div style={{
+                    padding: "1rem",
+                    background: "rgba(16, 185, 129, 0.2)",
+                    border: "1px solid rgba(16, 185, 129, 0.3)",
+                    borderRadius: "10px",
+                    color: "#e5e7eb"
+                  }}>
+                    <div style={{ fontWeight: 700, marginBottom: "0.5rem" }}>📝 Worksheet 2</div>
+                    <div style={{ fontSize: "0.9rem", color: "#a0aec0" }}>Answers submitted: {Object.keys(worksheet2Answers).length} questions</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Step 4: Q&A Posts */}
+            <div style={{ marginBottom: "2rem", paddingBottom: "1.5rem", borderBottom: "1px solid rgba(100, 200, 255, 0.1)" }}>
+              <h3 style={{ color: "#64c8ff", fontSize: "1.2rem", fontWeight: 700 }}>✅ Step 4: Q&A Posts ({communityPosts.length})</h3>
+              <div style={{ marginTop: "1rem" }}>
+                {communityPosts.length > 0 ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                    {communityPosts.slice(0, 5).map((post) => (
+                      <div key={post.id} style={{
+                        padding: "1rem",
+                        background: "rgba(100, 200, 255, 0.1)",
+                        border: "1px solid rgba(100, 200, 255, 0.2)",
+                        borderRadius: "8px",
+                        color: "#e5e7eb"
+                      }}>
+                        <div style={{ fontWeight: 700, marginBottom: "0.25rem" }}>{post.type === "question" ? "❓" : "💬"} {post.title || post.content.substring(0, 50)}...</div>
+                        <div style={{ fontSize: "0.85rem", color: "#a0aec0" }}>by {post.author} • {post.timestamp}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{ color: "#a0aec0" }}>No Q&A posts yet</div>
+                )}
+              </div>
+            </div>
+
+            {/* Step 5: Games */}
+            <div>
+              <h3 style={{ color: "#64c8ff", fontSize: "1.2rem", fontWeight: 700 }}>✅ Step 5: Game Completed</h3>
+              <div style={{
+                padding: "1rem",
+                background: "rgba(16, 185, 129, 0.2)",
+                border: "1px solid rgba(16, 185, 129, 0.3)",
+                borderRadius: "10px",
+                color: "#e5e7eb",
+                marginTop: "1rem"
+              }}>
+                <div style={{ fontWeight: 700, marginBottom: "0.25rem" }}>🎮 Lesson Game</div>
+                <div style={{ fontSize: "0.9rem", color: "#a0aec0" }}>Successfully completed all challenges</div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Main content grid */}
+        {!isReviewMode && (
         <div className={`lesson-content-grid ${isTransitioning ? 'transitioning' : ''}`}>
           {/* Watch Videos Section (Step 1) - Show only when activeStep === 1 */}
           {activeStep === 1 && (
@@ -2933,7 +3221,7 @@ export default function Lesson() {
                     if (!completedLessons.includes(lesson?.id)) {
                       completedLessons.push(lesson?.id);
                       localStorage.setItem("completedLessons", JSON.stringify(completedLessons));
-                      console.log("✅ Lesson completion saved to localStorage:", completedLessons);
+                      console.log("✅ Lesson marked as completed in localStorage:", completedLessons);
                     }
                     
                     // Save lesson completion details
@@ -2950,7 +3238,11 @@ export default function Lesson() {
                     
                     // Show success message
                     alert("🎉 Lesson completed and saved! Great job!");
-                    navigate("/lessons");
+                    
+                    // Navigate to next lesson
+                    const nextLessonId = parseInt(lesson?.id) + 1;
+                    console.log("📚 Navigating to next lesson:", nextLessonId);
+                    navigate(`/lesson/${nextLessonId}`, { replace: false });
                   }}
                 >
                   ✓ Complete & Save Lesson
@@ -2960,6 +3252,7 @@ export default function Lesson() {
           </section>
           )}
         </div>
+        )}
       </main>
     </div>
   );

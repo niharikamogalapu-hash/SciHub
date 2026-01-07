@@ -5,8 +5,8 @@
 
 .qna-main {
   flex: 1;
-  padding: 2.5rem;
-  max-width: 1400px;
+  padding: 2.5rem 2.5rem 2.5rem 1rem;
+  max-width: 100%;
   width: 100%;
   position: relative;
   z-index: 1;
@@ -202,13 +202,21 @@
 
 /* Content Layout */
 .qna-content {
-  display: grid;
-  grid-template-columns: 280px 1fr;
+  display: flex;
+  justify-content: center;
   gap: 2.5rem;
+}
+
+/* Main Content */
+.qna-main-content {
+  min-height: 500px;
+  width: 100%;
+  max-width: 900px;
 }
 
 /* Filters */
 .qna-filters {
+  display: none;
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(30, 50, 80, 0.4) 100%);
   border: 1.5px solid rgba(100, 200, 255, 0.15);
   border-radius: 16px;
@@ -272,11 +280,6 @@
   border-color: #64c8ff;
   background: rgba(15, 20, 25, 0.8);
   box-shadow: 0 0 15px rgba(100, 200, 255, 0.1);
-}
-
-/* Main Content */
-.qna-main-content {
-  min-height: 500px;
 }
 
 /* Questions List */
