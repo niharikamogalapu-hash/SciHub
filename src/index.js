@@ -5,8 +5,10 @@ import App from "./App";
 import "./styles.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+const basename = process.env.NODE_ENV === "production" ? "/SciHub/" : "/";
+
 root.render(
-  <BrowserRouter>
+  <BrowserRouter basename={basename}>
     <App />
   </BrowserRouter>
 );
