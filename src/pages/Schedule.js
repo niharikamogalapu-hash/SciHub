@@ -1,0 +1,132 @@
+// src/pages/Schedule.js
+import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
+
+const tutors = [
+  {
+    id: "t1",
+    name: "Dr. Rivera",
+    subject: "Biology",
+    description: "Cell biology and genetics, great for visual learners.",
+  },
+  {
+    id: "t2",
+    name: "Mr. Chen",
+    subject: "Physics",
+    description: "Mechanics, forces, and problem-solving strategies.",
+  },
+  {
+    id: "t3",
+    name: "Ms. Lopez",
+    subject: "Economics",
+    description: "Micro & macro foundations made simple.",
+  },
+];
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
+
+function Schedule({ onBookSession }) {
+  const query = useQuery();
+  const preselectedSubject = query.get("subject");
+
+  const [selectedTutor, setSelectedTutor] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+
+  const filteredTutors = preselectedSubject
+    ? tutors.filter(
+        (t) => t.subject.toLowerCase() === preselectedSubject.toLowerCase()
+      )
+    : tutors;
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const tutor = tutors.find((t) => t.id === selectedTutor);
+    if (!tutor || !date || !time) return;
+
+    const session = {
+      tutorId: tutor.id,
+      tutorName: tutor.name,
+      subject: tutor.subject,
+      date,
+      time,
+      zoomLink: "https://zoom.us/your-meeting-link", // placeholder
+    };
+
+    onBookSession(session);
+  }
+
+  return (
+    <section className="schedule-page fade-in">
+      <h1>Book a Tutoring Session</h1>
+      <p className="subtitle">
+        Choose a tutor, pick a time, and your Zoom session will be saved on your dashboard.
+      </p>
+
+      <div className="schedule-layout">
+        <div className="card">
+          <h2>Our Tutors</h2>
+          <ul className="tutor-list">
+            {filteredTutors.map((t) => (
+              <li key={t.id} className="tutor-item">
+                <h3>{t.name}</h3>
+                <p className="tutor-subject">{t.subject}</p>
+                <p className="tutor-description">{t.description}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <form className="card" onSubmit={handleSubmit}>
+          <h2>Schedule your session</h2>
+
+          <label className="field">
+            <span>Select a tutor</span>
+            <select
+              value={selectedTutor}
+              onChange={(e) => setSelectedTutor(e.target.value)}
+            >
+              <option value="">Choose...</option>
+              {filteredTutors.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.name} · {t.subject}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="field">
+            <span>Date</span>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </label>
+
+          <label className="field">
+            <span>Time</span>
+            <input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+            />
+          </label>
+
+          <button className="btn primary" type="submit">
+            Save session
+          </button>
+        </form>
+      </div>
+    </section>
+  );
+}
+
+export default Schedule;
+
+
+
+
+

@@ -1,0 +1,369 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Sidebar from "../../components/Sidebar";
+import { getUserData, markIntroVideoWatched, isIntroVideoWatched } from "../../utils/storageManager";
+import "../../styles/Lesson.css";
+
+// Economics lessons with videos
+const ECONOMICS_LESSONS = [
+  {
+    lesson_number: 1,
+    title: "The Foundation of Choice",
+    videos: [
+      { id: 1, title: "Intro to Economics", url: "https://www.youtube.com/embed/3ez10ADR_gM" },
+      { id: 2, title: "Specialization and Trade", url: "https://www.youtube.com/embed/NI9TLDIPVcs" },
+      { id: 3, title: "Economic Systems", url: "https://www.youtube.com/embed/5ezX87_988o" },
+      { id: 4, title: "Supply and Demand", url: "https://www.youtube.com/embed/g9u_62nIRe4" },
+      { id: 5, title: "Macroeconomics", url: "https://www.youtube.com/embed/d8uTB59IylQ" }
+    ]
+  },
+  {
+    lesson_number: 2,
+    title: "Measuring Economic Health",
+    videos: [
+      { id: 1, title: "Productivity and Growth", url: "https://www.youtube.com/embed/UHiUYj5EA0w" },
+      { id: 2, title: "Inflation and Bubbles", url: "https://www.youtube.com/embed/vByS_h9fUvA" },
+      { id: 3, title: "The Wealth of Nations", url: "https://www.youtube.com/embed/r0fN_91U5pI" },
+      { id: 4, title: "GDP and the Measurement of Progress", url: "https://www.youtube.com/embed/29S_m8Oq_uU" },
+      { id: 5, title: "The Underground Economy", url: "https://www.youtube.com/embed/8mG_7Yy-S90" }
+    ]
+  },
+  {
+    lesson_number: 3,
+    title: "Government & Fiscal Policy",
+    videos: [
+      { id: 1, title: "Fiscal Policy and Stimulus", url: "https://www.youtube.com/embed/otmgFQHbaDo" },
+      { id: 2, title: "Deficits and Debt", url: "https://www.youtube.com/embed/3sUuB_7Lxl8" },
+      { id: 3, title: "Taxes and Gov. Spending", url: "https://www.youtube.com/embed/zQuM78L6H9E" },
+      { id: 4, title: "Price Controls", url: "https://www.youtube.com/embed/01l_XSuIdtE" },
+      { id: 5, title: "Environmental Economics", url: "https://www.youtube.com/embed/otmgFQHbaDo" }
+    ]
+  },
+  {
+    lesson_number: 4,
+    title: "Money, Banking & The Fed",
+    videos: [
+      { id: 1, title: "Monetary Policy", url: "https://www.youtube.com/embed/3ez10ADR_gM" },
+      { id: 2, title: "Money and Finance", url: "https://www.youtube.com/embed/Dugn5126Bto" },
+      { id: 3, title: "The 2008 Financial Crisis", url: "https://www.youtube.com/embed/GPOv729KoP8" },
+      { id: 4, title: "Economic Schools of Thought", url: "https://www.youtube.com/embed/S2S_vKId_9Y" },
+      { id: 5, title: "Banking and Financial Institutions", url: "https://www.youtube.com/embed/fTTGALaRZoc" }
+    ]
+  },
+  {
+    lesson_number: 5,
+    title: "Global Markets & Trade",
+    videos: [
+      { id: 1, title: "International Trade", url: "https://www.youtube.com/embed/r6Ocmaym9Lg" },
+      { id: 2, title: "Exchange Rates", url: "https://www.youtube.com/embed/geoe-6NBy1g" },
+      { id: 3, title: "Globalization and Winners/Losers", url: "https://www.youtube.com/embed/geoe-6NBy1g" },
+      { id: 4, title: "The European Union Explained", url: "https://www.youtube.com/embed/r6Ocmaym9Lg" },
+      { id: 5, title: "Trade Wars and Protectionism", url: "https://www.youtube.com/embed/NI9TLDIPVcs" }
+    ]
+  },
+  {
+    lesson_number: 6,
+    title: "Microeconomics - Firms & Costs",
+    videos: [
+      { id: 1, title: "Markets and Efficiency", url: "https://www.youtube.com/embed/5ezX87_988o" },
+      { id: 2, title: "Externalities", url: "https://www.youtube.com/embed/g9u_62nIRe4" },
+      { id: 3, title: "Revenue, Profits, and Price", url: "https://www.youtube.com/embed/3sUuB_7Lxl8" },
+      { id: 4, title: "Labor Markets and Minimum Wage", url: "https://www.youtube.com/embed/r6Ocmaym9Lg" },
+      { id: 5, title: "Human Capital", url: "https://www.youtube.com/embed/geoe-6NBy1g" }
+    ]
+  },
+  {
+    lesson_number: 7,
+    title: "Competition & Market Structures",
+    videos: [
+      { id: 1, title: "Monopolies and Anti-Competitive Tech", url: "https://www.youtube.com/embed/3ez10ADR_gM" },
+      { id: 2, title: "Game Theory", url: "https://www.youtube.com/embed/Dugn5126Bto" },
+      { id: 3, title: "Oligopolies", url: "https://www.youtube.com/embed/S2S_vKId_9Y" },
+      { id: 4, title: "Perfect Competition", url: "https://www.youtube.com/embed/NI9TLDIPVcs" },
+      { id: 5, title: "Entrepreneurship & Startups", url: "https://www.youtube.com/embed/5ezX87_988o" }
+    ]
+  },
+  {
+    lesson_number: 8,
+    title: "Inequality & Human Welfare",
+    videos: [
+      { id: 1, title: "Economics of Education", url: "https://www.youtube.com/embed/otmgFQHbaDo" },
+      { id: 2, title: "Income and Wealth Inequality", url: "https://www.youtube.com/embed/3ez10ADR_gM" },
+      { id: 3, title: "Healthcare Economics", url: "https://www.youtube.com/embed/5ezX87_988o" },
+      { id: 4, title: "The Economics of Poverty", url: "https://www.youtube.com/embed/g9u_62nIRe4" },
+      { id: 5, title: "Economics of Happiness", url: "https://www.youtube.com/embed/S2S_vKId_9Y" }
+    ]
+  },
+  {
+    lesson_number: 9,
+    title: "Behavioral Econ & Data",
+    videos: [
+      { id: 1, title: "Behavioral Economics", url: "https://www.youtube.com/embed/otmgFQHbaDo" },
+      { id: 2, title: "The Sharing Economy", url: "https://www.youtube.com/embed/3sUuB_7Lxl8" },
+      { id: 3, title: "Market Research and Consumer Data", url: "https://www.youtube.com/embed/Dugn5126Bto" },
+      { id: 4, title: "Correlation vs. Causation in Econ", url: "https://www.youtube.com/embed/S2S_vKId_9Y" },
+      { id: 5, title: "How to Lie with Statistics", url: "https://www.youtube.com/embed/r6Ocmaym9Lg" }
+    ]
+  },
+  {
+    lesson_number: 10,
+    title: "The Future of the Global Economy",
+    videos: [
+      { id: 1, title: "The Gig Economy and Automation", url: "https://www.youtube.com/embed/geoe-6NBy1g" },
+      { id: 2, title: "Urbanization and Megacities", url: "https://www.youtube.com/embed/3ez10ADR_gM" },
+      { id: 3, title: "Economic Development in Emerging Markets", url: "https://www.youtube.com/embed/5ezX87_988o" },
+      { id: 4, title: "Cryptocurrency and the Future of Money", url: "https://www.youtube.com/embed/g9u_62nIRe4" },
+      { id: 5, title: "Sustainability and Circular Economies", url: "https://www.youtube.com/embed/otmgFQHbaDo" }
+    ]
+  }
+];
+
+export default function Economics() {
+  const [sub, setSub] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [lessons, setLessons] = useState([]);
+  const [introWatched, setIntroWatched] = useState(false);
+
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user") || "null") || null;
+
+  // Check if intro was already watched from backend
+  useEffect(() => {
+    if (!user || !user.id) {
+      console.log("User not logged in - skipping video_progress check");
+      return;
+    }
+
+    console.log("📡 Checking if intro video is already completed for user:", user.id);
+    
+    // Load intro video status from localStorage
+    const watched = isIntroVideoWatched(user.id, "social", "economics");
+    if (watched) {
+      console.log("✅ Intro video already watched - loading from localStorage");
+      setIntroWatched(true);
+    } else {
+      console.log("⏭️ Intro video not yet watched");
+      setIntroWatched(false);
+    }
+  }, [user?.id]);
+
+  // Refresh lessons from localStorage when component mounts
+  useEffect(() => {
+    // Get user for user-specific storage - inside effect to avoid dependency issues
+    const user = JSON.parse(localStorage.getItem("user") || "null") || null;
+    const userId = user?.id;
+    
+    console.log("🔄 useEffect triggered. introWatched:", introWatched);
+    
+    // Skip fetching resources - use fallback
+    const found = null; // No resource found
+    setSub(found);
+
+    // Create lessons from ECONOMICS_LESSONS data
+    const pad = ECONOMICS_LESSONS.map((lesson) => {
+      // Check if this lesson was unlocked by completing the previous lesson (organized by subject)
+      const isUnlocked = userId ? getUserData(userId, `lesson_Economics_unlocked_local-${lesson.lesson_number}`) !== null : false;
+      
+      // Check if this lesson was completed (organized by subject)
+      const isCompleted = userId ? getUserData(userId, `lesson_Economics_completed_local-${lesson.lesson_number}`) !== null : false;
+      
+      return {
+        id: `local-${lesson.lesson_number}`,
+        lesson_number: lesson.lesson_number,
+        title: lesson.title,
+        status: isCompleted ? "completed" : lesson.lesson_number === 1 ? "unlocked" : isUnlocked ? "unlocked" : "locked",
+        videos: lesson.videos
+      };
+    });
+    
+    console.log("📚 Lessons created:", pad);
+    setLessons(pad);
+    setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount - localStorage is checked inside effect
+
+  function markIntroWatched() {
+    console.log("🔘 Button clicked - markIntroWatched() called");
+    
+    // Backend API disabled - using localStorage instead
+    if (user && user.id) {
+      console.log("✅ Saving intro video to localStorage");
+      markIntroVideoWatched(user.id, "social", "economics", "Economics");
+    } else {
+      console.warn("⚠️ User not logged in - cannot save video progress");
+    }
+    
+    // Set intro watched state
+    setIntroWatched(true);
+  }
+
+  function markLessonCompleted(lessonId) {
+    setLessons((prev) => {
+      const updated = prev.map((ls) => {
+        if (ls.id === lessonId) {
+          return { ...ls, status: "completed" };
+        }
+        return ls;
+      });
+
+      // Unlock next lesson if the current one is completed
+      const completedLessonIndex = updated.findIndex((l) => l.id === lessonId);
+      if (completedLessonIndex >= 0 && completedLessonIndex < updated.length - 1) {
+        const nextLesson = updated[completedLessonIndex + 1];
+        if (nextLesson.status === "locked") {
+          updated[completedLessonIndex + 1] = { ...nextLesson, status: "unlocked" };
+        }
+      }
+
+      return updated;
+    });
+
+    // Backend API disabled - lesson completion saved to localStorage
+    console.log("✅ Lesson completion saved to localStorage");
+  }
+
+  function viewLesson(lesson) {
+    console.log("🔘 View Lesson button clicked. Lesson:", lesson);
+    console.log("🔗 Navigating to /lesson/" + lesson.id);
+    navigate(`/lesson/${lesson.id}`, { state: { lesson, lessons, subId: sub?.id, subjectName: "Economics" } });
+  }
+
+  return (
+    <div className="dashboard-page" style={{ width: "100%" }}>
+      <Sidebar />
+      <main className="dashboard-main" style={{ padding: "2rem", margin: "0", width: "100%", maxWidth: "100%", flex: "1 1 auto" }}>
+        <header className="dashboard-header" style={{ paddingLeft: "0", paddingRight: "0", marginBottom: "2rem", display: "block" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "1rem", marginBottom: "1rem" }}>
+            <div>
+              <h1 style={{ color: "#f5f7ff", margin: "0 0 0.5rem 0" }}>Economics</h1>
+              <p className="dashboard-subtitle" style={{ margin: "0" }}>Learn about markets, economies, and financial systems.</p>
+            </div>
+            {!loading && (
+              <div style={{ 
+                background: "linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(0, 240, 255, 0.1))",
+                border: "1px solid rgba(16, 185, 129, 0.3)",
+                borderRadius: "12px",
+                padding: "1rem",
+                minWidth: "200px",
+                textAlign: "center"
+              }}>
+                <div style={{ fontSize: "2rem", fontWeight: "800", background: "linear-gradient(135deg, #10b981, #00f0ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", margin: "0 0 0.5rem 0" }}>
+                  {lessons.filter(l => l.status === "completed").length}/{lessons.length}
+                </div>
+                <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>Lessons Completed</div>
+                <div style={{ marginTop: "0.75rem", height: "6px", background: "rgba(148, 163, 184, 0.2)", borderRadius: "3px", overflow: "hidden" }}>
+                  <div style={{ 
+                    height: "100%", 
+                    background: "linear-gradient(90deg, #10b981, #00f0ff)",
+                    width: `${lessons.length > 0 ? (lessons.filter(l => l.status === "completed").length / lessons.length) * 100 : 0}%`,
+                    transition: "width 0.5s ease"
+                  }}></div>
+                </div>
+              </div>
+            )}
+          </div>
+        </header>
+
+        {loading ? (
+          <p className="dashboard-loading">Loading...</p>
+        ) : (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", width: "100%", margin: "0" }}>
+            {/* Intro video - Left side */}
+            <section style={{ 
+              background: "radial-gradient(circle at top, #111827, #020617)",
+              border: "1px solid rgba(148, 163, 184, 0.2)",
+              borderRadius: "16px",
+              padding: "2rem",
+              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.3)",
+              height: "fit-content",
+              position: "sticky",
+              top: "2rem"
+            }}>
+              <h2 style={{ fontSize: "1.4rem", margin: "0 0 1.5rem 0", color: "#f5f7ff", fontWeight: "700" }}>Intro to Economics {introWatched && "✓"}</h2>
+              <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, marginBottom: "1.5rem", borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(148, 163, 184, 0.2)" }}>
+                <iframe
+                  title="Economics Intro"
+                  src="https://www.youtube.com/embed/3ez10ADR_gM?rel=0"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  frameBorder="0"
+                  allowFullScreen
+                />
+              </div>
+              {!introWatched ? (
+                <button 
+                  onClick={markIntroWatched}
+                  style={{
+                    width: "100%",
+                    background: "linear-gradient(135deg, #6c5ce7, #00cec9)",
+                    color: "white",
+                    border: "none",
+                    padding: "0.85rem 1.5rem",
+                    borderRadius: "8px",
+                    fontSize: "0.95rem",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    transition: "all 300ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+                    boxShadow: "0 10px 25px rgba(108, 92, 231, 0.3)"
+                  }}
+                  onMouseEnter={(e) => e.target.style.transform = "translateY(-2px)"}
+                  onMouseLeave={(e) => e.target.style.transform = "translateY(0)"}
+                >
+                  I've finished watching
+                </button>
+              ) : (
+                <div style={{
+                  padding: "0.85rem 1rem",
+                  background: "rgba(16, 185, 129, 0.15)",
+                  color: "#10b981",
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  textAlign: "center",
+                  fontSize: "0.95rem",
+                  border: "1px solid rgba(16, 185, 129, 0.25)"
+                }}>
+                  ✓ Intro Completed
+                </div>
+              )}
+            </section>
+
+            {/* Lessons - Right side */}
+            <section>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", marginBottom: "1.5rem" }}>
+                  <h2 style={{ fontSize: "1.4rem", margin: 0, color: "#f5f7ff", fontWeight: "700" }}>Lessons</h2>
+                  <p style={{ fontSize: "0.85rem", color: "#9ca3af", margin: 0, whiteSpace: "nowrap", background: "rgba(108, 92, 231, 0.15)", padding: "0.5rem 1rem", borderRadius: "8px" }}>
+                    {lessons.filter(l => l.status === "completed").length} / {lessons.length} completed
+                  </p>
+                </div>
+                <ul className="lessons-grid">
+                  {lessons.map((lesson) => (
+                    <li key={lesson.id} className={`lesson-card ${lesson.status}`}>
+                      <div className="lesson-card-number">{lesson.lesson_number}</div>
+                      <div className="lesson-card-content">
+                        <h3>{lesson.title}</h3>
+                        <p className="lesson-status">
+                          {lesson.status === "completed" && "✓ Completed"}
+                          {lesson.status === "unlocked" && "Ready to start"}
+                          {lesson.status === "locked" && "Locked"}
+                          {lesson.status === "schedule_locked" && "Select resources"}
+                        </p>
+                      </div>
+                      <button
+                        className="lesson-card-btn"
+                        title={lesson.status === "completed" ? "Click to review this completed lesson" : "Click to start this lesson"}
+                        disabled={lesson.status === "locked" || lesson.status === "schedule_locked"}
+                        onClick={() => viewLesson(lesson)}
+                      >
+                        {lesson.status === "completed" ? "Review →" : "View →"}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
