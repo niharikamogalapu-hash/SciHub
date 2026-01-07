@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <script type="text/javascript">
+      // Redirect to index.html for React Router to handle
+      var path = window.location.pathname;
+      // Only redirect if not already at index.html or root
+      if (!path.endsWith('index.html') && !path.endsWith('/SciHub/')) {
+        window.location.replace('/SciHub/');
+      }
+    </script>
+  </head>
+  <body>
+  </body>
+</html>
