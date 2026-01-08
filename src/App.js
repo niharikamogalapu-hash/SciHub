@@ -55,7 +55,6 @@ import Lesson from "./pages/Lesson";
 function App() {
   const [user, setUser] = useState(null);
   const [worksheetResult, setWorksheetResult] = useState(null);
-  const [theme, setTheme] = useState("dark");
   const [notifications, setNotifications] = useState([]);
 
   const [stats, setStats] = useState({
@@ -85,10 +84,6 @@ function App() {
       }
     }
   }, []);
-
-  function toggleTheme() {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  }
 
   function addNotification(text) {
     const id = Date.now();
@@ -211,7 +206,7 @@ function App() {
   }
 
   return (
-    <div className={`app ${theme}`}>
+    <div className="app dark">
       {/* Notifications */}
       <div className="notifications">
         {notifications.map((n) => (
@@ -226,8 +221,6 @@ function App() {
         <Navbar
           user={user}
           onLogout={handleLogout}
-          toggleTheme={toggleTheme}
-          theme={theme}
         />
       )}
 

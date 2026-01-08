@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { logActivity, addXP } from "../utils/storageManager";
 
 const topics = {
   chemistry: [
@@ -18,12 +19,38 @@ const topics = {
 function AIQuiz() {
   const [topic, setTopic] = useState("");
   const [quiz, setQuiz] = useState([]);
+  const [quizGenerated, setQuizGenerated] = useState(false);
 
   function generateQuiz() {
     if (!topic) return;
+    
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (!user) {
+      alert("Please log in to generate a quiz");
+      return;
+    }
+
     const selected = topics[topic];
     const random = selected.sort(() => 0.5 - Math.random()).slice(0, 2);
     setQuiz(random);
+    setQuizGenerated(true);
+
+    try {
+      // Log quiz generation activity
+      logActivity(user.id, {
+        type: "Quiz Generated",
+        description: `Generated ${topic.charAt(0).toUpperCase() + topic.slice(1)} quiz with ${random.length} questions`,
+        subject: topic.charAt(0).toUpperCase() + topic.slice(1),
+      });
+
+      // Award small XP for quiz generation
+      addXP(user.id, 5);
+
+      // Dispatch event to update dashboard
+      window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+    } catch (error) {
+      console.error("❌ Error logging quiz activity:", error);
+    }
   }
 
   return (

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { bookTutoringSession, logActivity } from "../utils/storageManager";
 
 const mockTutors = [
   // Biology Tutors
@@ -222,6 +223,34 @@ function Tutoring({ onBookSession }) {
         const bookedData = data.session || session;
         setBookedSession(bookedData);
         
+        const subject = selectedTutor.specialty.split("–")[0].trim();
+        
+        try {
+          // Save to localStorage using storageManager
+          bookTutoringSession(user.id, {
+            tutorId: selectedTutor.id,
+            tutorName: selectedTutor.name,
+            subject: subject,
+            sessionTime: new Date(session.session_time).toISOString(),
+            date: new Date(session.session_time).toLocaleDateString(),
+            time: new Date(session.session_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+            sessionId: bookedData.id || Date.now(),
+          });
+
+          // Log activity
+          logActivity(user.id, {
+            type: "Tutoring Session Booked",
+            description: `Scheduled session with ${selectedTutor.name}`,
+            subject: subject,
+          });
+
+          // Dispatch event for dashboard update
+          window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+        } catch (error) {
+          console.error("❌ Error saving tutoring session:", error);
+        }
+
+        // Call parent callback if provided
         onBookSession({
           teacher: selectedTutor.name,
           topic: selectedTutor.specialty,
@@ -229,30 +258,6 @@ function Tutoring({ onBookSession }) {
           time: new Date(session.session_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
           link: "booked",
         });
-
-        // Dispatch dashboard update event
-        const sessionData = {
-          id: bookedData.id || Date.now(),
-          subject: selectedTutor.specialty.split("–")[0].trim(),
-          tutorName: selectedTutor.name,
-          session_time: session.session_time,
-        };
-
-        const activity = {
-          id: Date.now(),
-          type: "Tutoring Booked",
-          description: `Scheduled session with ${selectedTutor.name}`,
-          subject: selectedTutor.specialty.split("–")[0].trim(),
-          created_at: new Date(),
-        };
-
-        window.dispatchEvent(new CustomEvent("dashboardUpdate", {
-          detail: {
-            type: "tutoringBooked",
-            activity,
-            session: sessionData,
-          }
-        }));
       } else {
         alert("Failed to book session");
       }

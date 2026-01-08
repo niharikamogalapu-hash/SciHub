@@ -1,76 +1,105 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import "./Dashboard.css";
+import {
+  getDashboardStats,
+  getBookedSessions,
+  getActivityLog,
+  getUserAchievementProgress,
+  checkAndUnlockAchievements,
+} from "../utils/storageManager";
 
 function Dashboard() {
   const [stats, setStats] = useState(null);
   const [upcomingSessions, setUpcomingSessions] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
+  const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const user = JSON.parse(localStorage.getItem("user") || "null") || null;
 
-  useEffect(() => {
+  // Function to load data from localStorage
+  const loadDashboardData = () => {
     if (!user) {
       setLoading(false);
       return;
     }
 
-    // Set default mock data
-    const mockStats = {
-      xp: 2450,
-      coins: 125,
-      streak: 7,
-      lessonsCompleted: 12,
-      lessonsInProgress: 8,
-      totalGameScore: 3540,
-    };
+    try {
+      // Load stats from localStorage using storageManager
+      const userStats = getDashboardStats(user.id);
+      setStats(userStats);
 
-    const mockSessions = [
-      { id: 1, subject: "Biology", tutorName: "Ms. Johnson", session_time: new Date(Date.now() + 86400000) },
-      { id: 2, subject: "Chemistry", tutorName: "Mr. Smith", session_time: new Date(Date.now() + 172800000) },
-    ];
+      // Check and unlock any new achievements
+      const newlyUnlocked = checkAndUnlockAchievements(user.id);
+      if (newlyUnlocked.length > 0) {
+        console.log(`🏆 New achievements unlocked: ${newlyUnlocked.length}`);
+      }
 
-    const mockActivity = [
-      { id: 1, type: "Game Won", description: "Completed Cell Structure Master", subject: "Biology", created_at: new Date() },
-      { id: 2, type: "Lesson Completed", description: "Finished Photosynthesis lesson", subject: "Biology", created_at: new Date(Date.now() - 3600000) },
-      { id: 3, type: "Quiz Passed", description: "Aced Chemistry Basics", subject: "Chemistry", created_at: new Date(Date.now() - 7200000) },
-    ];
+      // Load user achievement progress
+      const achievementProgress = getUserAchievementProgress(user.id);
+      setAchievements(achievementProgress);
 
-    // Backend API disabled - using mock data instead
-    console.log("✅ Backend API disabled - using mock data for Dashboard");
-    setStats(mockStats);
-    setUpcomingSessions(mockSessions);
-    setRecentActivity(mockActivity);
-    setLoading(false);
+      // Load booked sessions
+      const sessions = getBookedSessions(user.id);
+      // Convert session times to Date objects and sort by date
+      const upcomingSessions = sessions
+        .map(session => ({
+          ...session,
+          session_time: new Date(session.sessionTime || session.session_time),
+        }))
+        .filter(session => new Date(session.session_time) > new Date())
+        .sort((a, b) => new Date(a.session_time) - new Date(b.session_time))
+        .slice(0, 5);
+
+      setUpcomingSessions(upcomingSessions);
+
+      // Load activity log
+      const activities = getActivityLog(user.id, 10);
+      const formattedActivities = activities.map(activity => ({
+        ...activity,
+        created_at: new Date(activity.created_at),
+      }));
+      setRecentActivity(formattedActivities);
+
+      console.log("✅ Dashboard data loaded from localStorage");
+      setLoading(false);
+    } catch (error) {
+      console.error("❌ Error loading dashboard data:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDashboardData();
 
     // Listen for dashboard updates from other pages
     const handleDashboardUpdate = (event) => {
       console.log("📊 Dashboard update received:", event.detail);
-      const { type, activity, session, stats: newStats } = event.detail;
+      // Reload data when update event is received
+      loadDashboardData();
+    };
 
-      // Update stats if provided
-      if (newStats) {
-        setStats(prev => ({ ...prev, ...newStats }));
-      }
-
-      // Add new activity
-      if (activity) {
-        setRecentActivity(prev => [activity, ...prev.slice(0, 4)]);
-      }
-
-      // Add new session
-      if (session) {
-        setUpcomingSessions(prev => [session, ...prev]);
-      }
-
-      console.log(`✅ Dashboard updated: ${type}`);
+    // Also listen for custom storage change event
+    const handleStorageChange = () => {
+      console.log("🔄 Storage changed - refreshing dashboard");
+      loadDashboardData();
     };
 
     window.addEventListener("dashboardUpdate", handleDashboardUpdate);
+    window.addEventListener("dashboardStorageChange", handleStorageChange);
 
-    return () => window.removeEventListener("dashboardUpdate", handleDashboardUpdate);
+    // Set up interval to refresh stats every 10 seconds to catch changes from other tabs
+    const refreshInterval = setInterval(() => {
+      loadDashboardData();
+    }, 10000);
+
+    return () => {
+      window.removeEventListener("dashboardUpdate", handleDashboardUpdate);
+      window.removeEventListener("dashboardStorageChange", handleStorageChange);
+      clearInterval(refreshInterval);
+    };
   }, [user?.id]);
 
   // Calendar helper functions
@@ -136,7 +165,9 @@ function Dashboard() {
     return <h1 style={{ color: "white" }}>Please log in</h1>;
   }
 
-  const lessonProgress = stats ? (stats.lessonsCompleted / (stats.lessonsCompleted + stats.lessonsInProgress)) * 100 : 0;
+  // Calculate lesson progress safely (handle division by zero)
+  const totalLessons = (stats?.lessonsCompleted || 0) + (stats?.lessonsInProgress || 0);
+  const lessonProgress = totalLessons > 0 ? ((stats?.lessonsCompleted || 0) / totalLessons) * 100 : 0;
   const xpProgress = stats ? (stats.xp % 1000) / 10 : 0;
 
   return (
@@ -194,7 +225,7 @@ function Dashboard() {
                 <div className="stat-icon">📚</div>
                 <div className="stat-label">Lessons</div>
                 <div className="stat-value">
-                  {stats.lessonsCompleted}/{stats.lessonsCompleted + stats.lessonsInProgress}
+                  {stats?.lessonsCompleted || 0}/{totalLessons}
                 </div>
                 <div className="progress-bar">
                   <div className="progress-fill" style={{ background: "linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%)", width: `${lessonProgress}%` }}></div>
@@ -250,26 +281,89 @@ function Dashboard() {
               <div className="dashboard-section">
                 <h3>🏆 Achievements</h3>
                 <div className="achievements-grid">
-                  <div className="achievement-badge green">
-                    <div className="achievement-icon">🌟</div>
-                    <div className="achievement-title">Rising Star</div>
-                    <div className="achievement-stat">2000+ XP</div>
-                  </div>
-                  <div className="achievement-badge orange">
-                    <div className="achievement-icon">🔥</div>
-                    <div className="achievement-title">On Fire</div>
-                    <div className="achievement-stat">7 Day Streak</div>
-                  </div>
-                  <div className="achievement-badge blue">
-                    <div className="achievement-icon">🎮</div>
-                    <div className="achievement-title">Game Master</div>
-                    <div className="achievement-stat">3000+ Score</div>
-                  </div>
-                  <div className="achievement-badge purple">
-                    <div className="achievement-icon">📚</div>
-                    <div className="achievement-title">Scholar</div>
-                    <div className="achievement-stat">10 Lessons</div>
-                  </div>
+                  {achievements.length === 0 ? (
+                    <p className="empty-state">Loading achievements...</p>
+                  ) : (
+                    achievements.map((achievement) => {
+                      const colorMap = {
+                        green: "#10b981",
+                        orange: "#f97316",
+                        blue: "#3b82f6",
+                        purple: "#a855f7",
+                        cyan: "#06b6d4",
+                        yellow: "#eab308",
+                        red: "#ef4444",
+                        indigo: "#6366f1",
+                      };
+                      const bgColor = colorMap[achievement.color] || "#3b82f6";
+                      
+                      return (
+                        <div 
+                          key={achievement.id} 
+                          style={{
+                            padding: "20px",
+                            borderRadius: "12px",
+                            textAlign: "center",
+                            background: achievement.unlocked 
+                              ? `linear-gradient(135deg, ${bgColor}, ${bgColor}dd)`
+                              : "rgba(100, 116, 139, 0.2)",
+                            border: `2px solid ${achievement.unlocked ? bgColor : "rgba(148, 163, 184, 0.3)"}`,
+                            cursor: "pointer",
+                            transition: "all 0.3s ease",
+                            transform: "scale(1)",
+                            opacity: achievement.unlocked ? 1 : 0.6,
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "scale(1.05)";
+                            e.currentTarget.style.boxShadow = achievement.unlocked 
+                              ? `0 8px 16px ${bgColor}40`
+                              : "0 4px 8px rgba(0, 0, 0, 0.2)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "scale(1)";
+                            e.currentTarget.style.boxShadow = "none";
+                          }}
+                          title={achievement.unlocked ? `Unlocked: ${new Date(achievement.unlockedAt).toLocaleDateString()}` : "Locked"}
+                        >
+                          <div style={{
+                            fontSize: "32px",
+                            marginBottom: "8px",
+                            filter: achievement.unlocked ? "none" : "grayscale(100%)",
+                          }}>
+                            {achievement.icon}
+                          </div>
+                          <div style={{
+                            fontSize: "14px",
+                            fontWeight: "600",
+                            marginBottom: "6px",
+                            color: "#f9fafb",
+                          }}>
+                            {achievement.title}
+                          </div>
+                          <div style={{
+                            fontSize: "12px",
+                            color: achievement.unlocked ? "rgba(255, 255, 255, 0.9)" : "rgba(255, 255, 255, 0.6)",
+                            marginBottom: "8px",
+                            minHeight: "32px",
+                          }}>
+                            {achievement.description}
+                          </div>
+                          {achievement.unlocked && (
+                            <div style={{
+                              fontSize: "11px",
+                              marginTop: "8px",
+                              padding: "4px 8px",
+                              background: "rgba(0, 0, 0, 0.2)",
+                              borderRadius: "6px",
+                              color: "rgba(255, 255, 255, 0.8)",
+                            }}>
+                              ✓ Unlocked
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               </div>
             </div>

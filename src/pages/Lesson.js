@@ -2,7 +2,13 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import "../styles/Lesson.css";
-import { markVideoWatched as saveVideoToStorage, getWatchedVideos } from "../utils/storageManager";
+import { 
+  markVideoWatched as saveVideoToStorage, 
+  getWatchedVideos,
+  markLessonCompleted,
+  addXP,
+  logActivity,
+} from "../utils/storageManager";
 
 // Helper function to format dates
 function formatDate(date) {
@@ -52,10 +58,10 @@ export default function Lesson() {
   const lessonDatabase = {
     1: {
       id: 1,
-      title: "Cell Structure & Function",
+      title: "Introduction to Biology",
       category: "biology",
       subject: "Biology",
-      description: "Learn about cell components and their functions",
+      description: "Master the fundamentals of biology including the scientific method, organization of life, and ecological principles",
       videos: [
         { id: 1, title: "Introduction to Biology", url: "https://www.youtube.com/watch?v=tZE_fQFK8EY&list=PL8dPuuaLjXtPW_ofbxdHNciuLoTRLPMgB&index=2" },
         { id: 2, title: "Scientific Method", url: "https://www.youtube.com/watch?v=xOLcZMw0hd4&list=PL8dPuuaLjXtPW_ofbxdHNciuLoTRLPMgB&index=3" },
@@ -193,6 +199,8 @@ export default function Lesson() {
   const [newAnswer, setNewAnswer] = useState("");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isReviewMode, setIsReviewMode] = useState(false);
+  const [previousLessonCompleted, setPreviousLessonCompleted] = useState(true);
+  const [allCompletedLessons, setAllCompletedLessons] = useState([]);
   
   // Track if initial mount is complete to prevent auto-navigation on load
   const isInitialMountRef = useRef(true);
@@ -1873,9 +1881,7 @@ export default function Lesson() {
     { id: 6, title: "Finish Lesson", completed: step5Completed, current: firstIncompleteStep === 6 },
   ];
 
-  console.log("📊 Timeline state - activeStep:", activeStep, "step4Completed:", step4Completed, "Step 5 clickable:", step4Completed || activeStep === 5);
-  console.log("🎮 Step 5 state - should display?:", activeStep === 5, "activeStep value:", activeStep);
-  console.log("🔍 RENDER CHECK - activeStep === 5?", activeStep === 5, "| activeStep:", activeStep, "| step4Completed:", step4Completed, "| step5Completed:", step5Completed);
+  console.log("📊 Timeline state - activeStep:", activeStep, "step5Completed:", step5Completed);
 
   useEffect(() => {
     if (!lesson) {
@@ -1887,13 +1893,33 @@ export default function Lesson() {
     const mockTutors = [
       {
         id: 101,
-        name: "Dr. Sarah Mitchell",
-        bio: "Expert in Biology with 10+ years of teaching experience. Specializes in cellular biology and genetics.",
+        name: "Mr. Patel",
+        bio: "Specialist in Biology with expertise in cellular biology, genetics, and ecology. 15+ years of teaching experience.",
       },
       {
         id: 102,
-        name: "Prof. James Chen",
-        bio: "Passionate educator with a focus on interactive learning. Great at breaking down complex concepts.",
+        name: "Ms. Chen",
+        bio: "Expert in Chemistry and Physics. Passionate about making complex concepts clear and engaging.",
+      },
+      {
+        id: 103,
+        name: "Dr. Alex Rivers",
+        bio: "Specialist in Environmental Science and Earth Systems. Focused on sustainability and real-world applications.",
+      },
+      {
+        id: 104,
+        name: "Prof. Emma Rodriguez",
+        bio: "Expert in Social Sciences including Economics, History, Geography, and Psychology.",
+      },
+      {
+        id: 105,
+        name: "Sarah",
+        bio: "Peer Tutor - High school student and science enthusiast. Great at understanding student challenges.",
+      },
+      {
+        id: 106,
+        name: "Alex",
+        bio: "Peer Tutor - College freshman passionate about science education and helping peers succeed.",
       },
     ];
 
@@ -1981,6 +2007,26 @@ export default function Lesson() {
     isInitialMountRef.current = true; // Reset initial mount flag
     console.log("🔄 Lesson loaded (ID:", lessonId, "Title:", lesson?.title, ") - resetting activeStep to 1 and clearing progress");
   }, [lessonId, lesson?.id, lesson?.title]);
+
+  // Check if previous lessons are completed
+  useEffect(() => {
+    if (lesson && lesson.id) {
+      const completedLessonsData = JSON.parse(localStorage.getItem("completedLessons") || "[]");
+      setAllCompletedLessons(completedLessonsData);
+      
+      const currentLessonId = parseInt(lesson.id);
+      const previousLessonId = currentLessonId - 1;
+      
+      // Check if this is the first lesson or if previous lesson is completed
+      if (previousLessonId < 1 || completedLessonsData.includes(previousLessonId)) {
+        setPreviousLessonCompleted(true);
+        console.log(`✅ Lesson ${currentLessonId} can be accessed (first lesson or previous completed)`);
+      } else {
+        setPreviousLessonCompleted(false);
+        console.log(`⚠️ Lesson ${currentLessonId} requires completion of Lesson ${previousLessonId} first`);
+      }
+    }
+  }, [lesson?.id]);
 
   // Fetch video progress and lesson progress from database
   useEffect(() => {
@@ -2142,63 +2188,65 @@ export default function Lesson() {
     }
   }, [activeStep]);
 
+  // Auto-navigate to Step 6 when Step 5 is completed
+  useEffect(() => {
+    if (step5Completed && activeStep === 5) {
+      setTimeout(() => {
+        console.log("🎉 Step 5 complete! Moving to Step 6");
+        setActiveStep(6);
+        // Scroll to step 6 section
+        const step6Section = document.querySelector('.step-six-section');
+        if (step6Section) {
+          step6Section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+    }
+  }, [step5Completed, activeStep]);
+
   // Award XP when lesson is completed
   useEffect(() => {
     if (step5Completed && !lessonXPAwarded && user && user.id) {
       const XP_REWARD = 50;
+      const COINS_REWARD = 10;
       
-      // Update user XP in localStorage
-      const updatedUser = { ...user, coins: (user.coins || 0) + XP_REWARD };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      
-      // Mark lesson as completed in localStorage
-      const completedLessonsKey = "completedLessons";
-      const completedLessons = JSON.parse(localStorage.getItem(completedLessonsKey) || "[]");
-      if (!completedLessons.includes(lesson.id)) {
-        completedLessons.push(lesson.id);
-        localStorage.setItem(completedLessonsKey, JSON.stringify(completedLessons));
-        console.log("✅ Marked lesson as completed in localStorage:", lesson.id);
-      }
-      
-      // Send XP award to backend
-      fetch(`http://localhost:8080/lessons/${lesson.id}/complete`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: user.id,
-          xp_earned: XP_REWARD,
-        }),
-      }).catch(err => console.error("❌ Error saving XP reward:", err));
-      
-      // Dispatch dashboard update event
-      const activity = {
-        id: Date.now(),
-        type: "Lesson Completed",
-        description: `Finished ${lesson.title}`,
-        subject: lesson.title,
-        created_at: new Date(),
-      };
+      try {
+        // Update dashboard stats using storageManager
+        addXP(user.id, XP_REWARD);
+        
+        // Mark lesson as completed using storageManager
+        markLessonCompleted(user.id, lesson.id, {
+          title: lesson.title,
+          category: lesson.category,
+          subject: lesson.subject,
+        });
 
-      window.dispatchEvent(new CustomEvent("dashboardUpdate", {
-        detail: {
-          type: "lessonCompleted",
-          activity,
-          stats: { 
-            xp: (user?.xp || 0) + XP_REWARD,
-            lessonsCompleted: (user?.lessonsCompleted || 0) + 1
-          }
-        }
-      }));
-      
-      setLessonXPAwarded(true);
-      console.log(`✅ Awarded ${XP_REWARD} XP for completing lesson`);
-      
-      // Navigate to next lesson after 2 seconds
-      setTimeout(() => {
-        const nextLessonId = parseInt(lesson.id) + 1;
-        console.log("📚 Navigating to next lesson:", nextLessonId);
-        navigate(`/lesson/${nextLessonId}`, { replace: false });
-      }, 2000);
+        // Log activity
+        logActivity(user.id, {
+          type: "Lesson Completed",
+          description: `Finished ${lesson.title}`,
+          subject: lesson.subject,
+        });
+
+        // Also update local user object for consistency
+        const updatedUser = { ...user, coins: (user.coins || 0) + COINS_REWARD };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        
+        console.log(`✅ Lesson completed: +${XP_REWARD} XP for ${lesson.title}`);
+        
+        // Dispatch events for real-time updates
+        window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+        
+        setLessonXPAwarded(true);
+        
+        // Navigate to next lesson after 2 seconds
+        setTimeout(() => {
+          const nextLessonId = parseInt(lesson.id) + 1;
+          console.log("📚 Navigating to next lesson:", nextLessonId);
+          navigate(`/lesson/${nextLessonId}`, { replace: false });
+        }, 2000);
+      } catch (error) {
+        console.error("❌ Error completing lesson:", error);
+      }
     }
   }, [step5Completed, lessonXPAwarded, user, lesson, navigate]);
   function markVideoWatched(videoId) {
@@ -2232,6 +2280,7 @@ export default function Lesson() {
   }
 
   function openVideoPlayer(video) {
+    console.log("🎬 Opening video player for:", video);
     setCurrentVideoPlayer(video);
   }
 
@@ -2350,6 +2399,7 @@ export default function Lesson() {
       )
     );
   }  function closeVideoPlayer() {
+    console.log("❌ Closing video player");
     setCurrentVideoPlayer(null);
   }
 
@@ -2371,6 +2421,14 @@ export default function Lesson() {
     if (isClickable) {
       console.log("✅ Setting activeStep to:", stepId);
       setActiveStep(stepId);
+      
+      // Scroll to the content section
+      setTimeout(() => {
+        const contentGrid = document.querySelector('.lesson-content-grid');
+        if (contentGrid) {
+          contentGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     } else {
       console.log("❌ Step is not clickable yet. Completed:", step?.completed, "Current:", step?.current);
     }
@@ -2476,6 +2534,7 @@ export default function Lesson() {
       <Sidebar />
       <main className="dashboard-main lesson-main">
         {/* Video Player Modal */}
+        {currentVideoPlayer && console.log("🎥 Rendering video modal with:", currentVideoPlayer)}
         {currentVideoPlayer && (
           <div className="video-player-modal">
             <div className="video-player-backdrop" onClick={closeVideoPlayer} />
@@ -2519,6 +2578,54 @@ export default function Lesson() {
         <button className="back-btn" onClick={() => navigate(-1)}>
           ← Back
         </button>
+
+        {/* Previous Lesson Completion Status */}
+        {lesson && lesson.id && !previousLessonCompleted && (
+          <div style={{
+            background: "linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%)",
+            border: "2px solid rgba(239, 68, 68, 0.3)",
+            borderRadius: "12px",
+            padding: "1.5rem",
+            marginBottom: "1.5rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem"
+          }}>
+            <div style={{ fontSize: "1.5rem" }}>📋</div>
+            <div>
+              <h3 style={{ color: "#fca5a5", marginTop: 0, marginBottom: "0.25rem", fontWeight: 700 }}>
+                Complete Lesson {parseInt(lesson.id) - 1} First
+              </h3>
+              <p style={{ color: "#fecaca", marginTop: 0, marginBottom: 0 }}>
+                You must complete the previous lesson before accessing this one. Your progress will unlock the next lesson automatically!
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Previous Lessons Completed Banner */}
+        {allCompletedLessons.length > 0 && previousLessonCompleted && (
+          <div style={{
+            background: "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%)",
+            border: "2px solid rgba(16, 185, 129, 0.3)",
+            borderRadius: "12px",
+            padding: "1.5rem",
+            marginBottom: "1.5rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "1rem"
+          }}>
+            <div style={{ fontSize: "1.5rem" }}>✅</div>
+            <div>
+              <h3 style={{ color: "#86efac", marginTop: 0, marginBottom: "0.25rem", fontWeight: 700 }}>
+                {allCompletedLessons.length} Lesson{allCompletedLessons.length !== 1 ? 's' : ''} Completed
+              </h3>
+              <p style={{ color: "#bbf7d0", marginTop: 0, marginBottom: 0 }}>
+                Great progress! You've unlocked this lesson by completing previous lessons. Keep going! 🚀
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Header */}
         <header className="lesson-header">
@@ -2629,7 +2736,44 @@ export default function Lesson() {
             marginBottom: "2.5rem",
             backdropFilter: "blur(20px)"
           }}>
-            <h2 style={{ color: "#fff", marginTop: 0, marginBottom: "2rem", fontSize: "1.8rem", fontWeight: 800 }}>📋 Your Lesson Work</h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+              <h2 style={{ color: "#fff", marginTop: 0, marginBottom: 0, fontSize: "1.8rem", fontWeight: 800 }}>📋 Your Lesson Work</h2>
+              <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                {[1, 2, 3, 4, 5].map((step) => (
+                  <button
+                    key={step}
+                    onClick={() => {
+                      setIsReviewMode(false);
+                      setActiveStep(step);
+                      const contentGrid = document.querySelector('.lesson-content-grid');
+                      if (contentGrid) {
+                        contentGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }}
+                    style={{
+                      padding: "0.5rem 1rem",
+                      background: "rgba(100, 200, 255, 0.2)",
+                      border: "1px solid rgba(100, 200, 255, 0.3)",
+                      borderRadius: "8px",
+                      color: "#64c8ff",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                      transition: "all 200ms ease"
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.background = "rgba(100, 200, 255, 0.4)";
+                      e.target.style.borderColor = "rgba(100, 200, 255, 0.6)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.background = "rgba(100, 200, 255, 0.2)";
+                      e.target.style.borderColor = "rgba(100, 200, 255, 0.3)";
+                    }}
+                  >
+                    Step {step}
+                  </button>
+                ))}
+              </div>
+            </div>
             
             {/* Step 1: Videos Watched */}
             <div style={{ marginBottom: "2rem", paddingBottom: "1.5rem", borderBottom: "1px solid rgba(100, 200, 255, 0.1)" }}>
@@ -2758,8 +2902,23 @@ export default function Lesson() {
               
               <div className="videos-container">
                 {lessonVideos.map((video) => (
-                  <div key={video.id} className={`video-card ${watchedVideos[video.id] ? "watched" : ""}`} onClick={() => openVideoPlayer(video)} style={{ cursor: 'pointer' }}>
-                    <div className="video-number">{video.id}</div>
+                  <div 
+                    key={video.id} 
+                    className={`video-card ${watchedVideos[video.id] ? "watched" : ""}`} 
+                    onClick={() => openVideoPlayer(video)} 
+                    style={{ 
+                      cursor: 'pointer',
+                      transition: 'all 300ms ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-8px)';
+                      e.currentTarget.style.boxShadow = '0 15px 40px rgba(100, 200, 255, 0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
+                    }}
+                  >  <div className="video-number">{video.id}</div>
                     <div className="video-content">
                       <h3>{video.title}</h3>
                       <p className="video-status">
@@ -3192,8 +3351,8 @@ export default function Lesson() {
           </section>
           )}
 
-          {/* Complete Lesson Section (Step 6) - Appears after Step 5 */}
-          {step5Completed && (
+          {/* Complete Lesson Section (Step 6) - Appears when Step 6 is active */}
+          {activeStep === 6 && step5Completed && (
             <section className="lesson-section step-six-section">
             <div className="step-header">
               <div className="step-badge">Step 6</div>
@@ -3236,13 +3395,16 @@ export default function Lesson() {
                     localStorage.setItem("lessonCompletions", JSON.stringify(allCompletions));
                     console.log("✅ Lesson completion details saved:", lessonCompletion);
                     
+                    // Dispatch event to update dashboard
+                    window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+                    window.dispatchEvent(new CustomEvent("lessonsStorageChange"));
+                    
                     // Show success message
                     alert("🎉 Lesson completed and saved! Great job!");
                     
-                    // Navigate to next lesson
-                    const nextLessonId = parseInt(lesson?.id) + 1;
-                    console.log("📚 Navigating to next lesson:", nextLessonId);
-                    navigate(`/lesson/${nextLessonId}`, { replace: false });
+                    // Navigate back to lessons page
+                    console.log("📚 Navigating back to lessons page");
+                    navigate("/lessons", { replace: false });
                   }}
                 >
                   ✓ Complete & Save Lesson

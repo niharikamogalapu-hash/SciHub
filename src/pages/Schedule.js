@@ -1,6 +1,7 @@
 // src/pages/Schedule.js
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { bookTutoringSession, logActivity } from "../utils/storageManager";
 
 const tutors = [
   {
@@ -34,6 +35,8 @@ function Schedule({ onBookSession }) {
   const [selectedTutor, setSelectedTutor] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const filteredTutors = preselectedSubject
     ? tutors.filter(
@@ -43,8 +46,19 @@ function Schedule({ onBookSession }) {
 
   function handleSubmit(e) {
     e.preventDefault();
+    
+    // Get current user from localStorage
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (!user || !user.id) {
+      setErrorMessage("Please log in to book a session");
+      return;
+    }
+
     const tutor = tutors.find((t) => t.id === selectedTutor);
-    if (!tutor || !date || !time) return;
+    if (!tutor || !date || !time) {
+      setErrorMessage("Please fill in all fields");
+      return;
+    }
 
     const session = {
       tutorId: tutor.id,
@@ -52,10 +66,44 @@ function Schedule({ onBookSession }) {
       subject: tutor.subject,
       date,
       time,
+      sessionTime: new Date(`${date}T${time}`).toISOString(),
       zoomLink: "https://zoom.us/your-meeting-link", // placeholder
     };
 
-    onBookSession(session);
+    try {
+      // Save session to localStorage using storageManager
+      bookTutoringSession(user.id, session);
+      
+      // Log activity
+      logActivity(user.id, {
+        type: "Session Booked",
+        description: `Booked a ${session.subject} session with ${session.tutorName}`,
+        subject: session.subject,
+      });
+
+      // Show success message
+      setSuccessMessage(`✅ Session booked with ${tutor.name} on ${date} at ${time}!`);
+      setErrorMessage("");
+      
+      // Reset form
+      setSelectedTutor("");
+      setDate("");
+      setTime("");
+      
+      // Dispatch event to update dashboard
+      window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+      
+      // Call parent callback if provided
+      if (onBookSession) {
+        onBookSession(session);
+      }
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error) {
+      console.error("❌ Error booking session:", error);
+      setErrorMessage("Error booking session. Please try again.");
+    }
   }
 
   return (
@@ -64,6 +112,34 @@ function Schedule({ onBookSession }) {
       <p className="subtitle">
         Choose a tutor, pick a time, and your Zoom session will be saved on your dashboard.
       </p>
+
+      {successMessage && (
+        <div style={{
+          background: "rgba(34, 197, 94, 0.1)",
+          border: "1px solid rgba(34, 197, 94, 0.3)",
+          color: "#22c55e",
+          padding: "1rem",
+          borderRadius: "8px",
+          marginBottom: "1rem",
+          textAlign: "center"
+        }}>
+          {successMessage}
+        </div>
+      )}
+
+      {errorMessage && (
+        <div style={{
+          background: "rgba(239, 68, 68, 0.1)",
+          border: "1px solid rgba(239, 68, 68, 0.3)",
+          color: "#ef4444",
+          padding: "1rem",
+          borderRadius: "8px",
+          marginBottom: "1rem",
+          textAlign: "center"
+        }}>
+          {errorMessage}
+        </div>
+      )}
 
       <div className="schedule-layout">
         <div className="card">
@@ -125,8 +201,3 @@ function Schedule({ onBookSession }) {
 }
 
 export default Schedule;
-
-
-
-
-

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import "./LessonsHub.css";
@@ -9,20 +9,42 @@ function Lessons() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [filteredLessons, setFilteredLessons] = useState([]);
   const [completedLessons, setCompletedLessons] = useState([]);
+  const [lessonProgress, setLessonProgress] = useState({});
 
-  // Load completed lessons from localStorage on mount
+  const user = useMemo(() => JSON.parse(localStorage.getItem("user") || "null") || null, []);
+
+  // Load completed lessons and progress from localStorage on mount
   useEffect(() => {
-    const completed = JSON.parse(localStorage.getItem("completedLessons") || "[]");
-    setCompletedLessons(completed);
-    console.log("📚 Loaded completed lessons:", completed);
-  }, []);
+    let completedLessonIds = [];
+    
+    if (user && user.id) {
+      // Get completed lessons from storageManager format
+      const completedLessonsKey = `scihub_user_${user.id}_completed_lessons`;
+      const completedData = JSON.parse(localStorage.getItem(completedLessonsKey) || "[]");
+      completedLessonIds = completedData.map(l => l.id);
+    } else {
+      // Fallback to legacy format
+      completedLessonIds = JSON.parse(localStorage.getItem("completedLessons") || "[]");
+    }
+    
+    setCompletedLessons(completedLessonIds);
+    
+    // Build progress map (100% for completed, 0% for not started)
+    const progressMap = {};
+    completedLessonIds.forEach(lessonId => {
+      progressMap[lessonId] = 100;
+    });
+    setLessonProgress(progressMap);
+      
+    console.log("📚 Loaded completed lessons:", completedLessonIds);
+    console.log("📊 Lesson progress:", progressMap);
 
   // All lessons data
   const allLessons = [
     // Biology Lessons
     {
       id: 1,
-      title: "Cell Structure & Function",
+      title: "Introduction to Biology",
       category: "biology",
       subject: "Biology",
       level: "Beginner",
@@ -30,7 +52,7 @@ function Lessons() {
       videos: 5,
       icon: "🔬",
       progress: 75,
-      description: "Learn about cell components and their functions",
+      description: "Master the fundamentals of biology including the scientific method, organization of life, and ecological principles",
       color: "#10b981",
       lessons: [
         { id: 1, title: "Introduction to Biology", url: "https://www.youtube.com/watch?v=tZE_fQFK8EY" },
@@ -221,7 +243,8 @@ function Lessons() {
     },
   ];
 
-  useEffect(() => {
+  // Memoize filtered lessons to avoid unnecessary recalculations
+  const filteredLessonsComputed = useMemo(() => {
     let filtered = allLessons;
 
     // Filter by category
@@ -239,8 +262,13 @@ function Lessons() {
       );
     }
 
-    setFilteredLessons(filtered);
+    return filtered;
   }, [searchQuery, selectedCategory]);
+
+  // Update filtered lessons state
+  useEffect(() => {
+    setFilteredLessons(filteredLessonsComputed);
+  }, [filteredLessonsComputed]);
 
   const categories = [
     { id: "all", name: "All Subjects", icon: "📚" },
@@ -254,6 +282,13 @@ function Lessons() {
 
   const handleLessonClick = (lesson) => {
     navigate(`/lesson/${lesson.id}`, { state: { lesson } });
+  };
+
+  // Check if a lesson is locked (requires previous lesson completion)
+  const isLessonLocked = (lessonId) => {
+    if (lessonId === 1) return false; // First lesson is always unlocked
+    const previousLessonId = lessonId - 1;
+    return !completedLessons.includes(previousLessonId);
   };
 
   return (
@@ -301,6 +336,16 @@ function Lessons() {
                 key={category.id}
                 className={`filter-tag ${selectedCategory === category.id ? "active" : ""}`}
                 onClick={() => setSelectedCategory(category.id)}
+                style={{
+                  cursor: "pointer",
+                  transition: "all 200ms ease"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
               >
                 <span className="tag-icon">{category.icon}</span>
                 <span className="tag-name">{category.name}</span>
@@ -319,68 +364,134 @@ function Lessons() {
             </div>
           ) : (
             <div className="lessons-grid">
-              {filteredLessons.map((lesson, index) => (
-                <div
-                  key={lesson.id}
-                  className={`lesson-card ${completedLessons.includes(lesson.id) ? "completed" : ""}`}
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                  onClick={() => handleLessonClick(lesson)}
-                >
-                  {/* Card Header with Icon and Category */}
-                  <div className="card-header" style={{ borderTopColor: lesson.color }}>
-                    <div className="card-icon">{lesson.icon}</div>
-                    <div className="card-meta">
-                      <span className="card-subject">{lesson.subject}</span>
-                      <span className="card-level">{lesson.level}</span>
-                    </div>
-                    {completedLessons.includes(lesson.id) && (
-                      <div className="completed-badge">✅ Completed</div>
+              {filteredLessons.map((lesson, index) => {
+                const locked = isLessonLocked(lesson.id);
+                return (
+                  <div
+                    key={lesson.id}
+                    className={`lesson-card ${completedLessons.includes(lesson.id) ? "completed" : ""} ${locked ? "locked" : ""}`}
+                    style={{ 
+                      animationDelay: `${index * 0.05}s`,
+                      cursor: locked ? "not-allowed" : "pointer",
+                      transition: "all 300ms ease",
+                      opacity: locked ? 0.6 : 1
+                    }}
+                    onClick={() => !locked && handleLessonClick(lesson)}
+                    onMouseEnter={(e) => {
+                      if (!locked) {
+                        e.currentTarget.style.transform = "translateY(-8px)";
+                        e.currentTarget.style.boxShadow = "0 20px 60px rgba(100, 200, 255, 0.3)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.3)";
+                    }}
+                  >
+                    {/* Lock Badge for Locked Lessons */}
+                    {locked && (
+                      <div style={{
+                        position: "absolute",
+                        top: "10px",
+                        right: "10px",
+                        background: "rgba(239, 68, 68, 0.9)",
+                        color: "white",
+                        padding: "0.5rem 0.75rem",
+                        borderRadius: "8px",
+                        fontSize: "0.8rem",
+                        fontWeight: 700,
+                        zIndex: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem"
+                      }}>
+                        🔒 Locked
+                      </div>
                     )}
-                  </div>
-
-                  {/* Card Content */}
-                  <div className="card-content">
-                    <h3 className="card-title">{lesson.title}</h3>
-                    <p className="card-description">{lesson.description}</p>
-
-                    {/* Progress Bar */}
-                    <div className="progress-section">
-                      <div className="progress-header">
-                        <span className="progress-label">Progress</span>
-                        <span className="progress-percent">{completedLessons.includes(lesson.id) ? "100" : lesson.progress}%</span>
+                    
+                    {/* Card Header with Icon and Category */}
+                    <div className="card-header" style={{ borderTopColor: lesson.color }}>
+                      <div className="card-icon">{lesson.icon}</div>
+                      <div className="card-meta">
+                        <span className="card-subject">{lesson.subject}</span>
+                        <span className="card-level">{lesson.level}</span>
                       </div>
-                      <div className="progress-bar">
-                        <div
-                          className="progress-fill"
-                          style={{
-                            width: `${completedLessons.includes(lesson.id) ? 100 : lesson.progress}%`,
-                            backgroundColor: lesson.color
-                          }}
-                        ></div>
+                      {completedLessons.includes(lesson.id) && (
+                        <div className="completed-badge">✅ Completed</div>
+                      )}
+                    </div>
+
+                    {/* Card Content */}
+                    <div className="card-content">
+                      <h3 className="card-title">{lesson.title}</h3>
+                      <p className="card-description">{lesson.description}</p>
+
+                      {/* Progress Bar */}
+                      <div className="progress-section">
+                        <div className="progress-header">
+                          <span className="progress-label">Progress</span>
+                          <span className="progress-percent">{lessonProgress[lesson.id] || 0}%</span>
+                        </div>
+                        <div className="progress-bar">
+                          <div
+                            className="progress-fill"
+                            style={{
+                              width: `${lessonProgress[lesson.id] || 0}%`,
+                              backgroundColor: lesson.color
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      {/* Lesson Stats */}
+                      <div className="card-stats">
+                        <div className="stat-item" style={{ cursor: "pointer" }}>
+                          <span className="stat-icon">⏱️</span>
+                          <span className="stat-text">{lesson.duration}</span>
+                        </div>
+                        <div className="stat-item" style={{ cursor: "pointer" }}>
+                          <span className="stat-icon">🎬</span>
+                          <span className="stat-text">{lesson.videos} videos</span>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Lesson Stats */}
-                    <div className="card-stats">
-                      <div className="stat-item">
-                        <span className="stat-icon">⏱️</span>
-                        <span className="stat-text">{lesson.duration}</span>
-                      </div>
-                      <div className="stat-item">
-                        <span className="stat-icon">🎬</span>
-                        <span className="stat-text">{lesson.videos} videos</span>
-                      </div>
+                    {/* Card Footer */}
+                    <div className="card-footer">
+                      <button 
+                        className="continue-btn" 
+                        disabled={locked}
+                        style={{ 
+                          backgroundColor: lesson.color,
+                          cursor: locked ? "not-allowed" : "pointer",
+                          transition: "all 200ms ease",
+                          opacity: locked ? 0.5 : 1
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (locked) {
+                            alert(`Complete Lesson ${lesson.id - 1} first to unlock this lesson!`);
+                            return;
+                          }
+                          handleLessonClick(lesson);
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!locked) {
+                            e.currentTarget.style.transform = "scale(1.05)";
+                            e.currentTarget.style.boxShadow = `0 10px 30px ${lesson.color}40`;
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = "scale(1)";
+                          e.currentTarget.style.boxShadow = "none";
+                        }}
+                      >
+                        {completedLessons.includes(lesson.id) ? "Completed ✓" : (lessonProgress[lesson.id] > 0 ? "Continue" : "Start")} →
+                      </button>
                     </div>
                   </div>
-
-                  {/* Card Footer */}
-                  <div className="card-footer">
-                    <button className="continue-btn" style={{ backgroundColor: lesson.color }}>
-                      {completedLessons.includes(lesson.id) ? "Completed ✓" : (lesson.progress > 0 ? "Continue" : "Start")} →
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

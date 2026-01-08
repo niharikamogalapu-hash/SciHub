@@ -7,6 +7,7 @@ import DragDropGame from "../components/games/DragDropGame";
 import BuilderGame from "../components/games/BuilderGame";
 import ReactionGame from "../components/games/ReactionGame";
 import "./Games.css";
+import { addGameScore, logActivity } from "../utils/storageManager";
 
 function Games({ onGameWin }) {
   const [user, setUser] = useState(null);
@@ -3184,50 +3185,51 @@ function Games({ onGameWin }) {
   };
 
   const handleGameComplete = (scoreEarned) => {
-    if (!activeGame) return;
+    if (!activeGame || !user) return;
 
-    // Deduct coins if paid game
-    let newCoins = playerCoins;
-    if (activeGame.coin_cost > 0) {
-      newCoins = playerCoins - activeGame.coin_cost;
-    }
+    try {
+      // Deduct coins if paid game
+      let newCoins = playerCoins;
+      if (activeGame.coin_cost > 0) {
+        newCoins = playerCoins - activeGame.coin_cost;
+      }
 
-    // Add reward coins
-    newCoins += activeGame.base_reward;
-    setPlayerCoins(newCoins);
+      // Add reward coins
+      newCoins += activeGame.base_reward;
+      setPlayerCoins(newCoins);
 
-    // Update user
-    if (user) {
+      // Update user in localStorage
       const updatedUser = { ...user, coins: newCoins };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
-    }
 
-    // Notify parent
-    if (onGameWin) onGameWin(activeGame.id, activeGame.base_reward);
+      // Save game score to dashboard stats using storageManager
+      addGameScore(user.id, activeGame.base_reward);
 
-    // Dispatch dashboard update event
-    const activity = {
-      id: Date.now(),
-      type: "Game Won",
-      description: `Completed ${activeGame.title}`,
-      subject: Object.keys(gamesByTopic).find(topic => 
+      // Log activity
+      const topic = Object.keys(gamesByTopic).find(topic => 
         gamesByTopic[topic].some(g => g.id === activeGame.id)
-      ) || "Games",
-      created_at: new Date(),
-    };
+      ) || "Games";
+      
+      logActivity(user.id, {
+        type: "Game Won",
+        description: `Completed ${activeGame.title}`,
+        subject: topic,
+      });
 
-    window.dispatchEvent(new CustomEvent("dashboardUpdate", {
-      detail: {
-        type: "gameCompleted",
-        activity,
-        stats: { totalGameScore: (user?.totalGameScore || 0) + activeGame.base_reward }
-      }
-    }));
+      // Notify parent
+      if (onGameWin) onGameWin(activeGame.id, activeGame.base_reward);
 
-    // Show completion modal
-    alert(`🎉 Great job! You earned ${activeGame.base_reward} coins!`);
-    setActiveGame(null);
+      // Show completion modal
+      alert(`🎉 Great job! You earned ${activeGame.base_reward} coins!`);
+      
+      // Dispatch event to update dashboard
+      window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+      
+      setActiveGame(null);
+    } catch (error) {
+      console.error("❌ Error completing game:", error);
+    }
   };
 
   const handleExitGame = () => {
@@ -3310,9 +3312,9 @@ function Games({ onGameWin }) {
 
   return (
     <section className="page fade-in">
-      <div style={{ marginBottom: "3rem" }}>
+      <div style={{ marginBottom: "3rem", animation: "slideUp 0.8s ease-out" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-          <div>
+          <div style={{ animation: "slideUp 0.8s ease-out 0.1s both" }}>
             <h1 style={{ fontSize: "2.5rem", marginBottom: "0.5rem", fontWeight: "700", color: "#f9fafb" }}>🎮 Games by Subject</h1>
             <p style={{ fontSize: "1.1rem", color: "#9ca3af", marginBottom: "2rem" }}>Play interactive games, earn coins, and master each topic</p>
           </div>
@@ -3322,7 +3324,8 @@ function Games({ onGameWin }) {
             border: "2px solid rgba(252, 211, 77, 0.5)",
             borderRadius: "12px",
             textAlign: "center",
-            minWidth: "150px"
+            minWidth: "150px",
+            animation: "slideUp 0.8s ease-out 0.2s both"
           }}>
             <div style={{ fontSize: "14px", color: "#9ca3af", marginBottom: "5px" }}>💰 Coins</div>
             <div style={{ fontSize: "2rem", fontWeight: "700", color: "#fcd34d" }}>{playerCoins}</div>
@@ -3365,8 +3368,8 @@ function Games({ onGameWin }) {
         </div>
 
         {/* Games Grid - using card styling */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem" }}>
-        {topicGames.map((game) => {
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem", animation: "slideUp 0.8s ease-out 0.3s both" }}>
+        {topicGames.map((game, index) => {
           const isFree = game.coin_cost === 0;
           const isOwned = unlockedGames.has(game.id);
           const canPlay = isFree || isOwned;
@@ -3379,6 +3382,7 @@ function Games({ onGameWin }) {
               style={{ 
                 borderColor: isFree ? "rgba(16, 185, 129, 0.4)" : isOwned ? "rgba(56, 189, 248, 0.4)" : hasEnoughCoins ? "rgba(148, 163, 184, 0.4)" : "rgba(148, 163, 184, 0.2)",
                 position: "relative",
+                animation: `slideUp 0.6s ease-out ${0.35 + index * 0.05}s both`
               }}
             >
               {/* Lock icon overlay for locked games */}

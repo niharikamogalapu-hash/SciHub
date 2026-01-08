@@ -264,7 +264,7 @@ function QnA() {
   };
 
   return (
-    <div className="qna-container">
+    <div style={{ display: "flex", minHeight: "100vh", background: "#0f172a" }}>
       <Sidebar
         user={user}
         onLogout={() => {
@@ -273,190 +273,577 @@ function QnA() {
         }}
       />
 
-      <div className="qna-main">
-        {/* Header */}
-        <div className="qna-header">
-          <div className="qna-header-content">
-            <h1>Community Q&A</h1>
-            <p>Ask questions and share knowledge with the SciHub community</p>
-          </div>
+      <main className="qna-main-animated" style={{ flex: 1, padding: "40px", background: "#0f172a" }}>
+        {/* Hero Section */}
+        <header style={{
+          background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 50%, #0ea5e9 100%)",
+          padding: "50px 40px",
+          borderRadius: "16px",
+          marginBottom: "40px",
+          color: "white",
+          boxShadow: "0 20px 40px rgba(139, 92, 246, 0.2)"
+        }}>
+          <div style={{ fontSize: "3rem", marginBottom: "16px" }}>❓</div>
+          <h1 style={{ fontSize: "2.8rem", margin: "0 0 12px 0", fontWeight: "800" }}>Community Q&A</h1>
+          <p style={{ fontSize: "1.1rem", margin: 0, opacity: 0.95, maxWidth: "600px" }}>
+            Ask questions and share knowledge with the SciHub community. Learn together, grow together!
+          </p>
           <button
-            className="qna-post-btn"
             onClick={() => setShowNewQuestion(!showNewQuestion)}
+            style={{
+              marginTop: "24px",
+              background: "rgba(255, 255, 255, 0.2)",
+              border: "2px solid rgba(255, 255, 255, 0.3)",
+              color: "white",
+              padding: "12px 28px",
+              borderRadius: "10px",
+              fontSize: "1rem",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "all 0.3s",
+              backdropFilter: "blur(10px)"
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = "rgba(255, 255, 255, 0.3)";
+              e.target.style.borderColor = "rgba(255, 255, 255, 0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = "rgba(255, 255, 255, 0.2)";
+              e.target.style.borderColor = "rgba(255, 255, 255, 0.3)";
+            }}
           >
             + Ask a Question
           </button>
-        </div>
+        </header>
 
         {/* New Question Form */}
         {showNewQuestion && (
-          <div className="qna-form-container">
-            <div className="qna-form">
-              <h2>Ask a Question</h2>
-              <form onSubmit={handlePostQuestion}>
-                <div className="form-group">
-                  <label>Question Title</label>
-                  <input
-                    type="text"
-                    placeholder="What's your question?"
-                    value={newQuestionTitle}
-                    onChange={(e) => setNewQuestionTitle(e.target.value)}
-                    required
-                  />
-                </div>
+          <div style={{
+            background: "rgba(51, 65, 85, 0.5)",
+            border: "1px solid rgba(148, 163, 184, 0.2)",
+            borderRadius: "14px",
+            padding: "30px",
+            marginBottom: "40px",
+            backdropFilter: "blur(10px)"
+          }}>
+            <h2 style={{ fontSize: "1.8rem", margin: "0 0 24px 0", color: "#f9fafb" }}>Ask a Question</h2>
+            <form onSubmit={handlePostQuestion}>
+              <div style={{ marginBottom: "24px" }}>
+                <label style={{
+                  display: "block",
+                  color: "#cbd5e1",
+                  marginBottom: "10px",
+                  fontWeight: "600",
+                  fontSize: "0.95rem"
+                }}>
+                  Question Title
+                </label>
+                <input
+                  type="text"
+                  placeholder="What's your question?"
+                  value={newQuestionTitle}
+                  onChange={(e) => setNewQuestionTitle(e.target.value)}
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "12px 16px",
+                    background: "rgba(15, 23, 42, 0.8)",
+                    border: "1px solid rgba(148, 163, 184, 0.3)",
+                    borderRadius: "8px",
+                    color: "#f9fafb",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
+                    transition: "all 0.2s"
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "rgba(139, 92, 246, 0.5)";
+                    e.target.style.background = "rgba(15, 23, 42, 1)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "rgba(148, 163, 184, 0.3)";
+                    e.target.style.background = "rgba(15, 23, 42, 0.8)";
+                  }}
+                />
+              </div>
 
-                <div className="form-group">
-                  <label>Details</label>
-                  <textarea
-                    placeholder="Provide more details about your question..."
-                    value={newQuestionBody}
-                    onChange={(e) => setNewQuestionBody(e.target.value)}
-                    rows="6"
-                    required
-                  ></textarea>
-                </div>
+              <div style={{ marginBottom: "24px" }}>
+                <label style={{
+                  display: "block",
+                  color: "#cbd5e1",
+                  marginBottom: "10px",
+                  fontWeight: "600",
+                  fontSize: "0.95rem"
+                }}>
+                  Details
+                </label>
+                <textarea
+                  placeholder="Provide more details about your question..."
+                  value={newQuestionBody}
+                  onChange={(e) => setNewQuestionBody(e.target.value)}
+                  rows="6"
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "12px 16px",
+                    background: "rgba(15, 23, 42, 0.8)",
+                    border: "1px solid rgba(148, 163, 184, 0.3)",
+                    borderRadius: "8px",
+                    color: "#f9fafb",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
+                    fontFamily: "inherit",
+                    transition: "all 0.2s"
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "rgba(139, 92, 246, 0.5)";
+                    e.target.style.background = "rgba(15, 23, 42, 1)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "rgba(148, 163, 184, 0.3)";
+                    e.target.style.background = "rgba(15, 23, 42, 0.8)";
+                  }}
+                />
+              </div>
 
-                <div className="form-actions">
-                  <button type="submit" className="btn-primary">
-                    Post Question
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-secondary"
-                    onClick={() => setShowNewQuestion(false)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
+              <div style={{ display: "flex", gap: "12px" }}>
+                <button
+                  type="submit"
+                  style={{
+                    background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)",
+                    border: "none",
+                    color: "white",
+                    padding: "12px 28px",
+                    borderRadius: "8px",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    transition: "all 0.3s"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = "translateY(-2px)";
+                    e.target.style.boxShadow = "0 8px 20px rgba(139, 92, 246, 0.3)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = "translateY(0)";
+                    e.target.style.boxShadow = "none";
+                  }}
+                >
+                  Post Question
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowNewQuestion(false)}
+                  style={{
+                    background: "rgba(100, 116, 139, 0.2)",
+                    border: "1px solid rgba(148, 163, 184, 0.3)",
+                    color: "#cbd5e1",
+                    padding: "12px 28px",
+                    borderRadius: "8px",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = "rgba(100, 116, 139, 0.3)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = "rgba(100, 116, 139, 0.2)";
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         )}
 
-        <div className="qna-content">
-          {/* Questions List or Detail View */}
-          <div className="qna-main-content">
-            {selectedQuestion ? (
-              /* Question Detail View */
-              <div className="question-detail">
-                <button
-                  className="back-btn"
-                  onClick={() => setSelectedQuestion(null)}
-                >
-                  ← Back to Questions
-                </button>
+        {/* Search & Sort Controls */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 200px",
+          gap: "16px",
+          marginBottom: "30px"
+        }}>
+          <input
+            type="text"
+            placeholder="🔍 Search questions..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              padding: "12px 16px",
+              background: "rgba(51, 65, 85, 0.4)",
+              border: "1px solid rgba(148, 163, 184, 0.3)",
+              borderRadius: "8px",
+              color: "#f9fafb",
+              fontSize: "1rem",
+              transition: "all 0.2s"
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = "rgba(139, 92, 246, 0.5)";
+              e.target.style.background = "rgba(51, 65, 85, 0.6)";
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = "rgba(148, 163, 184, 0.3)";
+              e.target.style.background = "rgba(51, 65, 85, 0.4)";
+            }}
+          />
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            style={{
+              padding: "12px 16px",
+              background: "rgba(51, 65, 85, 0.4)",
+              border: "1px solid rgba(148, 163, 184, 0.3)",
+              borderRadius: "8px",
+              color: "#cbd5e1",
+              fontSize: "0.95rem",
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+          >
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="mostViewed">Most Viewed</option>
+            <option value="mostAnswered">Most Answered</option>
+          </select>
+        </div>
 
-                <div className="question-header">
-                  <h2>{selectedQuestion.title}</h2>
-                  <div className="question-meta">
-                    <span>Asked by {selectedQuestion.author}</span>
-                    <span>•</span>
-                    <span>{formatDate(selectedQuestion.timestamp)}</span>
-                    <span>•</span>
-                    <span>{selectedQuestion.views} views</span>
-                  </div>
-                </div>
+        {/* Main Content */}
+        {selectedQuestion ? (
+          /* Question Detail View */
+          <div>
+            <button
+              onClick={() => setSelectedQuestion(null)}
+              style={{
+                background: "rgba(100, 116, 139, 0.2)",
+                border: "1px solid rgba(148, 163, 184, 0.3)",
+                color: "#cbd5e1",
+                padding: "8px 16px",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "0.95rem",
+                marginBottom: "24px",
+                transition: "all 0.2s"
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = "rgba(100, 116, 139, 0.3)";
+                e.target.style.borderColor = "rgba(148, 163, 184, 0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = "rgba(100, 116, 139, 0.2)";
+                e.target.style.borderColor = "rgba(148, 163, 184, 0.3)";
+              }}
+            >
+              ← Back to Questions
+            </button>
 
-                <div className="question-body">
-                  <p>{selectedQuestion.body}</p>
-                </div>
+            <div style={{
+              background: "rgba(51, 65, 85, 0.3)",
+              border: "1px solid rgba(148, 163, 184, 0.2)",
+              borderRadius: "14px",
+              padding: "30px",
+              marginBottom: "30px"
+            }}>
+              <h2 style={{ fontSize: "2rem", margin: "0 0 16px 0", color: "#f9fafb" }}>
+                {selectedQuestion.title}
+              </h2>
+              <div style={{
+                display: "flex",
+                gap: "16px",
+                color: "#94a3b8",
+                fontSize: "0.95rem",
+                marginBottom: "24px"
+              }}>
+                <span>👤 {selectedQuestion.author}</span>
+                <span>•</span>
+                <span>⏱️ {formatDate(selectedQuestion.timestamp)}</span>
+                <span>•</span>
+                <span>👁️ {selectedQuestion.views} views</span>
+              </div>
 
-                {/* Replies Section */}
-                <div className="replies-section">
-                  <h3>
-                    Answers ({selectedQuestion.replies?.length || 0})
-                  </h3>
+              <div style={{
+                color: "#cbd5e1",
+                fontSize: "1.05rem",
+                lineHeight: "1.6"
+              }}>
+                {selectedQuestion.body}
+              </div>
+            </div>
 
-                  {selectedQuestion.replies && selectedQuestion.replies.length > 0 ? (
-                    <div className="replies-list">
-                      {selectedQuestion.replies.map((reply) => (
-                        <div key={reply.id} className="reply-item">
-                          <div className="reply-header">
-                            <span className="reply-author">{reply.author}</span>
-                            <span className="reply-time">
-                              {formatDate(reply.timestamp)}
-                            </span>
-                          </div>
-                          <p className="reply-body">{reply.body}</p>
-                          <div className="reply-footer">
-                            <button className="upvote-btn">
-                              👍 {reply.upvotes > 0 ? reply.upvotes : ""}
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="no-replies">No answers yet. Be the first to reply!</p>
-                  )}
+            {/* Replies Section */}
+            <div style={{ marginBottom: "30px" }}>
+              <h3 style={{
+                fontSize: "1.4rem",
+                margin: "0 0 20px 0",
+                color: "#f9fafb"
+              }}>
+                💬 Answers ({selectedQuestion.replies?.length || 0})
+              </h3>
 
-                  {/* Reply Form */}
-                  <div className="reply-form">
-                    <h4>Your Answer</h4>
-                    <form onSubmit={handlePostReply}>
-                      <textarea
-                        placeholder="Share your answer..."
-                        value={newReply}
-                        onChange={(e) => setNewReply(e.target.value)}
-                        rows="4"
-                        required
-                      ></textarea>
-                      <div className="form-actions">
-                        <button type="submit" className="btn-primary">
-                          Post Answer
-                        </button>
+              {selectedQuestion.replies && selectedQuestion.replies.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  {selectedQuestion.replies.map((reply) => (
+                    <div
+                      key={reply.id}
+                      style={{
+                        background: "rgba(51, 65, 85, 0.3)",
+                        border: "1px solid rgba(16, 185, 129, 0.2)",
+                        borderLeft: "4px solid #10b981",
+                        borderRadius: "10px",
+                        padding: "20px",
+                        transition: "all 0.3s"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.4)";
+                        e.currentTarget.style.background = "rgba(51, 65, 85, 0.4)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(16, 185, 129, 0.2)";
+                        e.currentTarget.style.background = "rgba(51, 65, 85, 0.3)";
+                      }}
+                    >
+                      <div style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: "12px",
+                        fontSize: "0.9rem"
+                      }}>
+                        <span style={{ color: "#10b981", fontWeight: "600" }}>✓ {reply.author}</span>
+                        <span style={{ color: "#94a3b8" }}>{formatDate(reply.timestamp)}</span>
                       </div>
-                    </form>
-                  </div>
+                      <p style={{
+                        color: "#cbd5e1",
+                        fontSize: "1rem",
+                        lineHeight: "1.6",
+                        margin: "0 0 12px 0"
+                      }}>
+                        {reply.body}
+                      </p>
+                      <button
+                        style={{
+                          background: "rgba(16, 185, 129, 0.2)",
+                          border: "1px solid rgba(16, 185, 129, 0.3)",
+                          color: "#10b981",
+                          padding: "6px 12px",
+                          borderRadius: "6px",
+                          cursor: "pointer",
+                          fontSize: "0.85rem",
+                          fontWeight: "600",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => {
+                          e.target.style.background = "rgba(16, 185, 129, 0.3)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.background = "rgba(16, 185, 129, 0.2)";
+                        }}
+                      >
+                        👍 {reply.upvotes > 0 ? reply.upvotes : "Helpful"}
+                      </button>
+                    </div>
+                  ))}
                 </div>
+              ) : (
+                <div style={{
+                  background: "rgba(100, 116, 139, 0.2)",
+                  border: "1px dashed rgba(148, 163, 184, 0.3)",
+                  borderRadius: "10px",
+                  padding: "30px",
+                  textAlign: "center",
+                  color: "#94a3b8"
+                }}>
+                  <p>No answers yet. Be the first to reply!</p>
+                </div>
+              )}
+            </div>
+
+            {/* Reply Form */}
+            <div style={{
+              background: "rgba(51, 65, 85, 0.3)",
+              border: "1px solid rgba(148, 163, 184, 0.2)",
+              borderRadius: "14px",
+              padding: "30px"
+            }}>
+              <h4 style={{ fontSize: "1.2rem", margin: "0 0 20px 0", color: "#f9fafb" }}>Your Answer</h4>
+              <form onSubmit={handlePostReply}>
+                <textarea
+                  placeholder="Share your answer..."
+                  value={newReply}
+                  onChange={(e) => setNewReply(e.target.value)}
+                  rows="4"
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "12px 16px",
+                    background: "rgba(15, 23, 42, 0.8)",
+                    border: "1px solid rgba(148, 163, 184, 0.3)",
+                    borderRadius: "8px",
+                    color: "#f9fafb",
+                    fontSize: "1rem",
+                    boxSizing: "border-box",
+                    fontFamily: "inherit",
+                    marginBottom: "16px",
+                    transition: "all 0.2s"
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "rgba(139, 92, 246, 0.5)";
+                    e.target.style.background = "rgba(15, 23, 42, 1)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "rgba(148, 163, 184, 0.3)";
+                    e.target.style.background = "rgba(15, 23, 42, 0.8)";
+                  }}
+                />
+                <button
+                  type="submit"
+                  style={{
+                    background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)",
+                    border: "none",
+                    color: "white",
+                    padding: "12px 28px",
+                    borderRadius: "8px",
+                    fontSize: "1rem",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    transition: "all 0.3s"
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = "translateY(-2px)";
+                    e.target.style.boxShadow = "0 8px 20px rgba(139, 92, 246, 0.3)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = "translateY(0)";
+                    e.target.style.boxShadow = "none";
+                  }}
+                >
+                  Post Answer
+                </button>
+              </form>
+            </div>
+          </div>
+        ) : (
+          /* Questions List View */
+          <div>
+            {filteredQuestions.length > 0 ? (
+              <div style={{
+                display: "grid",
+                gap: "16px"
+              }}>
+                {filteredQuestions.map((question) => (
+                  <div
+                    key={question.id}
+                    onClick={() => setSelectedQuestion(question)}
+                    style={{
+                      background: "rgba(51, 65, 85, 0.3)",
+                      border: "1px solid rgba(148, 163, 184, 0.2)",
+                      borderRadius: "12px",
+                      padding: "24px",
+                      cursor: "pointer",
+                      display: "grid",
+                      gridTemplateColumns: "120px 1fr",
+                      gap: "24px",
+                      transition: "all 0.3s",
+                      alignItems: "start"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.3)";
+                      e.currentTarget.style.background = "rgba(51, 65, 85, 0.4)";
+                      e.currentTarget.style.transform = "translateY(-4px)";
+                      e.currentTarget.style.boxShadow = "0 12px 24px rgba(139, 92, 246, 0.15)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(148, 163, 184, 0.2)";
+                      e.currentTarget.style.background = "rgba(51, 65, 85, 0.3)";
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
+                  >
+                    <div style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "12px",
+                      textAlign: "center"
+                    }}>
+                      <div style={{
+                        fontSize: "1.8rem",
+                        fontWeight: "800",
+                        color: "#06b6d4"
+                      }}>
+                        {question.replies?.length || 0}
+                      </div>
+                      <div style={{
+                        fontSize: "0.85rem",
+                        color: "#94a3b8",
+                        fontWeight: "600"
+                      }}>
+                        answers
+                      </div>
+                      <div style={{
+                        fontSize: "1.8rem",
+                        fontWeight: "800",
+                        color: "#8b5cf6"
+                      }}>
+                        {question.views}
+                      </div>
+                      <div style={{
+                        fontSize: "0.85rem",
+                        color: "#94a3b8",
+                        fontWeight: "600"
+                      }}>
+                        views
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 style={{
+                        fontSize: "1.3rem",
+                        fontWeight: "700",
+                        margin: "0 0 10px 0",
+                        color: "#f9fafb"
+                      }}>
+                        {question.title}
+                      </h3>
+                      <p style={{
+                        fontSize: "0.95rem",
+                        color: "#cbd5e1",
+                        margin: "0 0 16px 0",
+                        lineHeight: "1.5"
+                      }}>
+                        {question.body.substring(0, 150)}...
+                      </p>
+                      <div style={{
+                        display: "flex",
+                        gap: "16px",
+                        color: "#94a3b8",
+                        fontSize: "0.9rem",
+                        borderTop: "1px solid rgba(148, 163, 184, 0.1)",
+                        paddingTop: "12px"
+                      }}>
+                        <span>👤 {question.author}</span>
+                        <span>•</span>
+                        <span>⏱️ {formatDate(question.timestamp)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : (
-              /* Questions List View */
-              <div className="questions-list">
-                {filteredQuestions.length > 0 ? (
-                  filteredQuestions.map((question) => (
-                    <div
-                      key={question.id}
-                      className="question-card"
-                      onClick={() => setSelectedQuestion(question)}
-                    >
-                      <div className="question-stats">
-                        <div className="stat">
-                          <span className="stat-value">
-                            {question.replies?.length || 0}
-                          </span>
-                          <span className="stat-label">answers</span>
-                        </div>
-                        <div className="stat">
-                          <span className="stat-value">{question.views}</span>
-                          <span className="stat-label">views</span>
-                        </div>
-                      </div>
-
-                      <div className="question-content">
-                        <h3>{question.title}</h3>
-                        <p>{question.body.substring(0, 150)}...</p>
-                        <div className="question-footer">
-                          <span className="question-author">
-                            asked by {question.author}
-                          </span>
-                          <span className="question-time">
-                            {formatDate(question.timestamp)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="no-results">
-                    <p>No questions found. Ask the first one!</p>
-                  </div>
-                )}
+              <div style={{
+                background: "rgba(51, 65, 85, 0.3)",
+                border: "1px dashed rgba(148, 163, 184, 0.3)",
+                borderRadius: "12px",
+                padding: "60px 30px",
+                textAlign: "center"
+              }}>
+                <p style={{ fontSize: "1.1rem", color: "#94a3b8", margin: 0 }}>
+                  No questions found. Ask the first one! 🚀
+                </p>
               </div>
             )}
           </div>
-        </div>
-      </div>
+        )}
+      </main>
     </div>
   );
 }

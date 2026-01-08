@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function Navbar({ user, onLogout, toggleTheme, theme }) {
+function Navbar({ user, onLogout }) {
   return (
     <header className="navbar">
       {/* Logo */}
@@ -34,12 +34,8 @@ function Navbar({ user, onLogout, toggleTheme, theme }) {
         )}
       </nav>
 
-      {/* Auth + Theme */}
+      {/* Auth */}
       <div className="nav-auth">
-        <button className="secondary-btn" onClick={toggleTheme}>
-          {theme === "dark" ? "Light Mode" : "Dark Mode"}
-        </button>
-
         {user ? (
           <>
             <span className="nav-user">{user.name}</span>

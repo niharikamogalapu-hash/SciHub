@@ -14,101 +14,362 @@ function Sidebar({ user, onLogout }) {
   }
 
   return (
-    <aside className={`sidebar ${collapsed ? "collapsed" : "expanded"}`}>
-      <div className="sidebar-top">
-        <button className="sidebar-logo" onClick={handleLogoClick}>
-          <span className="sidebar-logo-icon" title="SciHub logo">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2v20" stroke="#e6eef8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="6" cy="8" r="2" stroke="#e6eef8" strokeWidth="1.5"/>
-              <circle cx="18" cy="16" r="2" stroke="#e6eef8" strokeWidth="1.5"/>
-            </svg>
-          </span>
-          {!collapsed && <span className="sidebar-logo-text">SciHub</span>}
-        </button>
-
-        <button
-          className="sidebar-toggle"
-          onClick={() => setCollapsed((prev) => !prev)}
-          aria-label="Toggle sidebar"
-        >
-          {collapsed ? "›" : "‹"}
-        </button>
+    <aside style={{
+      position: "fixed",
+      left: 0,
+      top: 0,
+      height: "100vh",
+      width: collapsed ? "80px" : "260px",
+      background: "linear-gradient(180deg, #0f172a 0%, #1a1f35 100%)",
+      borderRight: "1px solid rgba(148, 163, 184, 0.15)",
+      display: "flex",
+      flexDirection: "column",
+      padding: "20px 0",
+      zIndex: 1200,
+      transition: "width 300ms ease",
+      overflowY: "auto",
+      overflowX: "hidden",
+      boxShadow: "0 8px 32px rgba(139, 92, 246, 0.1)"
+    }}>
+      {/* Logo Section */}
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: collapsed ? "center" : "space-between",
+        padding: collapsed ? "16px 12px" : "16px 20px",
+        marginBottom: "30px",
+        gap: "12px"
+      }}>
+        {collapsed ? (
+          <button
+            onClick={() => setCollapsed(false)}
+            aria-label="Expand sidebar"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "40px",
+              height: "40px",
+              background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)",
+              border: "none",
+              borderRadius: "10px",
+              color: "white",
+              cursor: "pointer",
+              fontSize: "1.2rem",
+              transition: "all 200ms ease",
+              padding: 0,
+              boxShadow: "0 6px 20px rgba(139, 92, 246, 0.3)"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "scale(1.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+            }}
+          >
+            ›
+          </button>
+        ) : (
+          <>
+            <button
+              onClick={handleLogoClick}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                background: "none",
+                border: "none",
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: "700",
+                fontSize: "1rem",
+                transition: "all 200ms ease",
+                padding: 0,
+                flexShrink: 0
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.05)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+              }}
+            >
+              <div style={{
+                width: "40px",
+                height: "40px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)",
+                borderRadius: "10px",
+                fontSize: "1.4rem",
+                flexShrink: 0,
+                boxShadow: "0 6px 20px rgba(139, 92, 246, 0.3)"
+              }}>
+                🔬
+              </div>
+              <span style={{ fontSize: "0.95rem" }}>SciHub</span>
+            </button>
+            <button
+              onClick={() => setCollapsed(true)}
+              aria-label="Collapse sidebar"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "38px",
+                height: "38px",
+                background: "rgba(139, 92, 246, 0.1)",
+                border: "1px solid rgba(139, 92, 246, 0.3)",
+                borderRadius: "8px",
+                color: "#8b5cf6",
+                cursor: "pointer",
+                fontSize: "1rem",
+                transition: "all 200ms ease",
+                padding: 0
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(139, 92, 246, 0.2)";
+                e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(139, 92, 246, 0.1)";
+                e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.3)";
+              }}
+            >
+              ‹
+            </button>
+          </>
+        )}
       </div>
 
-<nav className="sidebar-nav">
+      {/* Navigation */}
+      <nav style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        flex: 1,
+        width: "100%",
+        padding: "0 12px"
+      }}>
+        {/* Dashboard */}
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) => isActive ? "active" : ""}
+          style={({ isActive }) => ({
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: collapsed ? "10px" : "10px 14px",
+            color: isActive ? "#06b6d4" : "#cbd5e1",
+            textDecoration: "none",
+            fontWeight: "500",
+            fontSize: "0.9rem",
+            transition: "all 200ms ease",
+            borderRadius: "8px",
+            background: isActive ? "rgba(6, 182, 212, 0.15)" : "transparent",
+            borderLeft: isActive ? "3px solid #06b6d4" : "3px solid transparent",
+            minHeight: "44px",
+            justifyContent: collapsed ? "center" : "flex-start"
+          })}
+          onMouseEnter={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "rgba(6, 182, 212, 0.08)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "transparent";
+            }
+          }}
+        >
+          <span style={{ fontSize: "1.3rem" }}>📊</span>
+          {!collapsed && <span>Dashboard</span>}
+        </NavLink>
 
-  {/* Dashboard */}
-  <NavLink to="/dashboard" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")}>
-    <span className="sidebar-icon" title="Dashboard">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 11.5L12 4l9 7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M21 13v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    </span>
-    {!collapsed && <span className="sidebar-label">Dashboard</span>}
-  </NavLink>
+        {/* Resources */}
+        <NavLink
+          to="/resources"
+          className={({ isActive }) => isActive ? "active" : ""}
+          style={({ isActive }) => ({
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: collapsed ? "10px" : "10px 14px",
+            color: isActive ? "#8b5cf6" : "#cbd5e1",
+            textDecoration: "none",
+            fontWeight: "500",
+            fontSize: "0.9rem",
+            transition: "all 200ms ease",
+            borderRadius: "8px",
+            background: isActive ? "rgba(139, 92, 246, 0.15)" : "transparent",
+            borderLeft: isActive ? "3px solid #8b5cf6" : "3px solid transparent",
+            minHeight: "44px",
+            justifyContent: collapsed ? "center" : "flex-start"
+          })}
+          onMouseEnter={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "rgba(139, 92, 246, 0.08)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "transparent";
+            }
+          }}
+        >
+          <span style={{ fontSize: "1.3rem" }}>📚</span>
+          {!collapsed && <span>Resources</span>}
+        </NavLink>
 
-  {/* Resources */}
-  <NavLink to="/resources" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")}>
-    <span className="sidebar-icon" title="Resources">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M12 7v5l4 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-      </svg>
-    </span>
-    {!collapsed && <span className="sidebar-label">Resources</span>}
-  </NavLink>
+        {/* Community Q&A */}
+        <NavLink
+          to="/qna"
+          className={({ isActive }) => isActive ? "active" : ""}
+          style={({ isActive }) => ({
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: collapsed ? "10px" : "10px 14px",
+            color: isActive ? "#10b981" : "#cbd5e1",
+            textDecoration: "none",
+            fontWeight: "500",
+            fontSize: "0.9rem",
+            transition: "all 200ms ease",
+            borderRadius: "8px",
+            background: isActive ? "rgba(16, 185, 129, 0.15)" : "transparent",
+            borderLeft: isActive ? "3px solid #10b981" : "3px solid transparent",
+            minHeight: "44px",
+            justifyContent: collapsed ? "center" : "flex-start"
+          })}
+          onMouseEnter={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "rgba(16, 185, 129, 0.08)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "transparent";
+            }
+          }}
+        >
+          <span style={{ fontSize: "1.3rem" }}>❓</span>
+          {!collapsed && <span>Community</span>}
+        </NavLink>
 
-  {/* Community */}
-  <NavLink to="/qna" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")}>
-    <span className="sidebar-icon" title="Community">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    </span>
-    {!collapsed && <span className="sidebar-label">Community</span>}
-  </NavLink>
+        {/* Games */}
+        <NavLink
+          to="/games"
+          className={({ isActive }) => isActive ? "active" : ""}
+          style={({ isActive }) => ({
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: collapsed ? "10px" : "10px 14px",
+            color: isActive ? "#f59e0b" : "#cbd5e1",
+            textDecoration: "none",
+            fontWeight: "500",
+            fontSize: "0.9rem",
+            transition: "all 200ms ease",
+            borderRadius: "8px",
+            background: isActive ? "rgba(245, 158, 11, 0.15)" : "transparent",
+            borderLeft: isActive ? "3px solid #f59e0b" : "3px solid transparent",
+            minHeight: "44px",
+            justifyContent: collapsed ? "center" : "flex-start"
+          })}
+          onMouseEnter={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "rgba(245, 158, 11, 0.08)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "transparent";
+            }
+          }}
+        >
+          <span style={{ fontSize: "1.3rem" }}>🎮</span>
+          {!collapsed && <span>Games</span>}
+        </NavLink>
+      </nav>
 
-  {/* Games */}
-  <NavLink to="/games" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")}>
-    <span className="sidebar-icon" title="Games">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6 12h.01M10 8h.01M10 16h.01M14 12h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <rect x="2" y="6" width="20" height="12" rx="3" stroke="currentColor" strokeWidth="1.5" />
-      </svg>
-    </span>
-    {!collapsed && <span className="sidebar-label">Games</span>}
-  </NavLink>
-
-</nav>
-
-
-      <div className="sidebar-bottom">
+      {/* Bottom Section */}
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+        padding: "0 12px",
+        borderTop: "1px solid rgba(148, 163, 184, 0.1)",
+        paddingTop: "20px"
+      }}>
         {/* Profile */}
-        <NavLink to="/profile" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")}>
-          <span className="sidebar-icon" title="Profile">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="1.5"/>
-            </svg>
-          </span>
-          {!collapsed && <span className="sidebar-label">Profile</span>}
+        <NavLink
+          to="/profile"
+          className={({ isActive }) => isActive ? "active" : ""}
+          style={({ isActive }) => ({
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: collapsed ? "10px" : "10px 14px",
+            color: isActive ? "#a855f7" : "#cbd5e1",
+            textDecoration: "none",
+            fontWeight: "500",
+            fontSize: "0.9rem",
+            transition: "all 200ms ease",
+            borderRadius: "8px",
+            background: isActive ? "rgba(168, 85, 247, 0.15)" : "transparent",
+            borderLeft: isActive ? "3px solid #a855f7" : "3px solid transparent",
+            minHeight: "44px",
+            justifyContent: collapsed ? "center" : "flex-start"
+          })}
+          onMouseEnter={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "rgba(168, 85, 247, 0.08)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "transparent";
+            }
+          }}
+        >
+          <span style={{ fontSize: "1.3rem" }}>👤</span>
+          {!collapsed && <span>Profile</span>}
         </NavLink>
 
         {/* Logout */}
-        <button className="sidebar-logout-btn" onClick={onLogout} title="Log out">
-          <span className="sidebar-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M16 17l5-5-5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M21 12H9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M8 5v14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </span>
-          {!collapsed && <span className="sidebar-label">Logout</span>}
+        <button
+          onClick={onLogout}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: collapsed ? "10px" : "10px 14px",
+            color: "#cbd5e1",
+            background: "transparent",
+            border: "none",
+            fontWeight: "500",
+            fontSize: "0.9rem",
+            transition: "all 200ms ease",
+            borderRadius: "8px",
+            borderLeft: "3px solid transparent",
+            cursor: "pointer",
+            minHeight: "44px",
+            justifyContent: collapsed ? "center" : "flex-start"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)";
+            e.currentTarget.style.borderLeftColor = "#ef4444";
+            e.currentTarget.style.color = "#ef4444";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "transparent";
+            e.currentTarget.style.borderLeftColor = "transparent";
+            e.currentTarget.style.color = "#cbd5e1";
+          }}
+        >
+          <span style={{ fontSize: "1.3rem" }}>🚪</span>
+          {!collapsed && <span>Logout</span>}
         </button>
       </div>
     </aside>
