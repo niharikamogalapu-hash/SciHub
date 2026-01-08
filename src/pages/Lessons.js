@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
+import { getWatchedVideos } from "../utils/storageManager";
 import "./LessonsHub.css";
 
 function Lessons() {
@@ -10,34 +11,58 @@ function Lessons() {
   const [filteredLessons, setFilteredLessons] = useState([]);
   const [completedLessons, setCompletedLessons] = useState([]);
   const [lessonProgress, setLessonProgress] = useState({});
+  const [introVideoWatched, setIntroVideoWatched] = useState(false);
 
   const user = useMemo(() => JSON.parse(localStorage.getItem("user") || "null") || null, []);
 
-  // Load completed lessons and progress from localStorage on mount
+  // Load completed lessons and progress from localStorage on mount and when storage changes
   useEffect(() => {
-    let completedLessonIds = [];
-    
-    if (user && user.id) {
-      // Get completed lessons from storageManager format
-      const completedLessonsKey = `scihub_user_${user.id}_completed_lessons`;
-      const completedData = JSON.parse(localStorage.getItem(completedLessonsKey) || "[]");
-      completedLessonIds = completedData.map(l => l.id);
-    } else {
-      // Fallback to legacy format
-      completedLessonIds = JSON.parse(localStorage.getItem("completedLessons") || "[]");
-    }
-    
-    setCompletedLessons(completedLessonIds);
-    
-    // Build progress map (100% for completed, 0% for not started)
-    const progressMap = {};
-    completedLessonIds.forEach(lessonId => {
-      progressMap[lessonId] = 100;
-    });
-    setLessonProgress(progressMap);
+    const loadLessonData = () => {
+      let completedLessonIds = [];
       
-    console.log("📚 Loaded completed lessons:", completedLessonIds);
-    console.log("📊 Lesson progress:", progressMap);
+      if (user && user.id) {
+        // Get completed lessons from storageManager format
+        const completedLessonsKey = `scihub_user_${user.id}_completed_lessons`;
+        const completedData = JSON.parse(localStorage.getItem(completedLessonsKey) || "[]");
+        completedLessonIds = completedData.map(l => l.id);
+        
+        console.log("✅ Loaded completed lessons:", completedLessonIds);
+        
+        // Check if intro video (Lesson 1 - first video) was watched
+        const watched = getWatchedVideos(user.id, 1);
+        const hasWatchedIntro = watched && watched[1]; // Video ID 1 is the intro
+        setIntroVideoWatched(hasWatchedIntro || false);
+      } else {
+        // Fallback to legacy format
+        completedLessonIds = JSON.parse(localStorage.getItem("completedLessons") || "[]");
+      }
+      
+      setCompletedLessons(completedLessonIds);
+      
+      // Build progress map (100% for completed, 0% for not started)
+      const progressMap = {};
+      completedLessonIds.forEach(lessonId => {
+        progressMap[lessonId] = 100;
+      });
+      setLessonProgress(progressMap);
+    };
+
+    loadLessonData();
+
+    // Listen for storage changes from other components (like when Lesson.js saves completion)
+    const handleStorageChange = () => {
+      console.log("📚 Storage changed - reloading lessons");
+      loadLessonData();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("dashboardStorageChange", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("dashboardStorageChange", handleStorageChange);
+    };
+  }, [user?.id]);
 
   // All lessons data
   const allLessons = [
@@ -284,9 +309,12 @@ function Lessons() {
     navigate(`/lesson/${lesson.id}`, { state: { lesson } });
   };
 
-  // Check if a lesson is locked (requires previous lesson completion)
+  // Check if a lesson is locked (requires previous lesson completion or intro video)
   const isLessonLocked = (lessonId) => {
-    if (lessonId === 1) return false; // First lesson is always unlocked
+    if (lessonId === 1) {
+      // Lesson 1 requires watching the intro video first
+      return !introVideoWatched;
+    }
     const previousLessonId = lessonId - 1;
     return !completedLessons.includes(previousLessonId);
   };
@@ -470,7 +498,11 @@ function Lessons() {
                         onClick={(e) => {
                           e.stopPropagation();
                           if (locked) {
-                            alert(`Complete Lesson ${lesson.id - 1} first to unlock this lesson!`);
+                            if (lesson.id === 1) {
+                              alert("🎥 Watch the Introduction to Biology video first to unlock Lesson 1!");
+                            } else {
+                              alert(`Complete Lesson ${lesson.id - 1} first to unlock this lesson!`);
+                            }
                             return;
                           }
                           handleLessonClick(lesson);

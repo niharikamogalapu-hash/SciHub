@@ -7,11 +7,12 @@ function QuizGame({ gameData, onComplete, onExit }) {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
   const [startTime] = useState(Date.now());
+  const [answerHistory, setAnswerHistory] = useState([]);
 
   const questions = gameData.questions || [];
 
   if (!questions.length) {
-    return <div style={{ color: "white" }}>No questions available</div>;
+    return <div style={{ color: "white", textAlign: "center", padding: "40px" }}>No questions available</div>;
   }
 
   const question = questions[currentQuestion];
@@ -26,6 +27,9 @@ function QuizGame({ gameData, onComplete, onExit }) {
 
     if (correct) {
       setScore(score + 10);
+      setAnswerHistory([...answerHistory, true]);
+    } else {
+      setAnswerHistory([...answerHistory, false]);
     }
   };
 
@@ -38,24 +42,43 @@ function QuizGame({ gameData, onComplete, onExit }) {
     } else {
       // Game over
       const timeTaken = (Date.now() - startTime) / 1000;
-      const finalScore = Math.max(50, Math.min(100, score + Math.floor(50 - timeTaken / 60)));
+      const timeBonus = Math.max(0, Math.floor(30 - timeTaken / 30));
+      const finalScore = Math.max(50, Math.min(100, score + timeBonus));
       onComplete(finalScore);
     }
   };
+
+  const correctCount = answerHistory.filter(Boolean).length;
+  const accuracy = answerHistory.length > 0 ? Math.round((correctCount / answerHistory.length) * 100) : 0;
 
   return (
     <div style={{
       padding: "40px",
       background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
       borderRadius: "12px",
-      minHeight: "400px",
+      minHeight: "500px",
       color: "white",
     }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
-        <h2 style={{ margin: 0 }}>{gameData.title}</h2>
-        <div style={{ display: "flex", gap: "20px", fontSize: "18px", fontWeight: "600" }}>
-          <div>Score: {score}</div>
-          <div>Question {currentQuestion + 1}/{questions.length}</div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px", flexWrap: "wrap", gap: "20px" }}>
+        <div>
+          <h2 style={{ margin: "0 0 8px 0", fontSize: "24px" }}>{gameData.title}</h2>
+          <p style={{ margin: 0, fontSize: "14px", opacity: 0.9 }}>Test your knowledge on this topic!</p>
+        </div>
+        <div style={{ display: "flex", gap: "20px", fontSize: "16px", fontWeight: "600" }}>
+          <div style={{ background: "rgba(0,0,0,0.2)", padding: "12px 16px", borderRadius: "8px" }}>
+            <div style={{ fontSize: "12px", opacity: 0.8 }}>Score</div>
+            <div style={{ fontSize: "20px" }}>{score}</div>
+          </div>
+          <div style={{ background: "rgba(0,0,0,0.2)", padding: "12px 16px", borderRadius: "8px" }}>
+            <div style={{ fontSize: "12px", opacity: 0.8 }}>Question</div>
+            <div style={{ fontSize: "20px" }}>{currentQuestion + 1}/{questions.length}</div>
+          </div>
+          {answerHistory.length > 0 && (
+            <div style={{ background: "rgba(0,0,0,0.2)", padding: "12px 16px", borderRadius: "8px" }}>
+              <div style={{ fontSize: "12px", opacity: 0.8 }}>Accuracy</div>
+              <div style={{ fontSize: "20px" }}>{accuracy}%</div>
+            </div>
+          )}
           <button
             onClick={onExit}
             style={{
@@ -66,9 +89,12 @@ function QuizGame({ gameData, onComplete, onExit }) {
               color: "white",
               cursor: "pointer",
               fontWeight: "600",
+              transition: "background 0.2s",
             }}
+            onMouseEnter={(e) => e.target.style.background = "#dc2626"}
+            onMouseLeave={(e) => e.target.style.background = "#ef4444"}
           >
-            Exit Game
+            Exit
           </button>
         </div>
       </div>
@@ -76,70 +102,95 @@ function QuizGame({ gameData, onComplete, onExit }) {
       {/* Progress Bar */}
       <div style={{
         width: "100%",
-        height: "8px",
-        background: "rgba(255,255,255,0.2)",
-        borderRadius: "4px",
+        height: "10px",
+        background: "rgba(255,255,255,0.15)",
+        borderRadius: "6px",
         marginBottom: "30px",
         overflow: "hidden",
       }}>
         <div style={{
           width: `${((currentQuestion + 1) / questions.length) * 100}%`,
           height: "100%",
-          background: "#10b981",
-          transition: "width 0.3s ease",
+          background: "linear-gradient(90deg, #10b981 0%, #38bdf8 100%)",
+          transition: "width 0.4s ease",
         }}></div>
       </div>
 
       {/* Question */}
-      <div style={{ marginBottom: "30px" }}>
-        <h3 style={{ fontSize: "20px", marginTop: 0, marginBottom: "20px" }}>{question.question}</h3>
+      <div style={{ marginBottom: "30px", animation: "slideUp 0.3s ease-out" }}>
+        <h3 style={{ fontSize: "22px", marginTop: 0, marginBottom: "25px", fontWeight: "600" }}>
+          {question.question}
+        </h3>
 
         {/* Answer Options */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          {question.options.map((option, idx) => (
-            <button
-              key={idx}
-              onClick={() => handleAnswerSelect(option)}
-              disabled={answered}
-              style={{
-                padding: "16px 20px",
-                borderRadius: "8px",
-                border: selectedAnswer === option ? "3px solid #fbbf24" : "2px solid rgba(255,255,255,0.3)",
-                background:
-                  selectedAnswer === option
-                    ? isCorrect
-                      ? "#10b981"
-                      : "#ef4444"
-                    : answered && option === question.correct
-                    ? "#10b981"
-                    : "rgba(255,255,255,0.1)",
-                color: "white",
-                cursor: answered ? "default" : "pointer",
-                fontSize: "16px",
-                fontWeight: "500",
-                textAlign: "left",
-                transition: "all 0.3s ease",
-                opacity: answered && selectedAnswer !== option && option !== question.correct ? 0.5 : 1,
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <div style={{
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "50%",
-                  border: "2px solid currentColor",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}>
-                  {selectedAnswer === option && isCorrect && "✓"}
-                  {selectedAnswer === option && !isCorrect && "✗"}
-                  {answered && option === question.correct && selectedAnswer !== option && "✓"}
+        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+          {question.options.map((option, idx) => {
+            const isSelected = selectedAnswer === option;
+            const isCorrectOption = option === question.correct;
+            const shouldShowCorrect = answered && isCorrectOption && !isSelected;
+
+            return (
+              <button
+                key={idx}
+                onClick={() => handleAnswerSelect(option)}
+                disabled={answered}
+                style={{
+                  padding: "16px 20px",
+                  borderRadius: "10px",
+                  border: isSelected ? "3px solid #fbbf24" : "2px solid rgba(255,255,255,0.3)",
+                  background:
+                    isSelected
+                      ? isCorrect
+                        ? "rgba(16, 185, 129, 0.3)"
+                        : "rgba(239, 68, 68, 0.3)"
+                      : shouldShowCorrect
+                      ? "rgba(16, 185, 129, 0.3)"
+                      : "rgba(255,255,255,0.08)",
+                  color: "white",
+                  cursor: answered ? "default" : "pointer",
+                  fontSize: "16px",
+                  fontWeight: "500",
+                  textAlign: "left",
+                  transition: "all 0.3s ease",
+                  opacity: answered && !isSelected && !isCorrectOption ? 0.5 : 1,
+                  transform: isSelected ? "translateX(8px)" : "translateX(0)",
+                }}
+                onMouseEnter={(e) => {
+                  if (!answered) {
+                    e.target.style.background = "rgba(255,255,255,0.15)";
+                    e.target.style.transform = "translateX(8px)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!answered) {
+                    e.target.style.background = "rgba(255,255,255,0.08)";
+                    e.target.style.transform = "translateX(0)";
+                  }
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                  <div style={{
+                    width: "24px",
+                    height: "24px",
+                    borderRadius: "50%",
+                    border: "2px solid currentColor",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                    flexShrink: 0,
+                  }}>
+                    {isSelected && isCorrect && "✓"}
+                    {isSelected && !isCorrect && "✗"}
+                    {shouldShowCorrect && "✓"}
+                    {!isSelected && !shouldShowCorrect && String.fromCharCode(65 + idx)}
+                  </div>
+                  <span>{option}</span>
                 </div>
-                {option}
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -148,16 +199,19 @@ function QuizGame({ gameData, onComplete, onExit }) {
         <div style={{
           background: isCorrect ? "rgba(16, 185, 129, 0.2)" : "rgba(239, 68, 68, 0.2)",
           border: `2px solid ${isCorrect ? "#10b981" : "#ef4444"}`,
-          padding: "16px",
-          borderRadius: "8px",
+          padding: "18px",
+          borderRadius: "10px",
           marginBottom: "20px",
           fontSize: "16px",
           fontWeight: "500",
+          animation: "slideUp 0.3s ease-out",
         }}>
-          {isCorrect ? "🎉 Correct!" : "❌ Incorrect!"}
+          <div style={{ marginBottom: "12px" }}>
+            {isCorrect ? "🎉 Correct Answer!" : "❌ Incorrect!"}
+          </div>
           {question.explanation && (
-            <p style={{ marginTop: "10px", marginBottom: 0, fontSize: "14px" }}>
-              {question.explanation}
+            <p style={{ marginTop: "0", marginBottom: 0, fontSize: "14px", lineHeight: "1.5", opacity: 0.95 }}>
+              <strong>Explanation:</strong> {question.explanation}
             </p>
           )}
         </div>
@@ -167,8 +221,8 @@ function QuizGame({ gameData, onComplete, onExit }) {
         <button
           onClick={handleNextQuestion}
           style={{
-            padding: "12px 30px",
-            borderRadius: "8px",
+            padding: "14px 40px",
+            borderRadius: "10px",
             border: "none",
             background: "#10b981",
             color: "white",
@@ -176,11 +230,22 @@ function QuizGame({ gameData, onComplete, onExit }) {
             fontSize: "16px",
             fontWeight: "600",
             width: "100%",
+            transition: "background 0.2s",
+            animation: "slideUp 0.3s ease-out",
           }}
+          onMouseEnter={(e) => e.target.style.background = "#059669"}
+          onMouseLeave={(e) => e.target.style.background = "#10b981"}
         >
-          {currentQuestion < questions.length - 1 ? "Next Question" : "Finish Game"}
+          {currentQuestion < questions.length - 1 ? "Next Question →" : "🏆 Finish Quiz"}
         </button>
       )}
+
+      <style>{`
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }

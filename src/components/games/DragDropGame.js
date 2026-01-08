@@ -7,6 +7,7 @@ function DragDropGame({ gameData, onComplete, onExit }) {
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState("");
   const [startTime] = useState(Date.now());
+  const [isGameComplete, setIsGameComplete] = useState(false);
 
   useEffect(() => {
     if (gameData.items) {
@@ -36,17 +37,18 @@ function DragDropGame({ gameData, onComplete, onExit }) {
       newSlots[slotIndex] = draggedItem;
       setSlots(newSlots);
       setScore(score + 15);
-      setFeedback("✅ Perfect!");
+      setFeedback("✅ Perfect placement!");
 
       // Check if complete
       if (newSlots.filter((s) => s !== null).length === gameData.items.length) {
-        setTimeout(() => handleGameComplete(), 600);
+        setIsGameComplete(true);
+        setTimeout(() => handleGameComplete(), 800);
       }
 
-      setTimeout(() => setFeedback(""), 1000);
+      setTimeout(() => setFeedback(""), 1200);
     } else {
-      setFeedback("❌ Try another slot");
-      setTimeout(() => setFeedback(""), 1000);
+      setFeedback("❌ Try another slot!");
+      setTimeout(() => setFeedback(""), 1200);
     }
 
     setDraggedItem(null);
@@ -54,7 +56,8 @@ function DragDropGame({ gameData, onComplete, onExit }) {
 
   const handleGameComplete = () => {
     const timeTaken = (Date.now() - startTime) / 1000;
-    const finalScore = Math.max(50, Math.min(100, score + Math.floor(50 - timeTaken / 10)));
+    const timeBonus = Math.max(0, Math.floor(30 - timeTaken / 10));
+    const finalScore = Math.max(50, Math.min(100, score + timeBonus));
     onComplete(finalScore);
   };
 
@@ -67,7 +70,7 @@ function DragDropGame({ gameData, onComplete, onExit }) {
         padding: "40px",
         background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
         borderRadius: "12px",
-        minHeight: "500px",
+        minHeight: "600px",
         color: "white",
       }}
     >
@@ -77,13 +80,22 @@ function DragDropGame({ gameData, onComplete, onExit }) {
           justifyContent: "space-between",
           alignItems: "center",
           marginBottom: "30px",
+          flexWrap: "wrap",
+          gap: "20px",
         }}
       >
-        <h2 style={{ margin: 0 }}>{gameData.title}</h2>
+        <div>
+          <h2 style={{ margin: "0 0 8px 0", fontSize: "24px" }}>{gameData.title}</h2>
+          <p style={{ margin: 0, fontSize: "14px", opacity: 0.9 }}>Drag items to their correct slots!</p>
+        </div>
         <div style={{ display: "flex", gap: "20px", fontSize: "16px", fontWeight: "600" }}>
-          <div>Score: {score}</div>
-          <div>
-            Placed: {placedCount}/{items.length}
+          <div style={{ background: "rgba(0,0,0,0.2)", padding: "12px 16px", borderRadius: "8px" }}>
+            <div style={{ fontSize: "12px", opacity: 0.8 }}>Score</div>
+            <div style={{ fontSize: "20px" }}>{score}</div>
+          </div>
+          <div style={{ background: "rgba(0,0,0,0.2)", padding: "12px 16px", borderRadius: "8px" }}>
+            <div style={{ fontSize: "12px", opacity: 0.8 }}>Placed</div>
+            <div style={{ fontSize: "20px" }}>{placedCount}/{items.length}</div>
           </div>
           <button
             onClick={onExit}
@@ -95,16 +107,15 @@ function DragDropGame({ gameData, onComplete, onExit }) {
               color: "white",
               cursor: "pointer",
               fontWeight: "600",
+              transition: "background 0.2s",
             }}
+            onMouseEnter={(e) => e.target.style.background = "#dc2626"}
+            onMouseLeave={(e) => e.target.style.background = "#ef4444"}
           >
             Exit
           </button>
         </div>
       </div>
-
-      <p style={{ marginBottom: "30px", fontSize: "16px" }}>
-        {gameData.description || "Drag items to the correct slots"}
-      </p>
 
       {feedback && (
         <div
@@ -114,17 +125,18 @@ function DragDropGame({ gameData, onComplete, onExit }) {
             fontSize: "18px",
             fontWeight: "600",
             minHeight: "30px",
+            animation: "fadeInOut 1.2s ease-in-out",
           }}
         >
           {feedback}
         </div>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", marginBottom: "30px" }}>
         {/* Items to drag */}
         <div>
-          <h3 style={{ marginTop: 0, marginBottom: "20px", color: "#fbbf24" }}>
-            Items
+          <h3 style={{ marginTop: 0, marginBottom: "20px", color: "#fbbf24", fontSize: "18px", fontWeight: "600" }}>
+            📦 Items to Drag
           </h3>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {items.map((item, idx) => {
@@ -134,25 +146,27 @@ function DragDropGame({ gameData, onComplete, onExit }) {
                   key={idx}
                   draggable={!isPlaced}
                   onDragStart={() => handleDragStart(idx)}
+                  onDragEnd={() => setDraggedItem(null)}
                   style={{
                     padding: "16px 20px",
-                    borderRadius: "8px",
+                    borderRadius: "10px",
                     background: isPlaced
-                      ? "#10b98144"
+                      ? "rgba(16, 185, 129, 0.2)"
                       : draggedItem === idx
                       ? "#fbbf24"
-                      : "rgba(255,255,255,0.2)",
+                      : "rgba(255,255,255,0.1)",
                     color: "white",
                     cursor: isPlaced ? "default" : "grab",
                     fontSize: "16px",
                     fontWeight: "500",
                     border: "2px solid rgba(255,255,255,0.3)",
                     transition: "all 0.3s ease",
-                    opacity: isPlaced ? 0.5 : 1,
+                    opacity: isPlaced ? 0.6 : 1,
+                    userSelect: "none",
+                    transform: draggedItem === idx ? "scale(0.95) rotate(2deg)" : "scale(1) rotate(0deg)",
                   }}
                 >
-                  {isPlaced && "✓ "}
-                  {item.label}
+                  {isPlaced ? "✓ " : "🖱️ "}{item.label}
                 </div>
               );
             })}
@@ -161,8 +175,8 @@ function DragDropGame({ gameData, onComplete, onExit }) {
 
         {/* Drop slots */}
         <div>
-          <h3 style={{ marginTop: 0, marginBottom: "20px", color: "#fbbf24" }}>
-            Slots
+          <h3 style={{ marginTop: 0, marginBottom: "20px", color: "#fbbf24", fontSize: "18px", fontWeight: "600" }}>
+            🎯 Drop Slots
           </h3>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {slots.map((slotItem, idx) => {
@@ -175,16 +189,18 @@ function DragDropGame({ gameData, onComplete, onExit }) {
                   onDrop={() => handleDropOnSlot(idx)}
                   style={{
                     padding: "16px 20px",
-                    borderRadius: "8px",
+                    borderRadius: "10px",
                     background: item
-                      ? "rgba(16, 185, 129, 0.3)"
-                      : "rgba(255,255,255,0.1)",
+                      ? "rgba(16, 185, 129, 0.25)"
+                      : draggedItem !== null
+                      ? "rgba(251, 191, 36, 0.15)"
+                      : "rgba(255,255,255,0.08)",
                     color: "white",
                     cursor: "drop",
                     fontSize: "16px",
                     fontWeight: "500",
                     border: draggedItem !== null ? "3px dashed #fbbf24" : "2px solid rgba(255,255,255,0.3)",
-                    minHeight: "55px",
+                    minHeight: "60px",
                     display: "flex",
                     alignItems: "center",
                     transition: "all 0.3s ease",
@@ -192,11 +208,11 @@ function DragDropGame({ gameData, onComplete, onExit }) {
                 >
                   {item ? (
                     <>
-                      ✓ {item.label}
+                      ✅ {item.label}
                     </>
                   ) : (
                     <span style={{ opacity: 0.6 }}>
-                      {gameData.slotLabels?.[idx] || `Slot ${idx + 1}`}
+                      {gameData.slotLabels?.[idx] || `📍 Slot ${idx + 1}`}
                     </span>
                   )}
                 </div>
@@ -210,20 +226,20 @@ function DragDropGame({ gameData, onComplete, onExit }) {
         <div
           style={{
             background: "rgba(0,0,0,0.3)",
-            padding: "30px",
+            padding: "40px 30px",
             borderRadius: "12px",
             textAlign: "center",
             marginTop: "30px",
+            animation: "slideUp 0.5s ease-out",
           }}
         >
-          <h3 style={{ fontSize: "24px", marginTop: 0 }}>🎉 Level Complete!</h3>
-          <p style={{ fontSize: "18px", marginBottom: "20px" }}>
-            Perfect! Score: {score}/100
-          </p>
+          <h3 style={{ fontSize: "32px", marginTop: 0, marginBottom: "10px" }}>🎉 Perfect!</h3>
+          <p style={{ fontSize: "18px", marginBottom: "8px", opacity: 0.9 }}>All items correctly placed!</p>
+          <p style={{ fontSize: "16px", marginBottom: "20px", opacity: 0.8 }}>Final Score: {score}/100</p>
           <button
             onClick={handleGameComplete}
             style={{
-              padding: "12px 30px",
+              padding: "12px 40px",
               borderRadius: "8px",
               border: "none",
               background: "#10b981",
@@ -231,12 +247,27 @@ function DragDropGame({ gameData, onComplete, onExit }) {
               cursor: "pointer",
               fontSize: "16px",
               fontWeight: "600",
+              transition: "background 0.2s",
             }}
+            onMouseEnter={(e) => e.target.style.background = "#059669"}
+            onMouseLeave={(e) => e.target.style.background = "#10b981"}
           >
-            Collect Coins
+            Claim Reward
           </button>
         </div>
       )}
+
+      <style>{`
+        @keyframes fadeInOut {
+          0% { opacity: 0; }
+          50% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }

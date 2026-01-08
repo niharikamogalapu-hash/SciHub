@@ -1001,7 +1001,7 @@ export default function Lesson() {
         { id: 2, question: "What are theories of intelligence?", options: ["Only IQ", "Multiple intelligences (Sternberg, Gardner), g-factor; nature-nurture debate", "Single ability", "Unchanging"], correct: 1 },
         { id: 3, question: "What does IQ measure and its limitations?", options: ["Everything", "Academic potential; doesn't capture creativity, emotional, practical intelligence", "Perfect measure", "No limits"], correct: 1 },
         { id: 4, question: "What are emotions and their functions?", options: ["Just feelings", "Adaptive responses involving cognition, physiology, expression; motivate behavior", "No purpose", "Harmful"], correct: 1 },
-        { id: 5, question: "What is emotional intelligence?", options: ["Not real", "Ability to understand and manage own and others' emotions affecting relationships", "Innate only", "Not teachable"], correct: 1 },
+        { id: 5, question: "What is emotional intelligence?", options: ["Not real", "Ability to understand and manage own and others\\' emotions affecting relationships", "Innate only", "Not teachable"], correct: 1 },
         { id: 6, question: "How do emotions affect cognition?", options: ["No effect", "Emotions influence attention, memory, decision-making (mood-congruent effects)", "Independent", "Not related"], correct: 1 },
         { id: 7, question: "What are display rules and cultural differences?", options: ["No differences", "Cultural norms for emotional expression vary; affect communication, relationships", "Universal", "Not important"], correct: 1 }
       ],
@@ -1870,18 +1870,19 @@ export default function Lesson() {
   
   // Find the first incomplete step (for "current" status)
   const stepsCompletionArray = [step1Completed, step2Completed, step3Completed, step4Completed, step5Completed];
-  const firstIncompleteStep = stepsCompletionArray.findIndex(completed => !completed) + 1;
+  const incompleteIndex = stepsCompletionArray.findIndex(completed => !completed);
+  const firstIncompleteStep = incompleteIndex === -1 ? 6 : incompleteIndex + 1; // If all complete, set to 6 (Finish Lesson)
   
   const timelineSteps = [
-    { id: 1, title: "Watch 5 Videos", completed: step1Completed, current: firstIncompleteStep === 1 },
-    { id: 2, title: "Book a Tutor", completed: step2Completed, current: firstIncompleteStep === 2 },
-    { id: 3, title: "Do 2 Worksheets", completed: step3Completed, current: firstIncompleteStep === 3 },
-    { id: 4, title: "Q&A Post", completed: step4Completed, current: firstIncompleteStep === 4 },
-    { id: 5, title: "Complete Game", completed: step5Completed, current: firstIncompleteStep === 5 },
-    { id: 6, title: "Finish Lesson", completed: step5Completed, current: firstIncompleteStep === 6 },
+    { id: 1, title: "Watch 5 Videos", completed: step1Completed, current: activeStep === 1 && !step1Completed },
+    { id: 2, title: "Book a Tutor", completed: step2Completed, current: activeStep === 2 && !step2Completed },
+    { id: 3, title: "Do 2 Worksheets", completed: step3Completed, current: activeStep === 3 && !step3Completed },
+    { id: 4, title: "Q&A Post", completed: step4Completed, current: activeStep === 4 && !step4Completed },
+    { id: 5, title: "Complete Game", completed: step5Completed, current: activeStep === 5 && !step5Completed },
+    { id: 6, title: "Finish Lesson", completed: step5Completed, current: activeStep === 6 || (step5Completed && activeStep >= 5) },
   ];
 
-  console.log("📊 Timeline state - activeStep:", activeStep, "step5Completed:", step5Completed);
+  console.log("📊 Timeline state - activeStep:", activeStep, "step5Completed:", step5Completed, "firstIncompleteStep:", firstIncompleteStep);
 
   useEffect(() => {
     if (!lesson) {
@@ -2533,8 +2534,65 @@ export default function Lesson() {
     <div className="dashboard-page">
       <Sidebar />
       <main className="dashboard-main lesson-main">
+        {/* TOP NAVIGATION BAR */}
+        <div style={{
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          background: "linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.98) 100%)",
+          padding: "1.25rem 2rem",
+          borderBottom: "2px solid rgba(59, 130, 246, 0.3)",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backdropFilter: "blur(10px)",
+        }}>
+          <button 
+            onClick={() => navigate("/lessons")}
+            style={{
+              padding: "0.7rem 1.4rem",
+              background: "linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              fontWeight: "700",
+              cursor: "pointer",
+              fontSize: "0.95rem",
+              transition: "all 200ms ease",
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "scale(1.05)";
+              e.target.style.boxShadow = "0 8px 20px rgba(59, 130, 246, 0.4)";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "scale(1)";
+              e.target.style.boxShadow = "none";
+            }}
+          >
+            ← Exit
+          </button>
+          <div style={{ textAlign: "center", flex: 1 }}>
+            <h2 style={{ margin: 0, color: "#38bdf8", fontSize: "1.2rem" }}>
+              Lesson {lesson?.lesson_number}
+            </h2>
+            <p style={{ margin: "0.25rem 0 0 0", color: "#9ca3af", fontSize: "0.85rem" }}>
+              {lesson?.title}
+            </p>
+          </div>
+          <div style={{
+            padding: "0.5rem 1rem",
+            background: "rgba(34, 197, 94, 0.1)",
+            border: "1px solid rgba(34, 197, 94, 0.3)",
+            borderRadius: "8px",
+            color: "#86efac",
+            fontWeight: "700",
+            fontSize: "0.9rem",
+          }}>
+            +50 XP
+          </div>
+        </div>
+
         {/* Video Player Modal */}
-        {currentVideoPlayer && console.log("🎥 Rendering video modal with:", currentVideoPlayer)}
         {currentVideoPlayer && (
           <div className="video-player-modal">
             <div className="video-player-backdrop" onClick={closeVideoPlayer} />
@@ -2574,142 +2632,160 @@ export default function Lesson() {
           </div>
         )}
 
-        {/* Back button */}
-        <button className="back-btn" onClick={() => navigate(-1)}>
-          ← Back
-        </button>
-
-        {/* Previous Lesson Completion Status */}
-        {lesson && lesson.id && !previousLessonCompleted && (
-          <div style={{
-            background: "linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%)",
-            border: "2px solid rgba(239, 68, 68, 0.3)",
-            borderRadius: "12px",
-            padding: "1.5rem",
-            marginBottom: "1.5rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem"
-          }}>
-            <div style={{ fontSize: "1.5rem" }}>📋</div>
-            <div>
-              <h3 style={{ color: "#fca5a5", marginTop: 0, marginBottom: "0.25rem", fontWeight: 700 }}>
-                Complete Lesson {parseInt(lesson.id) - 1} First
-              </h3>
-              <p style={{ color: "#fecaca", marginTop: 0, marginBottom: 0 }}>
-                You must complete the previous lesson before accessing this one. Your progress will unlock the next lesson automatically!
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Previous Lessons Completed Banner */}
-        {allCompletedLessons.length > 0 && previousLessonCompleted && (
-          <div style={{
-            background: "linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%)",
-            border: "2px solid rgba(16, 185, 129, 0.3)",
-            borderRadius: "12px",
-            padding: "1.5rem",
-            marginBottom: "1.5rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "1rem"
-          }}>
-            <div style={{ fontSize: "1.5rem" }}>✅</div>
-            <div>
-              <h3 style={{ color: "#86efac", marginTop: 0, marginBottom: "0.25rem", fontWeight: 700 }}>
-                {allCompletedLessons.length} Lesson{allCompletedLessons.length !== 1 ? 's' : ''} Completed
-              </h3>
-              <p style={{ color: "#bbf7d0", marginTop: 0, marginBottom: 0 }}>
-                Great progress! You've unlocked this lesson by completing previous lessons. Keep going! 🚀
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Header */}
-        <header className="lesson-header">
-          <div>
-            <h1>Lesson {lesson.lesson_number}</h1>
-            <p className="lesson-subtitle">{lesson.title}</p>
-          </div>
-          {step5Completed && (
-            <button 
-              className="view-work-btn"
-              onClick={() => setIsReviewMode(!isReviewMode)}
-              style={{
-                padding: "0.75rem 1.5rem",
-                background: isReviewMode ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)" : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                color: "white",
-                border: "none",
-                borderRadius: "10px",
-                fontWeight: 700,
-                cursor: "pointer",
-                transition: "all 250ms ease"
-              }}
-            >
-              {isReviewMode ? "← Back to Lesson" : "📋 View Your Work"}
-            </button>
-          )}
-        </header>
-
-        {/* XP Bar */}
+        {/* MAIN CONTENT AREA */}
         <div style={{
-          background: "linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(22, 163, 74, 0.05) 100%)",
-          border: "1px solid rgba(34, 197, 94, 0.2)",
-          borderRadius: "12px",
-          padding: "1.2rem",
-          marginBottom: "1.5rem",
-          backdropFilter: "blur(10px)",
+          maxWidth: "1000px",
+          margin: "0 auto",
+          padding: "2rem 1.5rem",
         }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-            <div style={{ color: "#9ca3af", fontSize: "0.9rem", fontWeight: "600" }}>📊 Lesson Reward</div>
-            <div style={{ color: "#86efac", fontSize: "1rem", fontWeight: "700" }}>+50 XP</div>
-          </div>
-          <div style={{ background: "rgba(0, 0, 0, 0.2)", borderRadius: "8px", height: "10px", overflow: "hidden" }}>
+          {/* PROGRESS BAR */}
+          <div style={{
+            marginBottom: "2.5rem",
+          }}>
             <div style={{
-              width: `${(Object.keys(watchedVideos).length / 5) * 25 + (bookedSession ? 25 : 0) + (step3Completed ? 25 : 0) + (step4Completed ? 12.5 : 0) + (step5Completed ? 12.5 : 0)}%`,
-              height: "100%",
-              background: "linear-gradient(90deg, #86efac, #22c55e)",
-              transition: "width 0.3s ease",
-            }}></div>
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1rem",
+            }}>
+              <h3 style={{ margin: 0, color: "#f9fafb", fontSize: "0.95rem", fontWeight: "600" }}>
+                Overall Progress
+              </h3>
+              <span style={{ color: "#60a5fa", fontWeight: "700" }}>
+                {Math.round((Object.keys(watchedVideos).length / 5) * 25 + (bookedSession ? 25 : 0) + (step3Completed ? 25 : 0) + (step4Completed ? 12.5 : 0) + (step5Completed ? 12.5 : 0))}%
+              </span>
+            </div>
+            <div style={{
+              background: "rgba(0, 0, 0, 0.3)",
+              borderRadius: "10px",
+              height: "8px",
+              overflow: "hidden",
+              border: "1px solid rgba(59, 130, 246, 0.2)",
+            }}>
+              <div style={{
+                width: `${(Object.keys(watchedVideos).length / 5) * 25 + (bookedSession ? 25 : 0) + (step3Completed ? 25 : 0) + (step4Completed ? 12.5 : 0) + (step5Completed ? 12.5 : 0)}%`,
+                height: "100%",
+                background: "linear-gradient(90deg, #3b82f6, #60a5fa)",
+                transition: "width 0.5s ease",
+              }}></div>
+            </div>
           </div>
-          <div style={{ color: "#6b7280", fontSize: "0.8rem", marginTop: "0.5rem" }}>
-            {step5Completed ? "✅ Lesson Complete! XP Awarded" : "Complete all steps to earn 50 XP"}
-          </div>
-        </div>
 
-        {/* Timeline Progress for All Lessons */}
-        <div className="lesson-timeline">
-          <h3 className="timeline-title">Lesson Progress</h3>
-          <div className="timeline-container">
+          {/* STEP TIMELINE - HORIZONTAL */}
+          <div style={{
+            marginBottom: "3rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            gap: "0.5rem",
+            overflowX: "auto",
+            paddingBottom: "1rem",
+          }}>
             {timelineSteps.map((step, index) => {
-              // Check if all previous steps are completed to determine if this step is clickable
               const allPreviousCompleted = timelineSteps.slice(0, step.id - 1).every(s => s.completed);
               const isClickable = step.completed || step.current || allPreviousCompleted;
               return (
-                <div 
-                  key={step.id} 
-                  className="timeline-item"
-                  onClick={() => handleStepClick(step.id)}
-                  style={{ cursor: isClickable ? 'pointer' : 'not-allowed' }}
+                <div
+                  key={step.id}
+                  onClick={() => isClickable && handleStepClick(step.id)}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    flex: 1,
+                    minWidth: "80px",
+                    cursor: isClickable ? 'pointer' : 'not-allowed',
+                    opacity: isClickable ? 1 : 0.5,
+                  }}
                 >
-                  <div className={`timeline-step ${step.completed ? "completed" : step.current ? "current" : "pending"}`}>
-                    {step.completed ? (
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    ) : (
-                      <span>{step.id}</span>
-                    )}
+                  <div style={{
+                    width: "50px",
+                    height: "50px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: "700",
+                    marginBottom: "0.5rem",
+                    transition: "all 200ms ease",
+                    background: step.completed 
+                      ? "linear-gradient(135deg, #10b981, #059669)"
+                      : step.current
+                      ? "linear-gradient(135deg, #3b82f6, #1e40af)"
+                      : "rgba(148, 163, 184, 0.2)",
+                    color: step.completed || step.current ? "white" : "#9ca3af",
+                    border: `2px solid ${step.completed ? "rgba(16, 185, 129, 0.4)" : step.current ? "rgba(59, 130, 246, 0.4)" : "rgba(148, 163, 184, 0.2)"}`,
+                  }}>
+                    {step.completed ? "✓" : step.id}
                   </div>
-                  <div className="timeline-label">{step.title}</div>
-                  {index < timelineSteps.length - 1 && <div className="timeline-connector" />}
+                  <span style={{
+                    fontSize: "0.75rem",
+                    color: "#9ca3af",
+                    textAlign: "center",
+                    lineHeight: "1.2",
+                  }}>
+                    {step.title.split(" ")[0]}
+                  </span>
                 </div>
               );
             })}
           </div>
-          {/* Spaceship transition animation */}
+
+          {/* ACTIVE STEP CONTENT */}
+          <div style={{
+            background: "linear-gradient(135deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.5) 100%)",
+            border: "1px solid rgba(59, 130, 246, 0.2)",
+            borderRadius: "16px",
+            padding: "2.5rem",
+            minHeight: "400px",
+          }}>
+            {activeStep === 1 && (
+              <div>
+                <h3 style={{ margin: "0 0 1.5rem 0", color: "#f9fafb", fontSize: "1.3rem", fontWeight: "700" }}>
+                  📹 Watch Videos
+                </h3>
+                <p style={{ color: "#9ca3af", marginBottom: "1.5rem" }}>
+                  Complete all 5 videos ({Object.keys(watchedVideos).length}/5) to advance to the next step.
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "1rem" }}>
+                  {lessonVideos.map((video) => (
+                    <button 
+                      key={video.id}
+                      onClick={() => openVideoPlayer(video)}
+                      style={{
+                        padding: "1.25rem",
+                        background: watchedVideos[video.id] 
+                          ? "linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%)"
+                          : "linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(30, 58, 138, 0.1) 100%)",
+                        border: `2px solid ${watchedVideos[video.id] ? "rgba(16, 185, 129, 0.3)" : "rgba(59, 130, 246, 0.3)"}`,
+                        borderRadius: "12px",
+                        color: "#f9fafb",
+                        cursor: "pointer",
+                        fontWeight: "600",
+                        transition: "all 200ms ease",
+                        textAlign: "left",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.transform = "translateY(-4px)";
+                        e.target.style.boxShadow = watchedVideos[video.id] 
+                          ? "0 12px 24px rgba(16, 185, 129, 0.2)"
+                          : "0 12px 24px rgba(59, 130, 246, 0.2)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.transform = "translateY(0)";
+                        e.target.style.boxShadow = "none";
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span>Video {video.id}</span>
+                        <span>{watchedVideos[video.id] ? "✅" : "▶"}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
           {isTransitioning && (
             <div className="spaceship-animation" style={{
               left: `${(activeStep / timelineSteps.length) * 100 - 5}%`

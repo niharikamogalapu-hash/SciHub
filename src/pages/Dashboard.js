@@ -111,6 +111,15 @@ function Dashboard() {
     const firstDay = getFirstDayOfMonth(currentMonth);
     const days = [];
 
+    // Get all booked session dates for this month
+    const bookedDates = upcomingSessions
+      .filter(session => {
+        const sessionDate = new Date(session.session_time);
+        return sessionDate.getMonth() === currentMonth.getMonth() && 
+               sessionDate.getFullYear() === currentMonth.getFullYear();
+      })
+      .map(session => new Date(session.session_time).getDate());
+
     for (let i = 0; i < firstDay; i++) {
       days.push(
         <div key={`empty-${i}`} style={{
@@ -122,38 +131,47 @@ function Dashboard() {
 
     for (let i = 1; i <= daysInMonth; i++) {
       const isToday = i === new Date().getDate() && currentMonth.getMonth() === new Date().getMonth();
+      const hasSession = bookedDates.includes(i);
+      
       days.push(
         <div key={i} style={{
           padding: "10px",
           background: isToday 
             ? "linear-gradient(135deg, #38bdf8, #0ea5e9)"
+            : hasSession
+            ? "linear-gradient(135deg, #10b981, #059669)"
             : "rgba(148, 163, 184, 0.08)",
           border: isToday 
             ? "1px solid rgba(56, 189, 248, 0.4)"
+            : hasSession
+            ? "1px solid rgba(16, 185, 129, 0.4)"
             : "1px solid rgba(148, 163, 184, 0.15)",
           borderRadius: "8px",
-          color: isToday ? "white" : "#9ca3af",
+          color: (isToday || hasSession) ? "white" : "#9ca3af",
           textAlign: "center",
           fontSize: "0.9rem",
-          fontWeight: isToday ? "700" : "500",
+          fontWeight: (isToday || hasSession) ? "700" : "500",
           cursor: "pointer",
           transition: "all 0.2s",
+          position: "relative",
         }}
         onMouseEnter={(e) => {
-          if (!isToday) {
+          if (!isToday && !hasSession) {
             e.target.style.background = "rgba(56, 189, 248, 0.15)";
             e.target.style.color = "#38bdf8";
             e.target.style.borderColor = "rgba(56, 189, 248, 0.3)";
           }
         }}
         onMouseLeave={(e) => {
-          if (!isToday) {
+          if (!isToday && !hasSession) {
             e.target.style.background = "rgba(148, 163, 184, 0.08)";
             e.target.style.color = "#9ca3af";
             e.target.style.borderColor = "rgba(148, 163, 184, 0.15)";
           }
-        }}>
+        }}
+        title={hasSession ? "📅 Session booked" : ""}>
           {i}
+          {hasSession && <div style={{ fontSize: "8px", marginTop: "2px" }}>📅</div>}
         </div>
       );
     }
