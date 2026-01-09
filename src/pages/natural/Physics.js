@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
-import { getUserData, markIntroVideoWatched, isIntroVideoWatched } from "../../utils/storageManager";
+import { getUserData, markIntroVideoWatched, isIntroVideoWatched, isLessonCompleted } from "../../utils/storageManager";
 import "../../styles/Lesson.css";
+
+// Map Physics lesson numbers to global lesson IDs
+const PHYSICS_LESSON_ID_MAP = {
+  1: 7,  // Force & Motion
+  2: 8,  // Energy & Work
+  3: 9,  // Waves & Sound
+};
+
+// Source: All videos from CrashCourse Physics (https://www.youtube.com/@crashcourse)
+const VIDEO_SOURCE = {
+  name: "CrashCourse Physics",
+  channel: "CrashCourse",
+  url: "https://www.youtube.com/@crashcourse"
+};
 
 // Physics lessons with videos
 const PHYSICS_LESSONS = [
   {
-    lesson_number: 21,
+    id: 7,
+    lesson_number: 1,
     title: "One-Dimensional Motion & Calculus",
     videos: [
       { id: 1, title: "Motion in a Straight Line", url: "https://www.youtube.com/embed/ZM8ECpBuQYE" },
@@ -18,7 +33,8 @@ const PHYSICS_LESSONS = [
     ]
   },
   {
-    lesson_number: 22,
+    id: 8,
+    lesson_number: 2,
     title: "Forces, Friction & Circular Motion",
     videos: [
       { id: 1, title: "Friction", url: "https://www.youtube.com/embed/fo_pmp5rtzo" },
@@ -29,7 +45,8 @@ const PHYSICS_LESSONS = [
     ]
   },
   {
-    lesson_number: 23,
+    id: 9,
+    lesson_number: 3,
     title: "Momentum & Rotational Mechanics",
     videos: [
       { id: 1, title: "Collisions", url: "https://www.youtube.com/embed/Y-QD3782-Yw" },
@@ -40,7 +57,7 @@ const PHYSICS_LESSONS = [
     ]
   },
   {
-    lesson_number: 24,
+    lesson_number: 4,
     title: "Fluids & Oscillations",
     videos: [
       { id: 1, title: "Fluids at Rest", url: "https://www.youtube.com/embed/b5SqYuMA9E0" },
@@ -51,7 +68,7 @@ const PHYSICS_LESSONS = [
     ]
   },
   {
-    lesson_number: 25,
+    lesson_number: 5,
     title: "Sound & Thermal Physics",
     videos: [
       { id: 1, title: "Sound", url: "https://www.youtube.com/embed/qV4lR9EWGlY" },
@@ -62,7 +79,7 @@ const PHYSICS_LESSONS = [
     ]
   },
   {
-    lesson_number: 26,
+    lesson_number: 6,
     title: "Thermodynamics & Electrostatics",
     videos: [
       { id: 1, title: "First Law of Thermodynamics", url: "https://www.youtube.com/embed/46vS_0p0pYw" },
@@ -73,7 +90,7 @@ const PHYSICS_LESSONS = [
     ]
   },
   {
-    lesson_number: 27,
+    lesson_number: 7,
     title: "Voltage & DC Circuits",
     videos: [
       { id: 1, title: "Voltage & Capacitors", url: "https://www.youtube.com/embed/8XW9VreS_f8" },
@@ -84,7 +101,7 @@ const PHYSICS_LESSONS = [
     ]
   },
   {
-    lesson_number: 28,
+    lesson_number: 8,
     title: "Magnetism & Induction",
     videos: [
       { id: 1, title: "Magnetism", url: "https://www.youtube.com/embed/s94z27L2YTM" },
@@ -95,7 +112,7 @@ const PHYSICS_LESSONS = [
     ]
   },
   {
-    lesson_number: 29,
+    lesson_number: 9,
     title: "Optics & Light Behavior",
     videos: [
       { id: 1, title: "Light", url: "https://www.youtube.com/embed/9_XG6XmC34I" },
@@ -106,7 +123,7 @@ const PHYSICS_LESSONS = [
     ]
   },
   {
-    lesson_number: 30,
+    lesson_number: 10,
     title: "Modern Physics & Cosmology",
     videos: [
       { id: 1, title: "Special Relativity", url: "https://www.youtube.com/embed/AInCqm5nCzw" },
@@ -145,7 +162,7 @@ export default function Physics() {
       console.log("⏭️ Intro video not yet watched");
       setIntroWatched(false);
     }
-  }, [user?.id]);
+  }, [user]);
 
   // Refresh lessons from localStorage when component mounts
   useEffect(() => {
@@ -161,17 +178,24 @@ export default function Physics() {
 
     // Create lessons from PHYSICS_LESSONS data
     const pad = PHYSICS_LESSONS.map((lesson) => {
-      // Check if this lesson was unlocked by completing the previous lesson (organized by subject)
-      const isUnlocked = userId ? getUserData(userId, `lesson_Physics_unlocked_local-${lesson.lesson_number}`) !== null : false;
+      // Get the global lesson ID for this Physics lesson
+      const globalLessonId = PHYSICS_LESSON_ID_MAP[lesson.lesson_number];
       
-      // Check if this lesson was completed (organized by subject)
-      const isCompleted = userId ? getUserData(userId, `lesson_Physics_completed_local-${lesson.lesson_number}`) !== null : false;
+      // Check if this lesson was completed using the global lesson ID
+      const isCompleted = userId && globalLessonId ? isLessonCompleted(userId, globalLessonId) : false;
+      
+      // For unlocking: check if previous lesson was completed
+      let isUnlocked = lesson.lesson_number === 1; // First lesson is always unlocked
+      if (lesson.lesson_number > 1) {
+        const previousGlobalId = PHYSICS_LESSON_ID_MAP[lesson.lesson_number - 1];
+        isUnlocked = userId && previousGlobalId ? isLessonCompleted(userId, previousGlobalId) : false;
+      }
       
       return {
-        id: `local-${lesson.lesson_number}`,
+        id: globalLessonId,
         lesson_number: lesson.lesson_number,
         title: lesson.title,
-        status: isCompleted ? "completed" : lesson.lesson_number === 1 ? "unlocked" : isUnlocked ? "unlocked" : "locked",
+        status: isCompleted ? "completed" : isUnlocked ? "unlocked" : "locked",
         videos: lesson.videos
       };
     });
@@ -197,6 +221,9 @@ export default function Physics() {
     setIntroWatched(true);
   }
 
+  // Mark lesson as completed in the state
+  // (Currently unused - lesson completion is handled in Lesson.js)
+  /*
   function markLessonCompleted(lessonId) {
     setLessons((prev) => {
       const updated = prev.map((ls) => {
@@ -221,6 +248,7 @@ export default function Physics() {
     // Backend API disabled - lesson completion saved to localStorage
     console.log("✅ Lesson completion saved to localStorage");
   }
+  */
 
   function viewLesson(lesson) {
     console.log("🔘 View Lesson button clicked. Lesson:", lesson);
@@ -232,35 +260,149 @@ export default function Physics() {
     <div className="dashboard-page" style={{ width: "100%" }}>
       <Sidebar />
       <main className="dashboard-main" style={{ padding: "2rem", margin: "0", width: "100%", maxWidth: "100%", flex: "1 1 auto" }}>
-        <header className="dashboard-header" style={{ paddingLeft: "0", paddingRight: "0", marginBottom: "2rem", display: "block" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "1rem", marginBottom: "1rem" }}>
-            <div>
-              <h1 style={{ color: "#f5f7ff", margin: "0 0 0.5rem 0" }}>Physics</h1>
-              <p className="dashboard-subtitle" style={{ margin: "0" }}>Explore forces, energy, waves, and the fabric of the universe.</p>
-            </div>
-            {!loading && (
-              <div style={{ 
-                background: "linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(0, 240, 255, 0.1))",
-                border: "1px solid rgba(16, 185, 129, 0.3)",
-                borderRadius: "12px",
-                padding: "1rem",
-                minWidth: "200px",
-                textAlign: "center"
-              }}>
-                <div style={{ fontSize: "2rem", fontWeight: "800", background: "linear-gradient(135deg, #10b981, #00f0ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", margin: "0 0 0.5rem 0" }}>
-                  {lessons.filter(l => l.status === "completed").length}/{lessons.length}
+        <header className="dashboard-header" style={{ paddingLeft: "0", paddingRight: "0", marginBottom: "3rem", display: "block" }}>
+          <div style={{
+            background: "linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(34, 197, 94, 0.1) 100%)",
+            border: "1px solid rgba(6, 182, 212, 0.3)",
+            borderRadius: "20px",
+            padding: "3rem",
+            position: "relative",
+            overflow: "hidden",
+            backdropFilter: "blur(20px)",
+            boxShadow: "0 20px 60px rgba(6, 182, 212, 0.15)",
+          }}>
+            {/* Background gradient accent */}
+            <div style={{
+              position: "absolute",
+              top: "-50%",
+              right: "-10%",
+              width: "400px",
+              height: "400px",
+              background: "radial-gradient(circle, rgba(6, 182, 212, 0.2), transparent)",
+              borderRadius: "50%",
+              pointerEvents: "none"
+            }}></div>
+
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem" }}>
+                <div style={{ flex: 1 }}>
+                  {/* Subject Icon */}
+                  <div style={{
+                    fontSize: "3.5rem",
+                    marginBottom: "1rem"
+                  }}>🚀</div>
+
+                  {/* Title */}
+                  <h1 style={{
+                    fontSize: "2.8rem",
+                    fontWeight: "800",
+                    margin: "0 0 0.75rem 0",
+                    color: "#f5f7ff",
+                    background: "linear-gradient(135deg, #06b6d4 0%, #22c55e 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text"
+                  }}>
+                    Physics
+                  </h1>
+
+                  {/* Subtitle */}
+                  <p style={{
+                    fontSize: "1.05rem",
+                    color: "#d1d5db",
+                    margin: "0",
+                    lineHeight: "1.6",
+                    maxWidth: "600px"
+                  }}>
+                    Explore forces, energy, waves, and the fabric of the universe.
+                  </p>
+
+                  {/* Stats Section */}
+                  <div style={{
+                    display: "flex",
+                    gap: "2rem",
+                    marginTop: "1.5rem",
+                    paddingTop: "1.5rem",
+                    borderTop: "1px solid rgba(148, 163, 184, 0.2)"
+                  }}>
+                    <div>
+                      <div style={{
+                        fontSize: "1.8rem",
+                        fontWeight: "700",
+                        background: "linear-gradient(135deg, #06b6d4, #0891b2)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text"
+                      }}>
+                        {lessons.length}
+                      </div>
+                      <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600" }}>Total Lessons</div>
+                    </div>
+                    <div>
+                      <div style={{
+                        fontSize: "1.8rem",
+                        fontWeight: "700",
+                        background: "linear-gradient(135deg, #22c55e, #16a34a)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text"
+                      }}>
+                        {lessons.filter(l => l.status === "completed").length}
+                      </div>
+                      <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600" }}>Completed</div>
+                    </div>
+                  </div>
                 </div>
-                <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>Lessons Completed</div>
-                <div style={{ marginTop: "0.75rem", height: "6px", background: "rgba(148, 163, 184, 0.2)", borderRadius: "3px", overflow: "hidden" }}>
-                  <div style={{ 
-                    height: "100%", 
-                    background: "linear-gradient(90deg, #10b981, #00f0ff)",
-                    width: `${lessons.length > 0 ? (lessons.filter(l => l.status === "completed").length / lessons.length) * 100 : 0}%`,
-                    transition: "width 0.5s ease"
-                  }}></div>
-                </div>
+
+                {/* Progress Card */}
+                {!loading && (
+                  <div style={{
+                    background: "linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(34, 197, 94, 0.15))",
+                    border: "1px solid rgba(6, 182, 212, 0.4)",
+                    borderRadius: "16px",
+                    padding: "2rem",
+                    minWidth: "220px",
+                    textAlign: "center",
+                    backdropFilter: "blur(10px)"
+                  }}>
+                    <div style={{
+                      fontSize: "3rem",
+                      fontWeight: "800",
+                      background: "linear-gradient(135deg, #06b6d4, #22c55e)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      margin: "0 0 0.75rem 0"
+                    }}>
+                      {lessons.length > 0 ? Math.round((lessons.filter(l => l.status === "completed").length / lessons.length) * 100) : 0}%
+                    </div>
+                    <div style={{
+                      fontSize: "0.9rem",
+                      color: "#d1d5db",
+                      fontWeight: "600",
+                      marginBottom: "1rem"
+                    }}>
+                      Course Complete
+                    </div>
+                    <div style={{
+                      marginTop: "1rem",
+                      height: "8px",
+                      background: "rgba(148, 163, 184, 0.2)",
+                      borderRadius: "4px",
+                      overflow: "hidden"
+                    }}>
+                      <div style={{
+                        height: "100%",
+                        background: "linear-gradient(90deg, #06b6d4, #22c55e)",
+                        width: `${lessons.length > 0 ? (lessons.filter(l => l.status === "completed").length / lessons.length) * 100 : 0}%`,
+                        transition: "width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                        borderRadius: "4px"
+                      }}></div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </header>
 

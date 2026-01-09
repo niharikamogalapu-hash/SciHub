@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
-import { getUserData, markIntroVideoWatched, isIntroVideoWatched } from "../../utils/storageManager";
+import { getUserData, markIntroVideoWatched, isIntroVideoWatched, isLessonCompleted } from "../../utils/storageManager";
 import "../../styles/Lesson.css";
 
 // Economics lessons with videos
+// Source: CrashCourse Economics (https://www.youtube.com/@crashcourse)
+const VIDEO_SOURCE = {
+  name: "CrashCourse Economics",
+  channel: "CrashCourse",
+  url: "https://www.youtube.com/@crashcourse"
+};
+
 const ECONOMICS_LESSONS = [
   {
+    id: 13,
     lesson_number: 1,
     title: "The Foundation of Choice",
     videos: [
@@ -161,17 +169,17 @@ export default function Economics() {
 
     // Create lessons from ECONOMICS_LESSONS data
     const pad = ECONOMICS_LESSONS.map((lesson) => {
-      // Check if this lesson was unlocked by completing the previous lesson (organized by subject)
-      const isUnlocked = userId ? getUserData(userId, `lesson_Economics_unlocked_local-${lesson.lesson_number}`) !== null : false;
+      // Economics uses global lesson ID 13
+      const globalLessonId = lesson.id;
       
-      // Check if this lesson was completed (organized by subject)
-      const isCompleted = userId ? getUserData(userId, `lesson_Economics_completed_local-${lesson.lesson_number}`) !== null : false;
+      // Check if this lesson was completed using the global lesson ID
+      const isCompleted = userId && globalLessonId ? isLessonCompleted(userId, globalLessonId) : false;
       
       return {
-        id: `local-${lesson.lesson_number}`,
+        id: globalLessonId,
         lesson_number: lesson.lesson_number,
         title: lesson.title,
-        status: isCompleted ? "completed" : lesson.lesson_number === 1 ? "unlocked" : isUnlocked ? "unlocked" : "locked",
+        status: isCompleted ? "completed" : lesson.lesson_number === 1 ? "unlocked" : "locked",
         videos: lesson.videos
       };
     });
@@ -232,35 +240,149 @@ export default function Economics() {
     <div className="dashboard-page" style={{ width: "100%" }}>
       <Sidebar />
       <main className="dashboard-main" style={{ padding: "2rem", margin: "0", width: "100%", maxWidth: "100%", flex: "1 1 auto" }}>
-        <header className="dashboard-header" style={{ paddingLeft: "0", paddingRight: "0", marginBottom: "2rem", display: "block" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "1rem", marginBottom: "1rem" }}>
-            <div>
-              <h1 style={{ color: "#f5f7ff", margin: "0 0 0.5rem 0" }}>Economics</h1>
-              <p className="dashboard-subtitle" style={{ margin: "0" }}>Learn about markets, economies, and financial systems.</p>
-            </div>
-            {!loading && (
-              <div style={{ 
-                background: "linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(0, 240, 255, 0.1))",
-                border: "1px solid rgba(16, 185, 129, 0.3)",
-                borderRadius: "12px",
-                padding: "1rem",
-                minWidth: "200px",
-                textAlign: "center"
-              }}>
-                <div style={{ fontSize: "2rem", fontWeight: "800", background: "linear-gradient(135deg, #10b981, #00f0ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", margin: "0 0 0.5rem 0" }}>
-                  {lessons.filter(l => l.status === "completed").length}/{lessons.length}
+        <header className="dashboard-header" style={{ paddingLeft: "0", paddingRight: "0", marginBottom: "3rem", display: "block" }}>
+          <div style={{
+            background: "linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%)",
+            border: "1px solid rgba(6, 182, 212, 0.3)",
+            borderRadius: "20px",
+            padding: "3rem",
+            position: "relative",
+            overflow: "hidden",
+            backdropFilter: "blur(20px)",
+            boxShadow: "0 20px 60px rgba(6, 182, 212, 0.15)",
+          }}>
+            {/* Background gradient accent */}
+            <div style={{
+              position: "absolute",
+              top: "-50%",
+              right: "-10%",
+              width: "400px",
+              height: "400px",
+              background: "radial-gradient(circle, rgba(6, 182, 212, 0.2), transparent)",
+              borderRadius: "50%",
+              pointerEvents: "none"
+            }}></div>
+
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem" }}>
+                <div style={{ flex: 1 }}>
+                  {/* Subject Icon */}
+                  <div style={{
+                    fontSize: "3.5rem",
+                    marginBottom: "1rem"
+                  }}>💼</div>
+
+                  {/* Title */}
+                  <h1 style={{
+                    fontSize: "2.8rem",
+                    fontWeight: "800",
+                    margin: "0 0 0.75rem 0",
+                    color: "#f5f7ff",
+                    background: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text"
+                  }}>
+                    Economics
+                  </h1>
+
+                  {/* Subtitle */}
+                  <p style={{
+                    fontSize: "1.05rem",
+                    color: "#d1d5db",
+                    margin: "0",
+                    lineHeight: "1.6",
+                    maxWidth: "600px"
+                  }}>
+                    Learn about markets, economies, and financial systems.
+                  </p>
+
+                  {/* Stats Section */}
+                  <div style={{
+                    display: "flex",
+                    gap: "2rem",
+                    marginTop: "1.5rem",
+                    paddingTop: "1.5rem",
+                    borderTop: "1px solid rgba(148, 163, 184, 0.2)"
+                  }}>
+                    <div>
+                      <div style={{
+                        fontSize: "1.8rem",
+                        fontWeight: "700",
+                        background: "linear-gradient(135deg, #06b6d4, #0891b2)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text"
+                      }}>
+                        {lessons.length}
+                      </div>
+                      <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600" }}>Total Lessons</div>
+                    </div>
+                    <div>
+                      <div style={{
+                        fontSize: "1.8rem",
+                        fontWeight: "700",
+                        background: "linear-gradient(135deg, #3b82f6, #60a5fa)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text"
+                      }}>
+                        {lessons.filter(l => l.status === "completed").length}
+                      </div>
+                      <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600" }}>Completed</div>
+                    </div>
+                  </div>
                 </div>
-                <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>Lessons Completed</div>
-                <div style={{ marginTop: "0.75rem", height: "6px", background: "rgba(148, 163, 184, 0.2)", borderRadius: "3px", overflow: "hidden" }}>
-                  <div style={{ 
-                    height: "100%", 
-                    background: "linear-gradient(90deg, #10b981, #00f0ff)",
-                    width: `${lessons.length > 0 ? (lessons.filter(l => l.status === "completed").length / lessons.length) * 100 : 0}%`,
-                    transition: "width 0.5s ease"
-                  }}></div>
-                </div>
+
+                {/* Progress Card */}
+                {!loading && (
+                  <div style={{
+                    background: "linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(59, 130, 246, 0.15))",
+                    border: "1px solid rgba(6, 182, 212, 0.4)",
+                    borderRadius: "16px",
+                    padding: "2rem",
+                    minWidth: "220px",
+                    textAlign: "center",
+                    backdropFilter: "blur(10px)"
+                  }}>
+                    <div style={{
+                      fontSize: "3rem",
+                      fontWeight: "800",
+                      background: "linear-gradient(135deg, #06b6d4, #3b82f6)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      margin: "0 0 0.75rem 0"
+                    }}>
+                      {lessons.length > 0 ? Math.round((lessons.filter(l => l.status === "completed").length / lessons.length) * 100) : 0}%
+                    </div>
+                    <div style={{
+                      fontSize: "0.9rem",
+                      color: "#d1d5db",
+                      fontWeight: "600",
+                      marginBottom: "1rem"
+                    }}>
+                      Course Complete
+                    </div>
+                    <div style={{
+                      marginTop: "1rem",
+                      height: "8px",
+                      background: "rgba(148, 163, 184, 0.2)",
+                      borderRadius: "4px",
+                      overflow: "hidden"
+                    }}>
+                      <div style={{
+                        height: "100%",
+                        background: "linear-gradient(90deg, #06b6d4, #3b82f6)",
+                        width: `${lessons.length > 0 ? (lessons.filter(l => l.status === "completed").length / lessons.length) * 100 : 0}%`,
+                        transition: "width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                        borderRadius: "4px"
+                      }}></div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </header>
 

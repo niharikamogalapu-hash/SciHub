@@ -48,9 +48,21 @@ const QNA_STORAGE_KEY = "scihub_qna_questions";
 function getStoredQuestions() {
   try {
     const stored = localStorage.getItem(QNA_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : getDefaultQuestions();
+    if (stored) {
+      const questions = JSON.parse(stored);
+      // Convert ISO strings back to Date objects
+      return questions.map(q => ({
+        ...q,
+        timestamp: new Date(q.timestamp),
+        replies: (q.replies || []).map(r => ({
+          ...r,
+          timestamp: new Date(r.timestamp),
+        })),
+      }));
+    }
+    return getDefaultQuestions();
   } catch (error) {
-    console.error("Error reading from localStorage:", error);
+    console.error("❌ Error reading from localStorage:", error);
     return getDefaultQuestions();
   }
 }
@@ -58,9 +70,19 @@ function getStoredQuestions() {
 // Save questions to localStorage
 function saveQuestions(questions) {
   try {
-    localStorage.setItem(QNA_STORAGE_KEY, JSON.stringify(questions));
+    // Convert Date objects to ISO strings for proper serialization
+    const serialized = questions.map(q => ({
+      ...q,
+      timestamp: q.timestamp instanceof Date ? q.timestamp.toISOString() : q.timestamp,
+      replies: (q.replies || []).map(r => ({
+        ...r,
+        timestamp: r.timestamp instanceof Date ? r.timestamp.toISOString() : r.timestamp,
+      })),
+    }));
+    localStorage.setItem(QNA_STORAGE_KEY, JSON.stringify(serialized));
+    console.log("✅ Q&A questions saved to localStorage:", serialized.length, "questions");
   } catch (error) {
-    console.error("Error saving to localStorage:", error);
+    console.error("❌ Error saving to localStorage:", error);
   }
 }
 
@@ -180,6 +202,7 @@ function QnA() {
     const updated = [question, ...questions];
     setQuestions(updated);
     saveQuestions(updated);
+    console.log("✅ New question posted and saved:", question.title);
     setNewQuestionTitle("");
     setNewQuestionBody("");
     setShowNewQuestion(false);
@@ -209,6 +232,7 @@ function QnA() {
 
     setQuestions(updatedQuestions);
     saveQuestions(updatedQuestions);
+    console.log("✅ Reply posted and saved to question:", selectedQuestion.id);
     setSelectedQuestion(updatedQuestions.find((q) => q.id === selectedQuestion.id));
     setNewReply("");
   };

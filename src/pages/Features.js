@@ -40,12 +40,6 @@ function Features() {
       color: "#fbbf24"
     },
     {
-      icon: "🤖",
-      title: "SciPet AI",
-      desc: "Your friendly study companion for questions, guidance, and motivation. Available 24/7 to support your learning.",
-      color: "#a855f7"
-    },
-    {
       icon: "💬",
       title: "Q&A",
       desc: "Ask questions and get answers from tutors and peers. Find solutions to your science problems instantly.",
@@ -68,7 +62,7 @@ function Features() {
 
   const differences = [
     "Built by students, for students — we understand your challenges",
-    "24/7 AI companion (SciPet) ready to help anytime",
+
     "Gamification keeps learning fun and motivating",
     "Real tutors paired with AI for the best of both worlds",
     "Community learning — study together, not alone",

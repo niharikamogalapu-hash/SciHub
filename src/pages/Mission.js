@@ -12,7 +12,6 @@ function Mission() {
     { emoji: "♿", title: "Accessible for Everyone", desc: "SciHub is designed to work beautifully on laptops, tablets, and phones. High‑contrast visuals, readable fonts, and clean layouts ensure every student can learn comfortably.", color: "#38bdf8" },
     { emoji: "🤝", title: "Powered by Community", desc: "Students, peer tutors, and teachers come together to support one another. Learning becomes a shared journey — not something you do alone.", color: "#a855f7" },
     { emoji: "🎯", title: "Motivation Built In", desc: "Games, progress tracking, AI encouragement, and personalized feedback help students stay engaged and excited about science.", color: "#fbbf24" },
-    { emoji: "🤖", title: "AI‑Enhanced Learning", desc: "SciPet, your AI study companion, helps you understand concepts, find resources, and stay on track with your goals.", color: "#22c55e" },
   ];
 
 

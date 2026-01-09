@@ -6,7 +6,6 @@ import { clearUserData } from "./utils/storageManager";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
-import SciPetChat from "./components/SciPetChat";
 
 // Public pages
 import Home from "./pages/Home";
@@ -22,13 +21,10 @@ import Signup from "./pages/Signup";
 // Core logged-in pages
 import Dashboard from "./pages/Dashboard";
 import Resources from "./pages/Resources";
-import SubscienceUnit from "./pages/SubscienceUnit";
 // You can keep ScienceDetail if you still use it for older lessons:
 import ScienceDetail from "./pages/ScienceDetail";
 
-// Optional: worksheets, if you still want them
-import Worksheet from "./pages/Worksheet";
-import WorksheetAnalysis from "./pages/WorksheetAnalysis";
+
 
 // Tutoring + games
 import Schedule from "./pages/Schedule";
@@ -54,7 +50,7 @@ import Lesson from "./pages/Lesson";
 
 function App() {
   const [user, setUser] = useState(null);
-  const [worksheetResult, setWorksheetResult] = useState(null);
+  const [theme, setTheme] = useState("dark");
   const [notifications, setNotifications] = useState([]);
 
   const [stats, setStats] = useState({
@@ -84,6 +80,10 @@ function App() {
       }
     }
   }, []);
+
+  function toggleTheme() {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  }
 
   function addNotification(text) {
     const id = Date.now();
@@ -206,7 +206,7 @@ function App() {
   }
 
   return (
-    <div className="app dark">
+    <div className={`app ${theme}`}>
       {/* Notifications */}
       <div className="notifications">
         {notifications.map((n) => (
@@ -221,6 +221,8 @@ function App() {
         <Navbar
           user={user}
           onLogout={handleLogout}
+          toggleTheme={toggleTheme}
+          theme={theme}
         />
       )}
 
@@ -275,7 +277,6 @@ function App() {
               <Route path="/resources" element={<Resources />} />
               <Route path="/resources/natural" element={<NaturalScience />} />
               <Route path="/resources/social" element={<SocialScience />} />
-              <Route path="/subscience/:subId" element={<SubscienceUnit />} />
               <Route path="/natural/biology" element={<Biology />} />
               <Route path="/natural/chemistry" element={<Chemistry />} />
               <Route path="/natural/physics" element={<Physics />} />
@@ -292,21 +293,7 @@ function App() {
                 }
               />
 
-              {/* Worksheets (optional, if you use them as part of lessons) */}
-              <Route
-                path="/worksheet"
-                element={<Worksheet onComplete={setWorksheetResult} />}
-              />
-              <Route
-                path="/analysis"
-                element={
-                  <WorksheetAnalysis
-                    result={worksheetResult}
-                    onLessonFromWorksheet={handleLessonCompleted}
-                  />
-                }
-              />
-
+             
               {/* Lesson Detail Page */}
               <Route path="/lesson/:lessonId" element={<Lesson />} />
 
@@ -358,7 +345,6 @@ function App() {
         </Routes>
       </main>
 
-      <SciPetChat />
       <Footer />
     </div>
   );

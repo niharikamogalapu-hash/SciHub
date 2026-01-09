@@ -430,6 +430,37 @@ function Dashboard() {
                         <p className="session-time">
                           ⏰ {new Date(session.session_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                         </p>
+                        {session.meetLink && (
+                          <a 
+                            href={session.meetLink} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            style={{
+                              display: "inline-block",
+                              marginTop: "0.75rem",
+                              padding: "0.5rem 1rem",
+                              background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)",
+                              color: "white",
+                              borderRadius: "6px",
+                              textDecoration: "none",
+                              fontSize: "0.85rem",
+                              fontWeight: "600",
+                              transition: "all 0.2s",
+                              cursor: "pointer",
+                              border: "none"
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.transform = "scale(1.05)";
+                              e.currentTarget.style.boxShadow = "0 8px 16px rgba(79, 70, 229, 0.4)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.transform = "scale(1)";
+                              e.currentTarget.style.boxShadow = "none";
+                            }}
+                          >
+                            🎥 Join Google Meet
+                          </a>
+                        )}
                       </div>
                     ))}
                   </div>

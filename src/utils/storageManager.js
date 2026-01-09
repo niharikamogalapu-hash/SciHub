@@ -21,6 +21,34 @@ export const getUserStorageKey = (userId, key) => {
 };
 
 /**
+ * Recalculate and get accurate dashboard stats from source data
+ * @param {string|number} userId - The user ID
+ * @returns {object} Accurate stats object
+ */
+export const recalculateDashboardStats = (userId) => {
+  try {
+    // Get completed lessons from source
+    const storageKey = getUserStorageKey(userId, "completed_lessons");
+    const completedLessons = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    const lessonsCompleted = completedLessons.length;
+    
+    // Get current stats from storage
+    const currentStats = getDashboardStats(userId);
+    
+    // Return stats with accurate lessons count
+    const accurateStats = {
+      ...currentStats,
+      lessonsCompleted: lessonsCompleted,
+    };
+    
+    return accurateStats;
+  } catch (error) {
+    console.error(`❌ Error recalculating dashboard stats:`, error);
+    return getDashboardStats(userId);
+  }
+};
+
+/**
  * Get global storage key (non-user-specific)
  * @param {string} key - The storage key
  * @returns {string} Global prefixed key
@@ -283,9 +311,17 @@ export const getDashboardStats = (userId) => {
   try {
     const storageKey = getUserStorageKey(userId, "dashboard_stats");
     const stats = localStorage.getItem(storageKey);
-    if (stats) {
+    const parsedStats = stats ? JSON.parse(stats) : null;
+    
+    if (parsedStats) {
       console.log(`✅ Retrieved dashboard stats for user ${userId}`);
-      return JSON.parse(stats);
+      
+      // Always recalculate lessonsCompleted from actual completed lessons
+      const completedLessonsKey = getUserStorageKey(userId, "completed_lessons");
+      const completedLessons = JSON.parse(localStorage.getItem(completedLessonsKey) || "[]");
+      parsedStats.lessonsCompleted = completedLessons.length;
+      
+      return parsedStats;
     }
   } catch (error) {
     console.error(`❌ Error retrieving dashboard stats:`, error);
@@ -816,4 +852,40 @@ export const getNextAchievement = (userId) => {
     console.error(`❌ Error getting next achievement:`, error);
   }
   return null;
+};
+
+/**
+ * Mark intro video as completed
+ * @param {string|number} userId - The user ID
+ */
+export const markIntroVideoCompleted = (userId) => {
+  try {
+    const storageKey = getUserStorageKey(userId, "intro_video_completed");
+    localStorage.setItem(storageKey, JSON.stringify({
+      completed: true,
+      completedAt: new Date().toISOString(),
+    }));
+    console.log(`✅ Intro video marked as completed for user ${userId}`);
+  } catch (error) {
+    console.error(`❌ Error marking intro video as completed:`, error);
+  }
+};
+
+/**
+ * Check if intro video has been completed
+ * @param {string|number} userId - The user ID
+ * @returns {boolean} True if intro video is completed
+ */
+export const hasCompletedIntroVideo = (userId) => {
+  try {
+    const storageKey = getUserStorageKey(userId, "intro_video_completed");
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+      const data = JSON.parse(stored);
+      return data.completed === true;
+    }
+  } catch (error) {
+    console.error(`❌ Error checking intro video completion:`, error);
+  }
+  return false;
 };

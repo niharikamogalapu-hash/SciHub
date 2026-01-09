@@ -1,8 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
-import { getUserData, markIntroVideoWatched, isIntroVideoWatched } from "../../utils/storageManager";
+import { getUserData, markIntroVideoWatched, isIntroVideoWatched, isLessonCompleted } from "../../utils/storageManager";
 import "../../styles/Lesson.css";
+
+// Map Biology lesson numbers to global lesson IDs
+const BIOLOGY_LESSON_ID_MAP = {
+  1: 1,  // Cell Structure & Function
+  2: 2,  // Photosynthesis
+  3: 3,  // Genetics & Evolution
+};
+
+// Source: All videos from CrashCourse Biology (https://www.youtube.com/@crashcourse)
+const VIDEO_SOURCE = {
+  name: "CrashCourse Biology",
+  channel: "CrashCourse",
+  url: "https://www.youtube.com/@crashcourse"
+};
 
 // Biology lessons with videos
 const BIOLOGY_LESSONS = [
@@ -145,7 +159,7 @@ export default function Biology() {
       console.log("⏭️ Intro video not yet watched");
       setIntroWatched(false);
     }
-  }, [user?.id]);
+  }, [user]);
 
   // Refresh lessons from localStorage when component mounts
   useEffect(() => {
@@ -162,19 +176,26 @@ export default function Biology() {
 
     // Create lessons from BIOLOGY_LESSONS data
     const pad = BIOLOGY_LESSONS.map((lesson) => {
-      // Check if this lesson was unlocked by completing the previous lesson (organized by subject)
-      const isUnlocked = userId ? getUserData(userId, `lesson_Biology_unlocked_${lesson.lesson_number}`) !== null : false;
+      // Get the global lesson ID for this Biology lesson
+      const globalLessonId = BIOLOGY_LESSON_ID_MAP[lesson.lesson_number];
       
-      // Check if this lesson was completed (organized by subject)
-      const isCompleted = userId ? getUserData(userId, `lesson_Biology_completed_${lesson.lesson_number}`) !== null : false;
+      // Check if this lesson was completed using the global lesson ID
+      const isCompleted = userId && globalLessonId ? isLessonCompleted(userId, globalLessonId) : false;
       
-      console.log(`📖 Lesson ${lesson.lesson_number}: completed=${isCompleted}, unlocked=${isUnlocked}`);
+      // For unlocking: check if previous lesson was completed
+      let isUnlocked = lesson.lesson_number === 1; // First lesson is always unlocked
+      if (lesson.lesson_number > 1) {
+        const previousGlobalId = BIOLOGY_LESSON_ID_MAP[lesson.lesson_number - 1];
+        isUnlocked = userId && previousGlobalId ? isLessonCompleted(userId, previousGlobalId) : false;
+      }
+      
+      console.log(`📖 Biology Lesson ${lesson.lesson_number} (ID ${globalLessonId}): completed=${isCompleted}, unlocked=${isUnlocked}`);
       
       return {
-        id: lesson.lesson_number,
+        id: globalLessonId,
         lesson_number: lesson.lesson_number,
         title: lesson.title,
-        status: isCompleted ? "completed" : lesson.lesson_number === 1 ? "unlocked" : isUnlocked ? "unlocked" : "locked",
+        status: isCompleted ? "completed" : isUnlocked ? "unlocked" : "locked",
         videos: lesson.videos
       };
     });
@@ -199,6 +220,9 @@ export default function Biology() {
     setIntroWatched(true);
   }
 
+  // Mark lesson as completed in the state
+  // (Currently unused - lesson completion is handled in Lesson.js)
+  /*
   function markLessonCompleted(lessonId) {
     setLessons((prev) => {
       const updated = prev.map((ls) => {
@@ -223,6 +247,7 @@ export default function Biology() {
     // Backend API disabled - lesson completion saved to localStorage
     console.log("✅ Lesson completion saved to localStorage");
   }
+  */
 
   function viewLesson(lesson) {
     console.log("🔘 View Lesson button clicked. Lesson object:", lesson);
@@ -237,35 +262,149 @@ export default function Biology() {
     <div className="dashboard-page" style={{ width: "100%" }}>
       <Sidebar />
       <main className="dashboard-main" style={{ padding: "2rem", margin: "0", width: "100%", maxWidth: "100%", flex: "1 1 auto" }}>
-        <header className="dashboard-header" style={{ paddingLeft: "0", paddingRight: "0", marginBottom: "2rem", display: "block" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "1rem", marginBottom: "1rem" }}>
-            <div>
-              <h1 style={{ color: "#f5f7ff", margin: "0 0 0.5rem 0" }}>Biology</h1>
-              <p className="dashboard-subtitle" style={{ margin: "0" }}>Discover living systems, cells, genetics and ecology.</p>
-            </div>
-            {!loading && (
-              <div style={{ 
-                background: "linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(0, 240, 255, 0.1))",
-                border: "1px solid rgba(16, 185, 129, 0.3)",
-                borderRadius: "12px",
-                padding: "1rem",
-                minWidth: "200px",
-                textAlign: "center"
-              }}>
-                <div style={{ fontSize: "2rem", fontWeight: "800", background: "linear-gradient(135deg, #10b981, #00f0ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", margin: "0 0 0.5rem 0" }}>
-                  {lessons.filter(l => l.status === "completed").length}/{lessons.length}
+        <header className="dashboard-header" style={{ paddingLeft: "0", paddingRight: "0", marginBottom: "3rem", display: "block" }}>
+          <div style={{
+            background: "linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%)",
+            border: "1px solid rgba(236, 72, 153, 0.3)",
+            borderRadius: "20px",
+            padding: "3rem",
+            position: "relative",
+            overflow: "hidden",
+            backdropFilter: "blur(20px)",
+            boxShadow: "0 20px 60px rgba(236, 72, 153, 0.15)",
+          }}>
+            {/* Background gradient accent */}
+            <div style={{
+              position: "absolute",
+              top: "-50%",
+              right: "-10%",
+              width: "400px",
+              height: "400px",
+              background: "radial-gradient(circle, rgba(236, 72, 153, 0.2), transparent)",
+              borderRadius: "50%",
+              pointerEvents: "none"
+            }}></div>
+
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem" }}>
+                <div style={{ flex: 1 }}>
+                  {/* Subject Icon */}
+                  <div style={{
+                    fontSize: "3.5rem",
+                    marginBottom: "1rem"
+                  }}>🔬</div>
+
+                  {/* Title */}
+                  <h1 style={{
+                    fontSize: "2.8rem",
+                    fontWeight: "800",
+                    margin: "0 0 0.75rem 0",
+                    color: "#f5f7ff",
+                    background: "linear-gradient(135deg, #ec4899 0%, #a855f7 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text"
+                  }}>
+                    Biology
+                  </h1>
+
+                  {/* Subtitle */}
+                  <p style={{
+                    fontSize: "1.05rem",
+                    color: "#d1d5db",
+                    margin: "0",
+                    lineHeight: "1.6",
+                    maxWidth: "600px"
+                  }}>
+                    Discover living systems, cells, genetics and ecology through hands-on learning.
+                  </p>
+
+                  {/* Stats Section */}
+                  <div style={{
+                    display: "flex",
+                    gap: "2rem",
+                    marginTop: "1.5rem",
+                    paddingTop: "1.5rem",
+                    borderTop: "1px solid rgba(148, 163, 184, 0.2)"
+                  }}>
+                    <div>
+                      <div style={{
+                        fontSize: "1.8rem",
+                        fontWeight: "700",
+                        background: "linear-gradient(135deg, #ec4899, #f472b6)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text"
+                      }}>
+                        {lessons.length}
+                      </div>
+                      <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600" }}>Total Lessons</div>
+                    </div>
+                    <div>
+                      <div style={{
+                        fontSize: "1.8rem",
+                        fontWeight: "700",
+                        background: "linear-gradient(135deg, #a855f7, #d946ef)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text"
+                      }}>
+                        {lessons.filter(l => l.status === "completed").length}
+                      </div>
+                      <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600" }}>Completed</div>
+                    </div>
+                  </div>
                 </div>
-                <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>Lessons Completed</div>
-                <div style={{ marginTop: "0.75rem", height: "6px", background: "rgba(148, 163, 184, 0.2)", borderRadius: "3px", overflow: "hidden" }}>
-                  <div style={{ 
-                    height: "100%", 
-                    background: "linear-gradient(90deg, #10b981, #00f0ff)",
-                    width: `${lessons.length > 0 ? (lessons.filter(l => l.status === "completed").length / lessons.length) * 100 : 0}%`,
-                    transition: "width 0.5s ease"
-                  }}></div>
-                </div>
+
+                {/* Progress Card */}
+                {!loading && (
+                  <div style={{
+                    background: "linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(168, 85, 247, 0.15))",
+                    border: "1px solid rgba(236, 72, 153, 0.4)",
+                    borderRadius: "16px",
+                    padding: "2rem",
+                    minWidth: "220px",
+                    textAlign: "center",
+                    backdropFilter: "blur(10px)"
+                  }}>
+                    <div style={{
+                      fontSize: "3rem",
+                      fontWeight: "800",
+                      background: "linear-gradient(135deg, #ec4899, #a855f7)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      margin: "0 0 0.75rem 0"
+                    }}>
+                      {lessons.length > 0 ? Math.round((lessons.filter(l => l.status === "completed").length / lessons.length) * 100) : 0}%
+                    </div>
+                    <div style={{
+                      fontSize: "0.9rem",
+                      color: "#d1d5db",
+                      fontWeight: "600",
+                      marginBottom: "1rem"
+                    }}>
+                      Course Complete
+                    </div>
+                    <div style={{
+                      marginTop: "1rem",
+                      height: "8px",
+                      background: "rgba(148, 163, 184, 0.2)",
+                      borderRadius: "4px",
+                      overflow: "hidden"
+                    }}>
+                      <div style={{
+                        height: "100%",
+                        background: "linear-gradient(90deg, #ec4899, #a855f7)",
+                        width: `${lessons.length > 0 ? (lessons.filter(l => l.status === "completed").length / lessons.length) * 100 : 0}%`,
+                        transition: "width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                        borderRadius: "4px"
+                      }}></div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </header>
 

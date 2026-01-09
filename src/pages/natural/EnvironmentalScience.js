@@ -1,13 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
-import { getUserData, markIntroVideoWatched, isIntroVideoWatched } from "../../utils/storageManager";
+import { getUserData, markIntroVideoWatched, isIntroVideoWatched, isLessonCompleted } from "../../utils/storageManager";
 import "../../styles/Lesson.css";
+
+// Map Environmental Science lesson numbers to global lesson IDs
+const ENVIRONMENTAL_LESSON_ID_MAP = {
+  1: 10,  // Climate Change
+  2: 11,  // Ecosystems & Biodiversity
+};
+
+// Source: All videos from CrashCourse Ecology (https://www.youtube.com/@crashcourse)
+const VIDEO_SOURCE = {
+  name: "CrashCourse Ecology",
+  channel: "CrashCourse",
+  url: "https://www.youtube.com/@crashcourse"
+};
 
 // Environmental Science lessons with videos
 const ENVIRONMENTAL_SCIENCE_LESSONS = [
   {
-    lesson_number: 31,
+    id: 10,
+    lesson_number: 1,
     title: "Foundations & The History of Life",
     videos: [
       { id: 1, title: "The Secret World of Plants", url: "https://www.youtube.com/embed/WACSnwKby2Y" },
@@ -18,7 +32,8 @@ const ENVIRONMENTAL_SCIENCE_LESSONS = [
     ]
   },
   {
-    lesson_number: 32,
+    id: 11,
+    lesson_number: 2,
     title: "Plant Biology & Evolution",
     videos: [
       { id: 1, title: "Photosynthesis", url: "https://www.youtube.com/embed/2th5lAd-77A" },
@@ -29,7 +44,7 @@ const ENVIRONMENTAL_SCIENCE_LESSONS = [
     ]
   },
   {
-    lesson_number: 33,
+    lesson_number: 3,
     title: "Botany - Reproduction & Senses",
     videos: [
       { id: 1, title: "Flowers & Reproduction", url: "https://www.youtube.com/embed/uK48U64zS7A" },
@@ -40,7 +55,7 @@ const ENVIRONMENTAL_SCIENCE_LESSONS = [
     ]
   },
   {
-    lesson_number: 34,
+    lesson_number: 4,
     title: "Zoology - Insects to Reptiles",
     videos: [
       { id: 1, title: "Insects & Arthropods", url: "https://www.youtube.com/embed/8p_S-mE_5t8" },
@@ -51,7 +66,7 @@ const ENVIRONMENTAL_SCIENCE_LESSONS = [
     ]
   },
   {
-    lesson_number: 35,
+    lesson_number: 5,
     title: "Zoology - Behavior & Interaction",
     videos: [
       { id: 1, title: "Domestication", url: "https://www.youtube.com/embed/vV99jS2Xy8o" },
@@ -62,7 +77,7 @@ const ENVIRONMENTAL_SCIENCE_LESSONS = [
     ]
   },
   {
-    lesson_number: 36,
+    lesson_number: 6,
     title: "Ecology - Populations & Growth",
     videos: [
       { id: 1, title: "Population Ecology", url: "https://www.youtube.com/embed/RBOsqmBQBQk" },
@@ -73,7 +88,7 @@ const ENVIRONMENTAL_SCIENCE_LESSONS = [
     ]
   },
   {
-    lesson_number: 37,
+    lesson_number: 7,
     title: "Ecology - Ecosystems & Cycles",
     videos: [
       { id: 1, title: "Ecosystem Ecology", url: "https://www.youtube.com/embed/v6ubvEJ3KGM" },
@@ -84,7 +99,7 @@ const ENVIRONMENTAL_SCIENCE_LESSONS = [
     ]
   },
   {
-    lesson_number: 38,
+    lesson_number: 8,
     title: "Biomes & Biodiversity",
     videos: [
       { id: 1, title: "Global Biomes", url: "https://www.youtube.com/embed/izRvPaAWgyw" },
@@ -95,7 +110,7 @@ const ENVIRONMENTAL_SCIENCE_LESSONS = [
     ]
   },
   {
-    lesson_number: 39,
+    lesson_number: 9,
     title: "The Future of Life",
     videos: [
       { id: 1, title: "The Future of Plants", url: "https://www.youtube.com/embed/A8vG_uN_8hE" },
@@ -106,7 +121,7 @@ const ENVIRONMENTAL_SCIENCE_LESSONS = [
     ]
   },
   {
-    lesson_number: 40,
+    lesson_number: 10,
     title: "Capstone: Synthesis & Review",
     videos: [
       { id: 1, title: "History of Life on Earth (Review)", url: "https://www.youtube.com/embed/sjE-Pkjp3u4" },
@@ -145,7 +160,7 @@ export default function EnvironmentalScience() {
       console.log("⏭️ Intro video not yet watched");
       setIntroWatched(false);
     }
-  }, [user?.id]);
+  }, [user]);
 
   // Refresh lessons from localStorage when component mounts
   useEffect(() => {
@@ -159,17 +174,24 @@ export default function EnvironmentalScience() {
     setSub(found);
 
     const pad = ENVIRONMENTAL_SCIENCE_LESSONS.map((lesson) => {
-      // Check if this lesson was unlocked by completing the previous lesson (organized by subject)
-      const isUnlocked = userId ? getUserData(userId, `lesson_Environmental Science_unlocked_local-${lesson.lesson_number}`) !== null : false;
+      // Get the global lesson ID for this Environmental Science lesson
+      const globalLessonId = ENVIRONMENTAL_LESSON_ID_MAP[lesson.lesson_number];
       
-      // Check if this lesson was completed (organized by subject)
-      const isCompleted = userId ? getUserData(userId, `lesson_Environmental Science_completed_local-${lesson.lesson_number}`) !== null : false;
+      // Check if this lesson was completed using the global lesson ID
+      const isCompleted = userId && globalLessonId ? isLessonCompleted(userId, globalLessonId) : false;
+      
+      // For unlocking: check if previous lesson was completed
+      let isUnlocked = lesson.lesson_number === 1; // First lesson is always unlocked
+      if (lesson.lesson_number > 1) {
+        const previousGlobalId = ENVIRONMENTAL_LESSON_ID_MAP[lesson.lesson_number - 1];
+        isUnlocked = userId && previousGlobalId ? isLessonCompleted(userId, previousGlobalId) : false;
+      }
       
       return {
-        id: `local-${lesson.lesson_number}`,
+        id: globalLessonId,
         lesson_number: lesson.lesson_number,
         title: lesson.title,
-        status: isCompleted ? "completed" : lesson.lesson_number === 1 ? "unlocked" : isUnlocked ? "unlocked" : "locked",
+        status: isCompleted ? "completed" : isUnlocked ? "unlocked" : "locked",
         videos: lesson.videos
       };
     });
@@ -193,6 +215,9 @@ export default function EnvironmentalScience() {
     setIntroWatched(true);
   }
 
+  // Mark lesson as completed in the state
+  // (Currently unused - lesson completion is handled in Lesson.js)
+  /*
   function markLessonCompleted(lessonId) {
     setLessons((prev) => {
       const updated = prev.map((ls) => {
@@ -216,6 +241,7 @@ export default function EnvironmentalScience() {
     // Backend API disabled - lesson completion saved to localStorage
     console.log("✅ Lesson completion saved to localStorage");
   }
+  */
 
   function viewLesson(lesson) {
     console.log("🔘 View Lesson button clicked. Lesson:", lesson);
@@ -227,35 +253,149 @@ export default function EnvironmentalScience() {
     <div className="dashboard-page" style={{ width: "100%" }}>
       <Sidebar />
       <main className="dashboard-main" style={{ padding: "2rem", margin: "0", width: "100%", maxWidth: "100%", flex: "1 1 auto" }}>
-        <header className="dashboard-header" style={{ paddingLeft: "0", paddingRight: "0", marginBottom: "2rem", display: "block" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "1rem", marginBottom: "1rem" }}>
-            <div>
-              <h1 style={{ color: "#f5f7ff", margin: "0 0 0.5rem 0" }}>Environmental Science</h1>
-              <p className="dashboard-subtitle" style={{ margin: "0" }}>Understand ecosystems, sustainability, and environmental challenges.</p>
-            </div>
-            {!loading && (
-              <div style={{ 
-                background: "linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(0, 240, 255, 0.1))",
-                border: "1px solid rgba(16, 185, 129, 0.3)",
-                borderRadius: "12px",
-                padding: "1rem",
-                minWidth: "200px",
-                textAlign: "center"
-              }}>
-                <div style={{ fontSize: "2rem", fontWeight: "800", background: "linear-gradient(135deg, #10b981, #00f0ff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", margin: "0 0 0.5rem 0" }}>
-                  {lessons.filter(l => l.status === "completed").length}/{lessons.length}
+        <header className="dashboard-header" style={{ paddingLeft: "0", paddingRight: "0", marginBottom: "3rem", display: "block" }}>
+          <div style={{
+            background: "linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(0, 240, 255, 0.1) 100%)",
+            border: "1px solid rgba(34, 197, 94, 0.3)",
+            borderRadius: "20px",
+            padding: "3rem",
+            position: "relative",
+            overflow: "hidden",
+            backdropFilter: "blur(20px)",
+            boxShadow: "0 20px 60px rgba(34, 197, 94, 0.15)",
+          }}>
+            {/* Background gradient accent */}
+            <div style={{
+              position: "absolute",
+              top: "-50%",
+              right: "-10%",
+              width: "400px",
+              height: "400px",
+              background: "radial-gradient(circle, rgba(34, 197, 94, 0.2), transparent)",
+              borderRadius: "50%",
+              pointerEvents: "none"
+            }}></div>
+
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "2rem" }}>
+                <div style={{ flex: 1 }}>
+                  {/* Subject Icon */}
+                  <div style={{
+                    fontSize: "3.5rem",
+                    marginBottom: "1rem"
+                  }}>🌍</div>
+
+                  {/* Title */}
+                  <h1 style={{
+                    fontSize: "2.8rem",
+                    fontWeight: "800",
+                    margin: "0 0 0.75rem 0",
+                    color: "#f5f7ff",
+                    background: "linear-gradient(135deg, #22c55e 0%, #00f0ff 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text"
+                  }}>
+                    Environmental Science
+                  </h1>
+
+                  {/* Subtitle */}
+                  <p style={{
+                    fontSize: "1.05rem",
+                    color: "#d1d5db",
+                    margin: "0",
+                    lineHeight: "1.6",
+                    maxWidth: "600px"
+                  }}>
+                    Understand ecosystems, sustainability, and environmental challenges through hands-on learning.
+                  </p>
+
+                  {/* Stats Section */}
+                  <div style={{
+                    display: "flex",
+                    gap: "2rem",
+                    marginTop: "1.5rem",
+                    paddingTop: "1.5rem",
+                    borderTop: "1px solid rgba(148, 163, 184, 0.2)"
+                  }}>
+                    <div>
+                      <div style={{
+                        fontSize: "1.8rem",
+                        fontWeight: "700",
+                        background: "linear-gradient(135deg, #22c55e, #10b981)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text"
+                      }}>
+                        {lessons.length}
+                      </div>
+                      <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600" }}>Total Lessons</div>
+                    </div>
+                    <div>
+                      <div style={{
+                        fontSize: "1.8rem",
+                        fontWeight: "700",
+                        background: "linear-gradient(135deg, #00f0ff, #06b6d4)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text"
+                      }}>
+                        {lessons.filter(l => l.status === "completed").length}
+                      </div>
+                      <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600" }}>Completed</div>
+                    </div>
+                  </div>
                 </div>
-                <div style={{ fontSize: "0.85rem", color: "#9ca3af", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.5px" }}>Lessons Completed</div>
-                <div style={{ marginTop: "0.75rem", height: "6px", background: "rgba(148, 163, 184, 0.2)", borderRadius: "3px", overflow: "hidden" }}>
-                  <div style={{ 
-                    height: "100%", 
-                    background: "linear-gradient(90deg, #10b981, #00f0ff)",
-                    width: `${lessons.length > 0 ? (lessons.filter(l => l.status === "completed").length / lessons.length) * 100 : 0}%`,
-                    transition: "width 0.5s ease"
-                  }}></div>
-                </div>
+
+                {/* Progress Card */}
+                {!loading && (
+                  <div style={{
+                    background: "linear-gradient(135deg, rgba(22, 197, 94, 0.2), rgba(0, 240, 255, 0.15))",
+                    border: "1px solid rgba(34, 197, 94, 0.4)",
+                    borderRadius: "16px",
+                    padding: "2rem",
+                    minWidth: "220px",
+                    textAlign: "center",
+                    backdropFilter: "blur(10px)"
+                  }}>
+                    <div style={{
+                      fontSize: "3rem",
+                      fontWeight: "800",
+                      background: "linear-gradient(135deg, #22c55e, #00f0ff)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      margin: "0 0 0.75rem 0"
+                    }}>
+                      {lessons.length > 0 ? Math.round((lessons.filter(l => l.status === "completed").length / lessons.length) * 100) : 0}%
+                    </div>
+                    <div style={{
+                      fontSize: "0.9rem",
+                      color: "#d1d5db",
+                      fontWeight: "600",
+                      marginBottom: "1rem"
+                    }}>
+                      Course Complete
+                    </div>
+                    <div style={{
+                      marginTop: "1rem",
+                      height: "8px",
+                      background: "rgba(148, 163, 184, 0.2)",
+                      borderRadius: "4px",
+                      overflow: "hidden"
+                    }}>
+                      <div style={{
+                        height: "100%",
+                        background: "linear-gradient(90deg, #22c55e, #00f0ff)",
+                        width: `${lessons.length > 0 ? (lessons.filter(l => l.status === "completed").length / lessons.length) * 100 : 0}%`,
+                        transition: "width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                        borderRadius: "4px"
+                      }}></div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </header>
 

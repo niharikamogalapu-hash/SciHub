@@ -17,10 +17,10 @@ function QuizGame({ gameData, onComplete, onExit }) {
 
   const question = questions[currentQuestion];
 
-  const handleAnswerSelect = (answer) => {
+  const handleAnswerSelect = (answer, answerIndex) => {
     if (answered) return;
 
-    const correct = answer === question.correct;
+    const correct = answerIndex === question.correct;
     setSelectedAnswer(answer);
     setIsCorrect(correct);
     setAnswered(true);
@@ -132,7 +132,7 @@ function QuizGame({ gameData, onComplete, onExit }) {
             return (
               <button
                 key={idx}
-                onClick={() => handleAnswerSelect(option)}
+                onClick={() => handleAnswerSelect(option, idx)}
                 disabled={answered}
                 style={{
                   padding: "16px 20px",

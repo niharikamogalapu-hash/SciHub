@@ -67,7 +67,7 @@ function Schedule({ onBookSession }) {
       date,
       time,
       sessionTime: new Date(`${date}T${time}`).toISOString(),
-      zoomLink: "https://zoom.us/your-meeting-link", // placeholder
+      meetLink: "https://meet.google.com/kgc-xqnu-dym",
     };
 
     try {
