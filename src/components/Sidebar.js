@@ -339,7 +339,15 @@ function Sidebar({ user, onLogout }) {
 
         {/* Logout */}
         <button
-          onClick={onLogout}
+          onClick={() => {
+            console.log("🔘 Logout button clicked");
+            if (onLogout) {
+              console.log("✅ onLogout handler exists, calling...");
+              onLogout();
+            } else {
+              console.warn("⚠️ onLogout handler not provided");
+            }
+          }}
           style={{
             display: "flex",
             alignItems: "center",

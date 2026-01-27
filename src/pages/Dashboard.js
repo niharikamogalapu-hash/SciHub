@@ -48,16 +48,38 @@ function Dashboard() {
 
       // Load booked sessions
       const sessions = getBookedSessions(user.id);
+      console.log("📅 Raw booked sessions from storage:", sessions);
+      
       // Convert session times to Date objects and sort by date
       const upcomingSessions = sessions
-        .map(session => ({
-          ...session,
-          session_time: new Date(session.sessionTime || session.session_time),
-        }))
-        .filter(session => new Date(session.session_time) > new Date())
+        .map(session => {
+          let sessionDate;
+          // Try different date formats
+          if (session.sessionTime) {
+            sessionDate = new Date(session.sessionTime);
+          } else if (session.date && session.time) {
+            // Parse date and time separately
+            const dateObj = new Date(session.date);
+            sessionDate = dateObj;
+          } else {
+            sessionDate = new Date();
+          }
+          
+          return {
+            ...session,
+            session_time: sessionDate,
+          };
+        })
+        .filter(session => {
+          const sessionTime = new Date(session.session_time);
+          const isUpcoming = sessionTime > new Date();
+          console.log(`📅 Session: ${session.tutorName}, Time: ${sessionTime}, Upcoming: ${isUpcoming}`);
+          return isUpcoming;
+        })
         .sort((a, b) => new Date(a.session_time) - new Date(b.session_time))
         .slice(0, 5);
 
+      console.log("📅 Upcoming sessions after filtering:", upcomingSessions);
       setUpcomingSessions(upcomingSessions);
 
       // Load activity log

@@ -108,27 +108,37 @@ function App() {
   }
 
   function handleLogout() {
-    // Clear all user-specific data from localStorage
-    if (user && user.id) {
-      clearUserData(user.id);
+    try {
+      // Clear all user-specific data from localStorage
+      if (user && user.id) {
+        clearUserData(user.id);
+      }
+      
+      // Clear user from global storage
+      localStorage.removeItem("user");
+      
+      // Reset app state
+      setUser(null);
+      setStats({
+        xp: 0,
+        coins: 0,
+        streak: 0,
+        lessonsCompleted: 0,
+        lessonsInProgress: 0,
+        totalGameScore: 0,
+      });
+      setRecentActivity([]);
+      addNotification("Logged out successfully!");
+      console.log("✅ Logout successful, navigating to home...");
+      
+      // Navigate after a short delay to ensure state clears
+      setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 100);
+    } catch (error) {
+      console.error("❌ Logout error:", error);
+      addNotification("Error logging out");
     }
-    
-    // Clear user from global storage
-    localStorage.removeItem("user");
-    
-    // Reset app state
-    setUser(null);
-    setStats({
-      xp: 0,
-      coins: 0,
-      streak: 0,
-      lessonsCompleted: 0,
-      lessonsInProgress: 0,
-      totalGameScore: 0,
-    });
-    setRecentActivity([]);
-    addNotification("Logged out");
-    navigate("/");
   }
 
   // Dashboard helpers

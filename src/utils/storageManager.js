@@ -484,11 +484,27 @@ export const bookTutoringSession = (userId, sessionData) => {
     const storageKey = getUserStorageKey(userId, "booked_sessions");
     const sessions = JSON.parse(localStorage.getItem(storageKey) || "[]");
     
+    // Calculate sessionTime properly
+    let sessionTime;
+    if (sessionData.sessionTime && typeof sessionData.sessionTime === 'string') {
+      sessionTime = sessionData.sessionTime;
+    } else if (sessionData.sessionTime instanceof Date) {
+      sessionTime = sessionData.sessionTime.toISOString();
+    } else if (sessionData.date && sessionData.time) {
+      // Combine date and time into a proper datetime
+      const [month, day, year] = sessionData.date.split('/');
+      const [hours, minutes] = sessionData.time.split(':');
+      const sessionDate = new Date(year, parseInt(month) - 1, day, parseInt(hours), parseInt(minutes));
+      sessionTime = sessionDate.toISOString();
+    } else {
+      sessionTime = new Date().toISOString();
+    }
+    
     const session = {
       id: Date.now(), // Use timestamp as unique ID
       ...sessionData,
       bookedAt: new Date().toISOString(),
-      sessionTime: sessionData.sessionTime || new Date(sessionData.date + " " + sessionData.time).toISOString(),
+      sessionTime: sessionTime,
     };
     
     sessions.push(session);
