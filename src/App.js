@@ -363,6 +363,12 @@ function App() {
                 element={<QnA onHelp={handleHelpInQnA} />}
               />
 
+              {/* Unit tests hub */}
+              <Route
+                path="/unit-tests"
+                element={<UnitTest />}
+              />
+
               {/* Unit test per subscience */}
               <Route
                 path="/unit-test/:subId"

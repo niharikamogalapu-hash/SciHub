@@ -178,6 +178,9 @@ function QnA() {
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [newReply, setNewReply] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [editingQuestionId, setEditingQuestionId] = useState(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editBody, setEditBody] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [loading, setLoading] = useState(false);
 
@@ -246,6 +249,58 @@ function QnA() {
     console.log("✅ Reply posted and saved to question:", selectedQuestion.id);
     setSelectedQuestion(updatedQuestions.find((q) => q.id === selectedQuestion.id));
     setNewReply("");
+  };
+
+  const handleEditStart = (question) => {
+    setEditingQuestionId(question.id);
+    setEditTitle(question.title);
+    setEditBody(question.body);
+  };
+
+  const handleEditSave = () => {
+    if (!editTitle.trim() || !editBody.trim()) {
+      alert("Title and body cannot be empty");
+      return;
+    }
+
+    const updatedQuestions = questions.map((q) => {
+      if (q.id === editingQuestionId) {
+        return {
+          ...q,
+          title: editTitle,
+          body: editBody,
+        };
+      }
+      return q;
+    });
+
+    setQuestions(updatedQuestions);
+    if (user && user.id) {
+      saveQuestions(user.id, updatedQuestions);
+    }
+    console.log("✅ Question edited and saved:", editingQuestionId);
+    setSelectedQuestion(updatedQuestions.find((q) => q.id === editingQuestionId));
+    setEditingQuestionId(null);
+    setEditTitle("");
+    setEditBody("");
+  };
+
+  const handleEditCancel = () => {
+    setEditingQuestionId(null);
+    setEditTitle("");
+    setEditBody("");
+  };
+
+  const handleDeleteQuestion = (questionId) => {
+    if (window.confirm("Are you sure you want to delete this question? This action cannot be undone.")) {
+      const updatedQuestions = questions.filter((q) => q.id !== questionId);
+      setQuestions(updatedQuestions);
+      if (user && user.id) {
+        saveQuestions(user.id, updatedQuestions);
+      }
+      console.log("✅ Question deleted:", questionId);
+      setSelectedQuestion(null);
+    }
   };
 
   const filteredQuestions = questions
@@ -580,30 +635,220 @@ function QnA() {
               padding: "30px",
               marginBottom: "30px"
             }}>
-              <h2 style={{ fontSize: "2rem", margin: "0 0 16px 0", color: "#f9fafb" }}>
-                {selectedQuestion.title}
-              </h2>
-              <div style={{
-                display: "flex",
-                gap: "16px",
-                color: "#94a3b8",
-                fontSize: "0.95rem",
-                marginBottom: "24px"
-              }}>
-                <span>👤 {selectedQuestion.author}</span>
-                <span>•</span>
-                <span>⏱️ {formatDate(selectedQuestion.timestamp)}</span>
-                <span>•</span>
-                <span>👁️ {selectedQuestion.views} views</span>
-              </div>
+              {editingQuestionId === selectedQuestion.id ? (
+                // EDIT MODE
+                <div>
+                  <h3 style={{ fontSize: "1.2rem", margin: "0 0 16px 0", color: "#f9fafb" }}>
+                    ✏️ Edit Your Question
+                  </h3>
+                  <div style={{ marginBottom: "20px" }}>
+                    <label style={{
+                      display: "block",
+                      color: "#cbd5e1",
+                      marginBottom: "8px",
+                      fontWeight: "600",
+                      fontSize: "0.95rem"
+                    }}>
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "12px 16px",
+                        background: "rgba(15, 23, 42, 0.8)",
+                        border: "1px solid rgba(148, 163, 184, 0.3)",
+                        borderRadius: "8px",
+                        color: "#f9fafb",
+                        fontSize: "1rem",
+                        boxSizing: "border-box",
+                        fontFamily: "inherit",
+                        transition: "all 0.2s"
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = "rgba(139, 92, 246, 0.5)";
+                        e.target.style.background = "rgba(15, 23, 42, 1)";
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = "rgba(148, 163, 184, 0.3)";
+                        e.target.style.background = "rgba(15, 23, 42, 0.8)";
+                      }}
+                    />
+                  </div>
 
-              <div style={{
-                color: "#cbd5e1",
-                fontSize: "1.05rem",
-                lineHeight: "1.6"
-              }}>
-                {selectedQuestion.body}
-              </div>
+                  <div style={{ marginBottom: "20px" }}>
+                    <label style={{
+                      display: "block",
+                      color: "#cbd5e1",
+                      marginBottom: "8px",
+                      fontWeight: "600",
+                      fontSize: "0.95rem"
+                    }}>
+                      Details
+                    </label>
+                    <textarea
+                      value={editBody}
+                      onChange={(e) => setEditBody(e.target.value)}
+                      rows="6"
+                      style={{
+                        width: "100%",
+                        padding: "12px 16px",
+                        background: "rgba(15, 23, 42, 0.8)",
+                        border: "1px solid rgba(148, 163, 184, 0.3)",
+                        borderRadius: "8px",
+                        color: "#f9fafb",
+                        fontSize: "1rem",
+                        boxSizing: "border-box",
+                        fontFamily: "inherit",
+                        transition: "all 0.2s"
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = "rgba(139, 92, 246, 0.5)";
+                        e.target.style.background = "rgba(15, 23, 42, 1)";
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = "rgba(148, 163, 184, 0.3)";
+                        e.target.style.background = "rgba(15, 23, 42, 0.8)";
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: "flex", gap: "12px" }}>
+                    <button
+                      onClick={handleEditSave}
+                      style={{
+                        background: "linear-gradient(135deg, #10b981 0%, #06b6d4 100%)",
+                        border: "none",
+                        color: "white",
+                        padding: "12px 28px",
+                        borderRadius: "8px",
+                        fontSize: "1rem",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                        transition: "all 0.3s"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.transform = "translateY(-2px)";
+                        e.target.style.boxShadow = "0 8px 20px rgba(16, 185, 129, 0.3)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.transform = "translateY(0)";
+                        e.target.style.boxShadow = "none";
+                      }}
+                    >
+                      💾 Save Changes
+                    </button>
+                    <button
+                      onClick={handleEditCancel}
+                      style={{
+                        background: "rgba(100, 116, 139, 0.2)",
+                        border: "1px solid rgba(148, 163, 184, 0.3)",
+                        color: "#cbd5e1",
+                        padding: "12px 28px",
+                        borderRadius: "8px",
+                        fontSize: "1rem",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                        transition: "all 0.2s"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.background = "rgba(100, 116, 139, 0.3)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.background = "rgba(100, 116, 139, 0.2)";
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // VIEW MODE
+                <div>
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    marginBottom: "16px"
+                  }}>
+                    <h2 style={{ fontSize: "2rem", margin: 0, color: "#f9fafb", flex: 1 }}>
+                      {selectedQuestion.title}
+                    </h2>
+                    {selectedQuestion.authorId === user?.id && (
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          onClick={() => handleEditStart(selectedQuestion)}
+                          style={{
+                            background: "rgba(139, 92, 246, 0.2)",
+                            border: "1px solid rgba(139, 92, 246, 0.3)",
+                            color: "#a78bfa",
+                            padding: "8px 16px",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            fontSize: "0.9rem",
+                            fontWeight: "600",
+                            transition: "all 0.2s"
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.background = "rgba(139, 92, 246, 0.3)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.background = "rgba(139, 92, 246, 0.2)";
+                          }}
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteQuestion(selectedQuestion.id)}
+                          style={{
+                            background: "rgba(239, 68, 68, 0.2)",
+                            border: "1px solid rgba(239, 68, 68, 0.3)",
+                            color: "#fca5a5",
+                            padding: "8px 16px",
+                            borderRadius: "6px",
+                            cursor: "pointer",
+                            fontSize: "0.9rem",
+                            fontWeight: "600",
+                            transition: "all 0.2s"
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.background = "rgba(239, 68, 68, 0.3)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.background = "rgba(239, 68, 68, 0.2)";
+                          }}
+                        >
+                          🗑️ Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{
+                    display: "flex",
+                    gap: "16px",
+                    color: "#94a3b8",
+                    fontSize: "0.95rem",
+                    marginBottom: "24px"
+                  }}>
+                    <span>👤 {selectedQuestion.author}</span>
+                    <span>•</span>
+                    <span>⏱️ {formatDate(selectedQuestion.timestamp)}</span>
+                    <span>•</span>
+                    <span>👁️ {selectedQuestion.views} views</span>
+                  </div>
+
+                  <div style={{
+                    color: "#cbd5e1",
+                    fontSize: "1.05rem",
+                    lineHeight: "1.6"
+                  }}>
+                    {selectedQuestion.body}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Replies Section */}

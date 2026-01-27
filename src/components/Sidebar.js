@@ -311,6 +311,41 @@ function Sidebar({ user, onLogout }) {
           <span style={{ fontSize: "1.3rem" }}>🎮</span>
           {!collapsed && <span>Games</span>}
         </NavLink>
+
+        {/* Unit Tests */}
+        <NavLink
+          to="/unit-tests"
+          className={({ isActive }) => isActive ? "active" : ""}
+          style={({ isActive }) => ({
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: collapsed ? "10px" : "10px 14px",
+            color: isActive ? "#06b6d4" : "#cbd5e1",
+            textDecoration: "none",
+            fontWeight: "500",
+            fontSize: "0.9rem",
+            transition: "all 200ms ease",
+            borderRadius: "8px",
+            background: isActive ? "rgba(6, 182, 212, 0.15)" : "transparent",
+            borderLeft: isActive ? "3px solid #06b6d4" : "3px solid transparent",
+            minHeight: "44px",
+            justifyContent: collapsed ? "center" : "flex-start"
+          })}
+          onMouseEnter={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "rgba(6, 182, 212, 0.08)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "transparent";
+            }
+          }}
+        >
+          <span style={{ fontSize: "1.3rem" }}>📝</span>
+          {!collapsed && <span>Unit Tests</span>}
+        </NavLink>
       </nav>
 
       {/* Bottom Section */}
