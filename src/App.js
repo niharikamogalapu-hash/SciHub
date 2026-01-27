@@ -1,7 +1,6 @@
 // src/App.js
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { clearUserData } from "./utils/storageManager";
 
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
@@ -109,10 +108,9 @@ function App() {
 
   function handleLogout() {
     try {
-      // Clear all user-specific data from localStorage
-      if (user && user.id) {
-        clearUserData(user.id);
-      }
+      // DO NOT clear user data - keep progress saved!
+      // Users should be able to log back in and see their progress
+      // Just remove the current session user
       
       // Clear user from global storage
       localStorage.removeItem("user");
