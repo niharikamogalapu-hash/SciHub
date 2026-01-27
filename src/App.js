@@ -1,6 +1,7 @@
 // src/App.js
 import React, { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { getDashboardStats, getActivityLog } from "./utils/storageManager";
 
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
@@ -71,7 +72,19 @@ function App() {
     const saved = localStorage.getItem("user");
     if (saved) {
       try {
-        setUser(JSON.parse(saved));
+        const userData = JSON.parse(saved);
+        setUser(userData);
+        
+        // Load the user's saved stats from localStorage
+        if (userData && userData.id) {
+          const savedStats = getDashboardStats(userData.id);
+          console.log("📊 Loaded saved stats for user:", userData.id, savedStats);
+          setStats(savedStats);
+          
+          // Load activity log
+          const activities = getActivityLog(userData.id, 10);
+          setRecentActivity(activities);
+        }
       } catch (error) {
         console.error("❌ Error parsing user from localStorage:", error);
         localStorage.removeItem("user");
@@ -95,6 +108,18 @@ function App() {
   function handleLogin(userData) {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
+    
+    // Load saved stats for this user from localStorage
+    if (userData && userData.id) {
+      const savedStats = getDashboardStats(userData.id);
+      console.log("📊 Loaded saved stats on login:", savedStats);
+      setStats(savedStats);
+      
+      // Load activity log
+      const activities = getActivityLog(userData.id, 10);
+      setRecentActivity(activities);
+    }
+    
     addNotification("Logged in successfully");
     navigate("/dashboard");
   }
@@ -102,6 +127,13 @@ function App() {
   function handleSignup(userData) {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
+    
+    // Initialize empty stats for new user (first signup)
+    if (userData && userData.id) {
+      const savedStats = getDashboardStats(userData.id);
+      setStats(savedStats);
+    }
+    
     addNotification("Account created successfully");
     navigate("/dashboard");
   }

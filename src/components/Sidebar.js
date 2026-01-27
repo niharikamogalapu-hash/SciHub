@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
-import { clearUserData } from "../utils/storageManager";
 
 function Sidebar({ user, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -22,12 +21,8 @@ function Sidebar({ user, onLogout }) {
         console.log("✅ Using onLogout handler from props");
         onLogout();
       } else {
-        // Fallback: Handle logout locally
+        // Fallback: Handle logout locally (keep progress, just clear session)
         console.log("⚠️ No onLogout handler provided, handling logout locally");
-        const currentUser = JSON.parse(localStorage.getItem("user"));
-        if (currentUser && currentUser.id) {
-          clearUserData(currentUser.id);
-        }
         localStorage.removeItem("user");
         console.log("✅ User logged out, navigating to home");
         navigate("/", { replace: true });

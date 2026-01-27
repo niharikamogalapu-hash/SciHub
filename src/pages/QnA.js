@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import "./QnA.css";
+import { getUserStorageKey } from "../utils/storageManager";
 
 // Helper function to format dates
 function formatDate(date) {
@@ -41,13 +42,16 @@ function formatDate(date) {
   }
 }
 
-// Shared localStorage key for Q&A data
-const QNA_STORAGE_KEY = "scihub_qna_questions";
+// Get user-specific storage key for Q&A data
+function getQnAStorageKey(userId) {
+  return getUserStorageKey(userId, "qna_questions");
+}
 
-// Get questions from localStorage
-function getStoredQuestions() {
+// Get questions from localStorage for specific user
+function getStoredQuestions(userId) {
   try {
-    const stored = localStorage.getItem(QNA_STORAGE_KEY);
+    const storageKey = getQnAStorageKey(userId);
+    const stored = localStorage.getItem(storageKey);
     if (stored) {
       const questions = JSON.parse(stored);
       // Convert ISO strings back to Date objects
@@ -67,9 +71,10 @@ function getStoredQuestions() {
   }
 }
 
-// Save questions to localStorage
-function saveQuestions(questions) {
+// Save questions to localStorage for specific user
+function saveQuestions(userId, questions) {
   try {
+    const storageKey = getQnAStorageKey(userId);
     // Convert Date objects to ISO strings for proper serialization
     const serialized = questions.map(q => ({
       ...q,
@@ -79,8 +84,8 @@ function saveQuestions(questions) {
         timestamp: r.timestamp instanceof Date ? r.timestamp.toISOString() : r.timestamp,
       })),
     }));
-    localStorage.setItem(QNA_STORAGE_KEY, JSON.stringify(serialized));
-    console.log("✅ Q&A questions saved to localStorage:", serialized.length, "questions");
+    localStorage.setItem(storageKey, JSON.stringify(serialized));
+    console.log(`✅ Q&A questions saved for user ${userId}:`, serialized.length, "questions");
   } catch (error) {
     console.error("❌ Error saving to localStorage:", error);
   }
@@ -180,9 +185,11 @@ function QnA() {
 
   // Load questions from localStorage on mount
   useEffect(() => {
-    const stored = getStoredQuestions();
-    setQuestions(stored);
-  }, []);
+    if (user && user.id) {
+      const stored = getStoredQuestions(user.id);
+      setQuestions(stored);
+    }
+  }, [user?.id]);
 
   const handlePostQuestion = (e) => {
     e.preventDefault();
@@ -201,7 +208,9 @@ function QnA() {
 
     const updated = [question, ...questions];
     setQuestions(updated);
-    saveQuestions(updated);
+    if (user && user.id) {
+      saveQuestions(user.id, updated);
+    }
     console.log("✅ New question posted and saved:", question.title);
     setNewQuestionTitle("");
     setNewQuestionBody("");
@@ -231,7 +240,9 @@ function QnA() {
     });
 
     setQuestions(updatedQuestions);
-    saveQuestions(updatedQuestions);
+    if (user && user.id) {
+      saveQuestions(user.id, updatedQuestions);
+    }
     console.log("✅ Reply posted and saved to question:", selectedQuestion.id);
     setSelectedQuestion(updatedQuestions.find((q) => q.id === selectedQuestion.id));
     setNewReply("");
