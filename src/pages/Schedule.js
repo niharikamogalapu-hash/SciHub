@@ -1,7 +1,7 @@
 // src/pages/Schedule.js
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { bookTutoringSession, logActivity } from "../utils/storageManager";
+import { bookTutoringSession, logActivity, checkAndUnlockAchievements } from "../utils/storageManager";
 
 const tutors = [
   {
@@ -80,6 +80,12 @@ function Schedule({ onBookSession }) {
         description: `Booked a ${session.subject} session with ${session.tutorName}`,
         subject: session.subject,
       });
+
+      // Check for achievement unlocks
+      const newlyUnlocked = checkAndUnlockAchievements(user.id);
+      if (newlyUnlocked.length > 0) {
+        console.log(`🏆 ${newlyUnlocked.length} achievement(s) unlocked!`);
+      }
 
       // Show success message
       setSuccessMessage(`✅ Session booked with ${tutor.name} on ${date} at ${time}!`);

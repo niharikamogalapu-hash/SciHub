@@ -889,3 +889,56 @@ export const hasCompletedIntroVideo = (userId) => {
   }
   return false;
 };
+
+/**
+ * Save game progress for mid-game resumption
+ * @param {string|number} userId - The user ID
+ * @param {string} gameId - The game ID
+ * @param {object} progress - The game progress data
+ */
+export const saveGameProgress = (userId, gameId, progress) => {
+  try {
+    const storageKey = getUserStorageKey(userId, `game_progress_${gameId}`);
+    localStorage.setItem(storageKey, JSON.stringify({
+      ...progress,
+      savedAt: new Date().toISOString(),
+    }));
+    console.log(`✅ Game progress saved for ${gameId}`);
+  } catch (error) {
+    console.error(`❌ Error saving game progress:`, error);
+  }
+};
+
+/**
+ * Load game progress for a game
+ * @param {string|number} userId - The user ID
+ * @param {string} gameId - The game ID
+ * @returns {object|null} The game progress or null if not found
+ */
+export const loadGameProgress = (userId, gameId) => {
+  try {
+    const storageKey = getUserStorageKey(userId, `game_progress_${gameId}`);
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error(`❌ Error loading game progress:`, error);
+  }
+  return null;
+};
+
+/**
+ * Clear game progress when a game is completed
+ * @param {string|number} userId - The user ID
+ * @param {string} gameId - The game ID
+ */
+export const clearGameProgress = (userId, gameId) => {
+  try {
+    const storageKey = getUserStorageKey(userId, `game_progress_${gameId}`);
+    localStorage.removeItem(storageKey);
+    console.log(`✅ Game progress cleared for ${gameId}`);
+  } catch (error) {
+    console.error(`❌ Error clearing game progress:`, error);
+  }
+};

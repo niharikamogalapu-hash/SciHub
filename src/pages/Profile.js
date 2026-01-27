@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 
-function Profile({ user, onUpdate }) {
+function Profile({ user, onUpdate, onLogout }) {
   const [firstName, setFirstName] = useState(user?.firstName || "");
   const [lastName, setLastName] = useState(user?.lastName || "");
   const [email, setEmail] = useState(user?.email || "");
@@ -31,14 +31,15 @@ function Profile({ user, onUpdate }) {
     alert("Profile updated!");
   }
 
-  function handleLogout() {
-    localStorage.removeItem("user");
-    window.location.href = "/login";
+  function handleLogoutClick() {
+    if (onLogout) {
+      onLogout();
+    }
   }
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "#0f172a" }}>
-      <Sidebar user={currentUser} onLogout={handleLogout} />
+      <Sidebar user={currentUser} onLogout={handleLogoutClick} />
 
       <main style={{ flex: 1, padding: "40px", background: "#0f172a", animation: "fadeInScale 0.5s ease-out" }}>
         {/* Hero Section */}
@@ -337,7 +338,7 @@ function Profile({ user, onUpdate }) {
           <h2 style={{ fontSize: "1.3rem", margin: "0 0 16px 0", color: "#ef4444", fontWeight: "700" }}>⚠️ Danger Zone</h2>
           <p style={{ color: "#cbd5e1", marginBottom: "20px" }}>This action is permanent and cannot be undone.</p>
           <button
-            onClick={handleLogout}
+            onClick={handleLogoutClick}
             style={{
               background: "rgba(239, 68, 68, 0.2)",
               border: "1px solid rgba(239, 68, 68, 0.5)",

@@ -18,13 +18,30 @@ function Login({ onLogin }) {
 
     try {
       // LOCAL STORAGE MODE - Database disabled
+      // Trim and validate inputs
+      const trimmedEmail = email.trim().toLowerCase();
+      const trimmedPassword = password.trim();
+
+      if (!trimmedEmail || !trimmedPassword) {
+        setError("Please enter both email and password");
+        return;
+      }
+
       // Retrieve all registered users from localStorage
       const registeredUsers = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
       
-      // Find user with matching email and password
-      const user = registeredUsers.find(u => u.email === email && u.password === password);
+      console.log("🔍 Login attempt with email:", trimmedEmail);
+      console.log("📝 Registered users count:", registeredUsers.length);
+      
+      // Find user with matching email and password (case-insensitive email)
+      const user = registeredUsers.find(u => {
+        const userEmail = (u.email || "").trim().toLowerCase();
+        const userPassword = (u.password || "").trim();
+        return userEmail === trimmedEmail && userPassword === trimmedPassword;
+      });
       
       if (user) {
+        console.log("✅ Login successful for user:", user.email);
         // Save current logged-in user to localStorage
         localStorage.setItem("user", JSON.stringify(user));
 
@@ -34,6 +51,7 @@ function Login({ onLogin }) {
         // Redirect to dashboard
         navigate("/dashboard");
       } else {
+        console.log("❌ No matching user found for email:", trimmedEmail);
         setError("Invalid email or password");
       }
     } catch (err) {

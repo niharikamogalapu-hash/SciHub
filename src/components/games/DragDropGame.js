@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { saveGameProgress, loadGameProgress, clearGameProgress } from "../../utils/storageManager";
 
-function DragDropGame({ gameData, onComplete, onExit }) {
+function DragDropGame({ gameData, onComplete, onExit, userId }) {
   const [items, setItems] = useState([]);
   const [slots, setSlots] = useState([]);
   const [draggedItem, setDraggedItem] = useState(null);
@@ -16,6 +17,27 @@ function DragDropGame({ gameData, onComplete, onExit }) {
       setSlots(new Array(gameData.items.length).fill(null));
     }
   }, [gameData]);
+
+  // Load saved progress on mount
+  useEffect(() => {
+    if (userId && gameData.id && items.length > 0) {
+      const savedProgress = loadGameProgress(userId, gameData.id);
+      if (savedProgress) {
+        setSlots(savedProgress.slots || []);
+        setScore(savedProgress.score || 0);
+      }
+    }
+  }, [userId, gameData.id, items.length]);
+
+  // Save progress whenever it changes
+  useEffect(() => {
+    if (userId && gameData.id && items.length > 0) {
+      saveGameProgress(userId, gameData.id, {
+        slots,
+        score,
+      });
+    }
+  }, [slots, score, userId, gameData.id, items.length]);
 
   const handleDragStart = (index) => {
     setDraggedItem(index);
@@ -55,6 +77,10 @@ function DragDropGame({ gameData, onComplete, onExit }) {
   };
 
   const handleGameComplete = () => {
+    // Clear saved progress when game is completed
+    if (userId && gameData.id) {
+      clearGameProgress(userId, gameData.id);
+    }
     const timeTaken = (Date.now() - startTime) / 1000;
     const timeBonus = Math.max(0, Math.floor(30 - timeTaken / 10));
     const finalScore = Math.max(50, Math.min(100, score + timeBonus));

@@ -1,11 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { saveGameProgress, loadGameProgress, clearGameProgress } from "../../utils/storageManager";
 
-function BuilderGame({ gameData, onComplete, onExit }) {
+function BuilderGame({ gameData, onComplete, onExit, userId }) {
   const [selectedParts, setSelectedParts] = useState([]);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState("");
   const [buildComplete, setBuildComplete] = useState(false);
   const [startTime] = useState(Date.now());
+
+  // Load saved progress on mount
+  useEffect(() => {
+    if (userId && gameData.id) {
+      const savedProgress = loadGameProgress(userId, gameData.id);
+      if (savedProgress) {
+        setSelectedParts(savedProgress.selectedParts || []);
+        setScore(savedProgress.score || 0);
+      }
+    }
+  }, [userId, gameData.id]);
+
+  // Save progress whenever it changes
+  useEffect(() => {
+    if (userId && gameData.id) {
+      saveGameProgress(userId, gameData.id, {
+        selectedParts,
+        score,
+      });
+    }
+  }, [selectedParts, score, userId, gameData.id]);
 
   const handleSelectPart = (part) => {
     if (selectedParts.find((p) => p.id === part.id)) {
@@ -45,6 +67,10 @@ function BuilderGame({ gameData, onComplete, onExit }) {
   };
 
   const handleComplete = () => {
+    // Clear saved progress when game is completed
+    if (userId && gameData.id) {
+      clearGameProgress(userId, gameData.id);
+    }
     const timeTaken = (Date.now() - startTime) / 1000;
     const timeBonus = Math.max(0, Math.floor(30 - timeTaken / 30));
     const finalScore = Math.max(50, Math.min(100, score + timeBonus));

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { saveGameProgress, loadGameProgress, clearGameProgress } from "../../utils/storageManager";
 
-function MemoryGame({ gameData, onComplete, onExit }) {
+function MemoryGame({ gameData, onComplete, onExit, userId }) {
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState(new Set());
   const [matched, setMatched] = useState(new Set());
@@ -19,6 +20,31 @@ function MemoryGame({ gameData, onComplete, onExit }) {
       setCards(shuffled);
     }
   }, [gameData]);
+
+  // Load saved progress on mount
+  useEffect(() => {
+    if (userId && gameData.id) {
+      const savedProgress = loadGameProgress(userId, gameData.id);
+      if (savedProgress && savedProgress.matched && savedProgress.flipped) {
+        setMatched(new Set(savedProgress.matched));
+        setFlipped(new Set(savedProgress.flipped));
+        setMoves(savedProgress.moves || 0);
+        setScore(savedProgress.score || 100);
+      }
+    }
+  }, [userId, gameData.id]);
+
+  // Save progress whenever it changes
+  useEffect(() => {
+    if (userId && gameData.id && cards.length > 0) {
+      saveGameProgress(userId, gameData.id, {
+        matched: Array.from(matched),
+        flipped: Array.from(flipped),
+        moves,
+        score,
+      });
+    }
+  }, [matched, flipped, moves, score, userId, gameData.id, cards.length]);
 
   const handleCardFlip = (index) => {
     if (!canFlip || flipped.has(index) || matched.has(index)) return;
@@ -69,6 +95,10 @@ function MemoryGame({ gameData, onComplete, onExit }) {
   };
 
   const handleGameComplete = () => {
+    // Clear saved progress when game is completed
+    if (userId && gameData.id) {
+      clearGameProgress(userId, gameData.id);
+    }
     const timeTaken = (Date.now() - startTime) / 1000;
     const timeBonus = Math.max(0, Math.floor(20 - timeTaken / 10));
     const finalScore = Math.max(50, Math.min(100, score + timeBonus));

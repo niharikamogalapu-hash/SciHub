@@ -84,6 +84,23 @@ function About() {
           </p>
         </div>
 
+        {/* Karthikashree's Section */}
+        <div className="card slide-up" style={{ marginBottom: "2rem", padding: "2rem" }}>
+          <h3 style={{ color: "#10b981", marginTop: "0", fontSize: "1.5rem", marginBottom: "1rem" }}>🐛 Karthikashree's Quality Assurance & Attention to Detail</h3>
+          <p style={{ lineHeight: "1.8", marginBottom: "1rem", fontSize: "1.02rem", color: "#f9fafb" }}>
+            As our Quality Assurance specialist, Karthikashree played a crucial role in making sure SciHub was rock-solid and bug-free. 
+            While Niharika was building features and Parimita was shaping the vision, Karthikashree meticulously tested every corner of the 
+            platform, finding bugs that we missed, identifying edge cases we didn't think of, and pushing us to make everything better.
+          </p>
+          <p style={{ lineHeight: "1.8", marginBottom: "0", fontSize: "1.02rem", color: "#f9fafb" }}>
+            Her eye for detail and relentless testing uncovered issues ranging from small UI glitches to significant logic problems that could 
+            have broken the user experience. Beyond just finding bugs, Karthikashree worked closely with us to understand the issues and provided 
+            clear feedback that helped us fix them faster. She was instrumental in ensuring that every game works perfectly, every lesson loads 
+            smoothly, and every feature functions as intended. Her contribution made SciHub not just functional, but reliable and trustworthy—
+            the kind of platform where students and educators can have complete confidence.
+          </p>
+        </div>
+
         {/* The Struggle & Victory */}
         <div className="card slide-up" style={{ marginBottom: "2rem", padding: "2rem" }}>
           <h3 style={{ color: "#38bdf8", marginTop: "0", fontSize: "1.5rem", marginBottom: "1rem" }}>🤝 The Struggle, The Growth, The Victory</h3>

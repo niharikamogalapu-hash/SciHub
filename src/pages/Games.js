@@ -7,7 +7,7 @@ import DragDropGame from "../components/games/DragDropGame";
 import BuilderGame from "../components/games/BuilderGame";
 import ReactionGame from "../components/games/ReactionGame";
 import "./Games.css";
-import { addGameScore, logActivity } from "../utils/storageManager";
+import { addGameScore, logActivity, checkAndUnlockAchievements } from "../utils/storageManager";
 
 function Games({ onGameWin }) {
   const [user, setUser] = useState(null);
@@ -3217,6 +3217,12 @@ function Games({ onGameWin }) {
         subject: topic,
       });
 
+      // Check and unlock any new achievements
+      const newlyUnlocked = checkAndUnlockAchievements(user.id);
+      if (newlyUnlocked.length > 0) {
+        console.log(`🏆 ${newlyUnlocked.length} achievement(s) unlocked from game completion!`);
+      }
+
       // Notify parent
       if (onGameWin) onGameWin(activeGame.id, activeGame.base_reward);
 
@@ -3233,7 +3239,7 @@ function Games({ onGameWin }) {
   };
 
   const handleExitGame = () => {
-    if (window.confirm("Are you sure you want to exit? Your progress will not be saved.")) {
+    if (window.confirm("Are you sure you want to exit? Your game progress has been automatically saved and you can resume where you left off.")) {
       setActiveGame(null);
     }
   };
@@ -3262,6 +3268,7 @@ function Games({ onGameWin }) {
             gameData={{ ...activeGame, ...gameContent }}
             onComplete={handleGameComplete}
             onExit={handleExitGame}
+            userId={user?.id}
           />
         )}
         {gameType === "quiz" && (
@@ -3269,6 +3276,7 @@ function Games({ onGameWin }) {
             gameData={{ ...activeGame, ...gameContent }}
             onComplete={handleGameComplete}
             onExit={handleExitGame}
+            userId={user?.id}
           />
         )}
         {gameType === "puzzle" && (
@@ -3276,6 +3284,7 @@ function Games({ onGameWin }) {
             gameData={{ ...activeGame, ...gameContent }}
             onComplete={handleGameComplete}
             onExit={handleExitGame}
+            userId={user?.id}
           />
         )}
         {gameType === "memory" && (
@@ -3283,6 +3292,7 @@ function Games({ onGameWin }) {
             gameData={{ ...activeGame, ...gameContent }}
             onComplete={handleGameComplete}
             onExit={handleExitGame}
+            userId={user?.id}
           />
         )}
         {gameType === "dragdrop" && (
@@ -3290,6 +3300,7 @@ function Games({ onGameWin }) {
             gameData={{ ...activeGame, ...gameContent }}
             onComplete={handleGameComplete}
             onExit={handleExitGame}
+            userId={user?.id}
           />
         )}
         {gameType === "builder" && (
@@ -3297,6 +3308,7 @@ function Games({ onGameWin }) {
             gameData={{ ...activeGame, ...gameContent }}
             onComplete={handleGameComplete}
             onExit={handleExitGame}
+            userId={user?.id}
           />
         )}
         {gameType === "reaction" && (
@@ -3304,6 +3316,7 @@ function Games({ onGameWin }) {
             gameData={{ ...activeGame, ...gameContent }}
             onComplete={handleGameComplete}
             onExit={handleExitGame}
+            userId={user?.id}
           />
         )}
       </section>

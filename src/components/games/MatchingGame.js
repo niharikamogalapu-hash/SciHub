@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { saveGameProgress, loadGameProgress, clearGameProgress } from "../../utils/storageManager";
 
-function MatchingGame({ gameData, onComplete, onExit }) {
+function MatchingGame({ gameData, onComplete, onExit, userId }) {
   const [matches, setMatches] = useState(new Map());
   const [selected, setSelected] = useState(null);
   const [items, setItems] = useState([]);
@@ -19,6 +20,28 @@ function MatchingGame({ gameData, onComplete, onExit }) {
       setDefinitions(shuffledDefs);
     }
   }, [gameData]);
+
+  // Load saved progress on mount
+  useEffect(() => {
+    if (userId && gameData.id && items.length > 0) {
+      const savedProgress = loadGameProgress(userId, gameData.id);
+      if (savedProgress && savedProgress.matches) {
+        const matchesMap = new Map(savedProgress.matches);
+        setMatches(matchesMap);
+        setScore(savedProgress.score || 0);
+      }
+    }
+  }, [userId, gameData.id, items.length]);
+
+  // Save progress whenever it changes
+  useEffect(() => {
+    if (userId && gameData.id && items.length > 0) {
+      saveGameProgress(userId, gameData.id, {
+        matches: Array.from(matches.entries()),
+        score,
+      });
+    }
+  }, [matches, score, userId, gameData.id, items.length]);
 
   const handleSelectItem = (index, type) => {
     if (gameOver) return;
@@ -59,6 +82,10 @@ function MatchingGame({ gameData, onComplete, onExit }) {
   };
 
   const handleComplete = () => {
+    // Clear saved progress when game is completed
+    if (userId && gameData.id) {
+      clearGameProgress(userId, gameData.id);
+    }
     const timeTaken = (Date.now() - startTime) / 1000;
     const timeBonus = Math.max(0, Math.floor(30 - timeTaken / 10));
     const finalScore = Math.max(50, Math.min(100, score + timeBonus));

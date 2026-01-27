@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { bookTutoringSession, logActivity } from "../utils/storageManager";
+import { bookTutoringSession, logActivity, checkAndUnlockAchievements } from "../utils/storageManager";
 
 const mockTutors = [
   // Biology Tutors
@@ -243,6 +243,12 @@ function Tutoring({ onBookSession }) {
             description: `Scheduled session with ${selectedTutor.name}`,
             subject: subject,
           });
+
+          // Check for achievement unlocks
+          const newlyUnlocked = checkAndUnlockAchievements(user.id);
+          if (newlyUnlocked.length > 0) {
+            console.log(`🏆 ${newlyUnlocked.length} achievement(s) unlocked!`);
+          }
 
           // Dispatch event for dashboard update
           window.dispatchEvent(new CustomEvent("dashboardStorageChange"));

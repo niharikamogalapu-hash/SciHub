@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 const teamMembers = [
   { name: "Niharika", role: "Founder & Lead Developer", emoji: "💻", desc: "Built the entire SciHub platform from scratch with brilliant technical expertise.", color: "#38bdf8" },
   { name: "Parimita", role: "Founder & Creative Director", emoji: "🎨", desc: "Shaped SciHub's vision, curriculum, and creative direction with innovative ideas.", color: "#a855f7" },
+  { name: "Karthikashree", role: "Quality Assurance & Testing Specialist", emoji: "🐛", desc: "Dedicated QA specialist who found critical bugs and helped refine the platform, ensuring quality and reliability.", color: "#10b981" },
   { name: "Mr. Patel", role: "Biology Specialist", emoji: "🧬", desc: "Expert in cellular biology, genetics, and ecology with 15+ years of teaching experience.", color: "#22c55e" },
   { name: "Ms. Chen", role: "Chemistry & Physics Specialist", emoji: "⚛️", desc: "Passionate about making complex chemistry and physics concepts clear and engaging.", color: "#ec4899" },
   { name: "Dr. Alex Rivers", role: "Environmental Science Specialist", emoji: "🌍", desc: "Specialist in Earth Systems and sustainability with focus on real-world applications.", color: "#06b6d4" },

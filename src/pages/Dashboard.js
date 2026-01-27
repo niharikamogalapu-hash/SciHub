@@ -16,6 +16,7 @@ function Dashboard() {
   const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [unlockedAchievementModal, setUnlockedAchievementModal] = useState(null);
 
   const user = JSON.parse(localStorage.getItem("user") || "null") || null;
 
@@ -35,6 +36,10 @@ function Dashboard() {
       const newlyUnlocked = checkAndUnlockAchievements(user.id);
       if (newlyUnlocked.length > 0) {
         console.log(`🏆 New achievements unlocked: ${newlyUnlocked.length}`);
+        // Show the first newly unlocked achievement in modal
+        setUnlockedAchievementModal(newlyUnlocked[0]);
+        // Auto-dismiss after 4 seconds
+        setTimeout(() => setUnlockedAchievementModal(null), 4000);
       }
 
       // Load user achievement progress
@@ -472,6 +477,101 @@ function Dashboard() {
           <p style={{ color: "#9ca3af", textAlign: "center" }}>No stats available. Please refresh.</p>
         )}
       </main>
+
+      {/* ACHIEVEMENT UNLOCK MODAL */}
+      {unlockedAchievementModal && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "rgba(0, 0, 0, 0.7)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999,
+          animation: "fadeIn 0.3s ease",
+        }}>
+          <div style={{
+            background: `linear-gradient(135deg, #a855f7 0%, #ec4899 100%)`,
+            borderRadius: "20px",
+            padding: "40px 50px",
+            textAlign: "center",
+            boxShadow: "0 20px 60px rgba(168, 85, 247, 0.5)",
+            animation: "slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            maxWidth: "500px",
+            color: "white",
+          }}>
+            <div style={{
+              fontSize: "80px",
+              marginBottom: "20px",
+              animation: "bounce 0.6s ease-in-out",
+              display: "inline-block",
+            }}>
+              {unlockedAchievementModal.icon}
+            </div>
+            
+            <h2 style={{
+              fontSize: "32px",
+              margin: "0 0 12px 0",
+              fontWeight: "800",
+            }}>
+              🎉 Achievement Unlocked!
+            </h2>
+            
+            <h3 style={{
+              fontSize: "24px",
+              margin: "12px 0 20px 0",
+              fontWeight: "700",
+              color: "rgba(255, 255, 255, 0.95)",
+            }}>
+              {unlockedAchievementModal.title}
+            </h3>
+            
+            <p style={{
+              fontSize: "16px",
+              margin: "0 0 30px 0",
+              color: "rgba(255, 255, 255, 0.9)",
+              lineHeight: "1.6",
+            }}>
+              {unlockedAchievementModal.description}
+            </p>
+            
+            <button
+              onClick={() => setUnlockedAchievementModal(null)}
+              style={{
+                background: "rgba(255, 255, 255, 0.2)",
+                border: "2px solid rgba(255, 255, 255, 0.4)",
+                color: "white",
+                padding: "12px 30px",
+                borderRadius: "10px",
+                fontSize: "16px",
+                fontWeight: "600",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = "rgba(255, 255, 255, 0.3)";
+                e.target.style.borderColor = "rgba(255, 255, 255, 0.6)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = "rgba(255, 255, 255, 0.2)";
+                e.target.style.borderColor = "rgba(255, 255, 255, 0.4)";
+              }}
+            >
+              Awesome! 🎊
+            </button>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-20px); }
+        }
+      `}</style>
     </div>
   );
 }

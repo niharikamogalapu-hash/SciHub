@@ -19,11 +19,22 @@ function Signup({ onSignup }) {
 
     try {
       // LOCAL STORAGE MODE - Database disabled
+      // Trim inputs
+      const trimmedEmail = email.trim().toLowerCase();
+      const trimmedPassword = password.trim();
+      const trimmedFirstName = firstName.trim();
+      const trimmedLastName = lastName.trim();
+
+      if (!trimmedEmail || !trimmedPassword || !trimmedFirstName || !trimmedLastName) {
+        setError("Please fill in all fields");
+        return;
+      }
+
       // Retrieve existing registered users
       const registeredUsers = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
       
-      // Check if email already exists
-      if (registeredUsers.some(u => u.email === email)) {
+      // Check if email already exists (case-insensitive)
+      if (registeredUsers.some(u => (u.email || "").trim().toLowerCase() === trimmedEmail)) {
         setError("Email already registered. Please log in or use a different email.");
         return;
       }
@@ -31,10 +42,10 @@ function Signup({ onSignup }) {
       // Create new user object with a simple ID
       const newUser = {
         id: Date.now().toString(), // Simple unique ID based on timestamp
-        firstName,
-        lastName,
-        email,
-        password, // Note: In production, this should be hashed!
+        firstName: trimmedFirstName,
+        lastName: trimmedLastName,
+        email: trimmedEmail,
+        password: trimmedPassword, // Note: In production, this should be hashed!
         createdAt: new Date().toISOString(),
       };
 

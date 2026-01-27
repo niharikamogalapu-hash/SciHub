@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { saveGameProgress, loadGameProgress, clearGameProgress } from "../../utils/storageManager";
 
-function QuizGame({ gameData, onComplete, onExit }) {
+function QuizGame({ gameData, onComplete, onExit, userId }) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(false);
@@ -8,6 +9,29 @@ function QuizGame({ gameData, onComplete, onExit }) {
   const [isCorrect, setIsCorrect] = useState(null);
   const [startTime] = useState(Date.now());
   const [answerHistory, setAnswerHistory] = useState([]);
+
+  // Load saved progress on mount
+  useEffect(() => {
+    if (userId && gameData.id) {
+      const savedProgress = loadGameProgress(userId, gameData.id);
+      if (savedProgress) {
+        setCurrentQuestion(savedProgress.currentQuestion || 0);
+        setScore(savedProgress.score || 0);
+        setAnswerHistory(savedProgress.answerHistory || []);
+      }
+    }
+  }, [userId, gameData.id]);
+
+  // Save progress whenever it changes
+  useEffect(() => {
+    if (userId && gameData.id) {
+      saveGameProgress(userId, gameData.id, {
+        currentQuestion,
+        score,
+        answerHistory,
+      });
+    }
+  }, [currentQuestion, score, answerHistory, userId, gameData.id]);
 
   const questions = gameData.questions || [];
 
@@ -40,7 +64,10 @@ function QuizGame({ gameData, onComplete, onExit }) {
       setSelectedAnswer(null);
       setIsCorrect(null);
     } else {
-      // Game over
+      // Game over - clear saved progress
+      if (userId && gameData.id) {
+        clearGameProgress(userId, gameData.id);
+      }
       const timeTaken = (Date.now() - startTime) / 1000;
       const timeBonus = Math.max(0, Math.floor(30 - timeTaken / 30));
       const finalScore = Math.max(50, Math.min(100, score + timeBonus));

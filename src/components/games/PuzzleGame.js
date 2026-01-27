@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { saveGameProgress, loadGameProgress, clearGameProgress } from "../../utils/storageManager";
 
-function PuzzleGame({ gameData, onComplete, onExit }) {
+function PuzzleGame({ gameData, onComplete, onExit, userId }) {
   const [sequence, setSequence] = useState([]);
   const [selectedIndices, setSelectedIndices] = useState([]);
   const [score, setScore] = useState(0);
@@ -16,6 +17,29 @@ function PuzzleGame({ gameData, onComplete, onExit }) {
       setSequence(shuffled);
     }
   }, [gameData]);
+
+  // Load saved progress on mount
+  useEffect(() => {
+    if (userId && gameData.id && sequence.length > 0) {
+      const savedProgress = loadGameProgress(userId, gameData.id);
+      if (savedProgress) {
+        setSelectedIndices(savedProgress.selectedIndices || []);
+        setScore(savedProgress.score || 0);
+        setMistakes(savedProgress.mistakes || 0);
+      }
+    }
+  }, [userId, gameData.id, sequence.length]);
+
+  // Save progress whenever it changes
+  useEffect(() => {
+    if (userId && gameData.id && sequence.length > 0) {
+      saveGameProgress(userId, gameData.id, {
+        selectedIndices,
+        score,
+        mistakes,
+      });
+    }
+  }, [selectedIndices, score, mistakes, userId, gameData.id, sequence.length]);
 
   const handleSelectItem = (index) => {
     if (gameOver) return;
@@ -45,6 +69,10 @@ function PuzzleGame({ gameData, onComplete, onExit }) {
   };
 
   const handleComplete = () => {
+    // Clear saved progress when game is completed
+    if (userId && gameData.id) {
+      clearGameProgress(userId, gameData.id);
+    }
     const timeTaken = (Date.now() - startTime) / 1000;
     const timeBonus = Math.max(0, Math.floor(30 - timeTaken / 10));
     const mistakeDeduction = Math.max(0, mistakes * 2);

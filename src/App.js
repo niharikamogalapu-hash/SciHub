@@ -332,7 +332,7 @@ function App() {
               {/* Profile */}
               <Route
                 path="/profile"
-                element={<Profile user={user} onUpdate={setUser} />}
+                element={<Profile user={user} onUpdate={setUser} onLogout={handleLogout} />}
               />
             </>
           )}

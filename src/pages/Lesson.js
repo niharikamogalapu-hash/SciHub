@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import "../styles/Lesson.css";
-import { markVideoWatched as saveVideoToStorage, getWatchedVideos, markIntroVideoCompleted, addXP, addCoins, markLessonCompleted, bookTutoringSession, logActivity, setUserData } from "../utils/storageManager";
+import { markVideoWatched as saveVideoToStorage, getWatchedVideos, markIntroVideoCompleted, addXP, addCoins, markLessonCompleted, bookTutoringSession, logActivity, setUserData, checkAndUnlockAchievements } from "../utils/storageManager";
 
 // Helper function to format dates
 function formatDate(date) {
@@ -2574,6 +2574,12 @@ export default function Lesson() {
           subject: lesson?.title || "Biology",
         });
 
+        // Check for achievement unlocks
+        const newlyUnlocked = checkAndUnlockAchievements(user.id);
+        if (newlyUnlocked.length > 0) {
+          console.log(`🏆 ${newlyUnlocked.length} achievement(s) unlocked!`);
+        }
+
         setBookingStatus({ type: "success", message: "Session booked successfully!" });
         setSessions((prev) =>
           prev.map((p) =>
@@ -2604,6 +2610,12 @@ export default function Lesson() {
         description: `Booked session with ${selectedTutor?.name}`,
         subject: lesson?.title || "Biology",
       });
+
+      // Check for achievement unlocks
+      const newlyUnlocked = checkAndUnlockAchievements(user.id);
+      if (newlyUnlocked.length > 0) {
+        console.log(`🏆 ${newlyUnlocked.length} achievement(s) unlocked!`);
+      }
 
       setBookingStatus({ type: "success", message: "Session booked successfully!" });
       setSessions((prev) =>
@@ -3472,6 +3484,12 @@ export default function Lesson() {
                         addXP(user.id, COMPLETION_BONUS_XP);
                         addCoins(user.id, COMPLETION_BONUS_COINS);
                         console.log(`🎉 Lesson completed! Awarded ${COMPLETION_BONUS_XP} XP and ${COMPLETION_BONUS_COINS} coins`);
+                        
+                        // Check for achievement unlocks
+                        const newlyUnlocked = checkAndUnlockAchievements(user.id);
+                        if (newlyUnlocked.length > 0) {
+                          console.log(`🏆 ${newlyUnlocked.length} achievement(s) unlocked!`);
+                        }
                       }
                     }
                     

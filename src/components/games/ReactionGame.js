@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { saveGameProgress, loadGameProgress, clearGameProgress } from "../../utils/storageManager";
 
-function ReactionGame({ gameData, onComplete, onExit }) {
+function ReactionGame({ gameData, onComplete, onExit, userId }) {
   const [gameStarted, setGameStarted] = useState(false);
   const [currentTarget, setCurrentTarget] = useState(0);
   const [score, setScore] = useState(0);
@@ -8,6 +9,29 @@ function ReactionGame({ gameData, onComplete, onExit }) {
   const [gameStartClock] = useState(Date.now());
 
   const targets = gameData.targets || [];
+
+  // Load saved progress on mount
+  useEffect(() => {
+    if (userId && gameData.id) {
+      const savedProgress = loadGameProgress(userId, gameData.id);
+      if (savedProgress) {
+        setGameStarted(savedProgress.gameStarted || false);
+        setCurrentTarget(savedProgress.currentTarget || 0);
+        setScore(savedProgress.score || 0);
+      }
+    }
+  }, [userId, gameData.id]);
+
+  // Save progress whenever it changes
+  useEffect(() => {
+    if (userId && gameData.id) {
+      saveGameProgress(userId, gameData.id, {
+        gameStarted,
+        currentTarget,
+        score,
+      });
+    }
+  }, [gameStarted, currentTarget, score, userId, gameData.id]);
 
   const handleStartGame = () => {
     setGameStarted(true);
@@ -24,7 +48,10 @@ function ReactionGame({ gameData, onComplete, onExit }) {
       if (currentTarget < targets.length - 1) {
         setCurrentTarget(currentTarget + 1);
       } else {
-        // Game complete
+        // Game complete - clear saved progress
+        if (userId && gameData.id) {
+          clearGameProgress(userId, gameData.id);
+        }
         const timeTaken = (Date.now() - gameStartClock) / 1000;
         const timeBonus = Math.max(0, Math.floor(30 - timeTaken / 2));
         const finalScore = Math.max(50, Math.min(100, score + 10 + timeBonus));
