@@ -286,6 +286,14 @@ export default function Lesson() {
     };
   }, [lessonId, location.state]); // eslint-disable-line react-hooks/exhaustive-deps
   
+  // Cleanup modal on component unmount
+  useEffect(() => {
+    return () => {
+      console.log("🧹 Component unmounting, closing modal");
+      setCurrentVideoPlayer(null);
+    };
+  }, []);
+  
   useEffect(() => {
     // Load shared questions from localStorage
     const getStoredQuestions = () => {

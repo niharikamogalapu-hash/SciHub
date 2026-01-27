@@ -396,12 +396,6 @@ function Sidebar({ user, onLogout }) {
           <span style={{ fontSize: "1.3rem" }}>🚪</span>
           {!collapsed && <span>Logout</span>}
         </button>
-            e.currentTarget.style.color = "#cbd5e1";
-          }}
-        >
-          <span style={{ fontSize: "1.3rem" }}>🚪</span>
-          {!collapsed && <span>Logout</span>}
-        </button>
       </div>
     </aside>
   );
