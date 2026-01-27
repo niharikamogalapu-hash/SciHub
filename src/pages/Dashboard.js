@@ -30,6 +30,7 @@ function Dashboard() {
     try {
       // Load stats from localStorage using storageManager
       const userStats = getDashboardStats(user.id);
+      console.log("💰 Dashboard stats loaded:", userStats);
       setStats(userStats);
 
       // Check and unlock any new achievements

@@ -277,6 +277,13 @@ export default function Lesson() {
     setWorksheet2Answers({});
     setWorksheet1Submitted(false);
     setWorksheet2Submitted(false);
+    
+    // Cleanup function when component unmounts
+    return () => {
+      console.log("🧹 Cleaning up Lesson component");
+      // Close any open video modal
+      setCurrentVideoPlayer(null);
+    };
   }, [lessonId, location.state]); // eslint-disable-line react-hooks/exhaustive-deps
   
   useEffect(() => {
@@ -2677,7 +2684,11 @@ export default function Lesson() {
       <main className="dashboard-main lesson-main">
 
         {/* Back button */}
-        <button className="back-btn" onClick={() => navigate(getBackNavigationPath())}>
+        <button className="back-btn" onClick={() => {
+          const path = getBackNavigationPath();
+          console.log("🔙 Back button clicked, navigating to:", path);
+          navigate(path, { replace: true });
+        }}>
           ← Back
         </button>
 

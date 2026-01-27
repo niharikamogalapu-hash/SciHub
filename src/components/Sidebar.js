@@ -1,8 +1,8 @@
-
 // src/components/Sidebar.js
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
+import { clearUserData } from "../utils/storageManager";
 
 function Sidebar({ user, onLogout }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -11,6 +11,31 @@ function Sidebar({ user, onLogout }) {
 
   function handleLogoClick() {
     navigate("/dashboard");
+  }
+
+  function handleLogoutClick() {
+    console.log("🔘 Logout button clicked");
+    
+    try {
+      // If onLogout handler is provided (from App.js), use it
+      if (onLogout) {
+        console.log("✅ Using onLogout handler from props");
+        onLogout();
+      } else {
+        // Fallback: Handle logout locally
+        console.log("⚠️ No onLogout handler provided, handling logout locally");
+        const currentUser = JSON.parse(localStorage.getItem("user"));
+        if (currentUser && currentUser.id) {
+          clearUserData(currentUser.id);
+        }
+        localStorage.removeItem("user");
+        console.log("✅ User logged out, navigating to home");
+        navigate("/", { replace: true });
+      }
+    } catch (error) {
+      console.error("❌ Logout error:", error);
+      navigate("/", { replace: true });
+    }
   }
 
   return (
@@ -339,15 +364,7 @@ function Sidebar({ user, onLogout }) {
 
         {/* Logout */}
         <button
-          onClick={() => {
-            console.log("🔘 Logout button clicked");
-            if (onLogout) {
-              console.log("✅ onLogout handler exists, calling...");
-              onLogout();
-            } else {
-              console.warn("⚠️ onLogout handler not provided");
-            }
-          }}
+          onClick={handleLogoutClick}
           style={{
             display: "flex",
             alignItems: "center",
@@ -373,6 +390,12 @@ function Sidebar({ user, onLogout }) {
           onMouseLeave={(e) => {
             e.currentTarget.style.background = "transparent";
             e.currentTarget.style.borderLeftColor = "transparent";
+            e.currentTarget.style.color = "#cbd5e1";
+          }}
+        >
+          <span style={{ fontSize: "1.3rem" }}>🚪</span>
+          {!collapsed && <span>Logout</span>}
+        </button>
             e.currentTarget.style.color = "#cbd5e1";
           }}
         >

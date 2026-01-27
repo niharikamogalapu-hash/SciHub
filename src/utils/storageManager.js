@@ -358,6 +358,10 @@ export const setDashboardStats = (userId, stats) => {
     };
     localStorage.setItem(storageKey, JSON.stringify(updatedStats));
     console.log(`✅ Saved dashboard stats for user ${userId}`, updatedStats);
+    
+    // Dispatch event to notify dashboard of changes
+    window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+    
     return updatedStats;
   } catch (error) {
     console.error(`❌ Error saving dashboard stats:`, error);
