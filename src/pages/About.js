@@ -21,15 +21,8 @@ function About() {
         {/* Why We Built This */}
         <div className="card slide-up" style={{ marginBottom: "2rem", padding: "2rem" }}>
           <h2 style={{ fontSize: "1.8rem", marginTop: "0", marginBottom: "1rem", color: "#38bdf8" }}>Why We Built This</h2>
-          <p style={{ lineHeight: "1.8", marginBottom: "1rem", fontSize: "1.02rem", color: "#f9fafb" }}>
-            We created SciHub because we saw a need in our community. Too many students find science intimidating, 
-            boring, or disconnected from their lives. We wanted to change that. We wanted to build a platform where 
-            learning science feels less like a chore and more like an adventure—where complex ideas become crystal clear 
-            and where every student feels supported in their learning journey.
-          </p>
           <p style={{ lineHeight: "1.8", marginBottom: "0", fontSize: "1.02rem", color: "#f9fafb" }}>
-            This isn't just a project for us. It's our passion project, our commitment to making education better, 
-            and our proof that two dedicated students can create something that truly makes a difference.
+            We built SciHub because science education needed a change. We noticed that AP classes—AP Biology, AP Chemistry, AP Physics, AP Environmental Science, AP Human Geography, and AP Psychology—have some of the highest failure rates among high school students. Too many students find these courses intimidating or feel unprepared for the AP exam. We wanted to create a platform where learning feels like an adventure, not a chore—where complex AP concepts become clear, students get targeted practice, and every learner feels confident and supported.
           </p>
         </div>
 
@@ -46,76 +39,32 @@ function About() {
         {/* Niharika's Section */}
         <div className="card slide-up" style={{ marginBottom: "2rem", padding: "2rem" }}>
           <h3 style={{ color: "#38bdf8", marginTop: "0", fontSize: "1.5rem", marginBottom: "1rem" }}>🚀 Niharika's Technical Excellence</h3>
-          <p style={{ lineHeight: "1.8", marginBottom: "1rem", fontSize: "1.02rem", color: "#f9fafb" }}>
-            Niharika took on the monumental task of building the entire platform from the ground up. We're talking hundreds and hundreds of hours 
-            of coding, debugging, designing, and optimizing. Every interactive game, every lesson page, every feature you see on this 
-            site came from her dedication and technical expertise at just 15 years old.
-          </p>
-          <p style={{ lineHeight: "1.8", marginBottom: "1rem", fontSize: "1.02rem", color: "#f9fafb" }}>
-            But here's the thing—it wasn't easy. Niharika faced countless challenges. There were bugs that took hours to track down. 
-            Features that didn't work the way she envisioned. Times when the code wouldn't cooperate, and she'd have to completely rethink 
-            an entire section. She dealt with performance issues, struggled with responsive design across different devices, and had to learn 
-            new technologies on the fly just to make certain features possible. There were moments of frustration, late nights staring at 
-            error messages, and moments where she questioned if she could pull this off.
-          </p>
           <p style={{ lineHeight: "1.8", marginBottom: "0", fontSize: "1.02rem", color: "#f9fafb" }}>
-            But she pushed through. She researched solutions online, tested relentlessly, rewrote entire sections of code to make them better, 
-            and never settled for "good enough." She stayed up late troubleshooting issues, researched best practices, and constantly refined 
-            every detail to make sure the platform is not just functional, but beautiful, intuitive, and actually enjoyable to use. 
-            Niharika's perseverance and technical brilliance is the backbone of everything you see here—and remember, she did all this while 
-            managing school, homework, and everything else that comes with being 15.
+            Niharika built the entire platform from scratch—hundreds of hours of coding, debugging, and design. Every game, lesson, and feature came from her technical expertise. She faced countless challenges: frustrating bugs, performance issues, and moments of doubt. But she pushed through, researched solutions, tested relentlessly, and never settled for less than perfect. All at just 15 years old while managing school and everything else.
           </p>
         </div>
 
         {/* Parimita's Section */}
         <div className="card slide-up" style={{ marginBottom: "2rem", padding: "2rem" }}>
-          <h3 style={{ color: "#a855f7", marginTop: "0", fontSize: "1.5rem", marginBottom: "1rem" }}>💡 Parimita's Creative Vision & Partnership</h3>
-          <p style={{ lineHeight: "1.8", marginBottom: "1rem", fontSize: "1.02rem", color: "#f9fafb" }}>
-            While Niharika was coding, I (Parimita) was thinking about how to make this truly special. At 15, I contributed creative ideas 
-            for the curriculum structure, suggested features that would actually help students learn better, and helped shape the overall 
-            vision of the platform. I was the voice asking "what if we could..." and "what would students really want?" 
-          </p>
+          <h3 style={{ color: "#a855f7", marginTop: "0", fontSize: "1.5rem", marginBottom: "1rem" }}>💡 Parimita's Creative Vision</h3>
           <p style={{ lineHeight: "1.8", marginBottom: "0", fontSize: "1.02rem", color: "#f9fafb" }}>
-            But our partnership meant we also supported each other through the struggles. When Niharika hit a coding wall and felt stuck, 
-            I'd brainstorm solutions with her. When I had doubts about our ideas, she'd show me what was possible through code. We had tough 
-            conversations about what to cut and what to keep, we had to learn project management and planning at an age when most teens are 
-            just thinking about weekend plans. We pushed each other, challenged each other's thinking, and built something neither of us 
-            could have created alone.
+            Parimita shaped the platform's vision and curriculum structure, always asking "what would students really want?" She supported Niharika through coding challenges while ensuring the platform was designed with students' needs in mind. Their partnership—brainstorming together, challenging each other's thinking, and building something neither could have created alone—made SciHub truly special.
           </p>
         </div>
 
         {/* Karthikashree's Section */}
         <div className="card slide-up" style={{ marginBottom: "2rem", padding: "2rem" }}>
-          <h3 style={{ color: "#10b981", marginTop: "0", fontSize: "1.5rem", marginBottom: "1rem" }}>🐛 Karthikashree's Quality Assurance & Attention to Detail</h3>
-          <p style={{ lineHeight: "1.8", marginBottom: "1rem", fontSize: "1.02rem", color: "#f9fafb" }}>
-            As our Quality Assurance specialist, Karthikashree played a crucial role in making sure SciHub was rock-solid and bug-free. 
-            While Niharika was building features and Parimita was shaping the vision, Karthikashree meticulously tested every corner of the 
-            platform, finding bugs that we missed, identifying edge cases we didn't think of, and pushing us to make everything better.
-          </p>
+          <h3 style={{ color: "#10b981", marginTop: "0", fontSize: "1.5rem", marginBottom: "1rem" }}>🐛 Karthikashree's Quality Assurance</h3>
           <p style={{ lineHeight: "1.8", marginBottom: "0", fontSize: "1.02rem", color: "#f9fafb" }}>
-            Her eye for detail and relentless testing uncovered issues ranging from small UI glitches to significant logic problems that could 
-            have broken the user experience. Beyond just finding bugs, Karthikashree worked closely with us to understand the issues and provided 
-            clear feedback that helped us fix them faster. She was instrumental in ensuring that every game works perfectly, every lesson loads 
-            smoothly, and every feature functions as intended. Her contribution made SciHub not just functional, but reliable and trustworthy—
-            the kind of platform where students and educators can have complete confidence.
+            Karthikashree meticulously tested every aspect of SciHub, finding bugs and edge cases others missed. Her attention to detail ensured every game works perfectly and every feature functions as intended. She was crucial in making SciHub not just functional, but reliable and trustworthy for all users.
           </p>
         </div>
 
         {/* The Struggle & Victory */}
         <div className="card slide-up" style={{ marginBottom: "2rem", padding: "2rem" }}>
-          <h3 style={{ color: "#38bdf8", marginTop: "0", fontSize: "1.5rem", marginBottom: "1rem" }}>🤝 The Struggle, The Growth, The Victory</h3>
-          <p style={{ lineHeight: "1.8", marginBottom: "1rem", fontSize: "1.02rem", color: "#f9fafb" }}>
-            This wasn't easy. There were long nights, frustrating bugs that seemed impossible to solve, merge conflicts that made no sense, 
-            and moments where we genuinely questioned if we could pull this off. We struggled with complex logic, debugged problems for hours, 
-            dealt with features that seemed amazing in theory but were a nightmare to build in reality. We had to learn database management, 
-            API integration, responsive design—all while being 15-year-olds who were supposed to be studying for other classes too.
-          </p>
+          <h3 style={{ color: "#38bdf8", marginTop: "0", fontSize: "1.5rem", marginBottom: "1rem" }}>🤝 The Struggle & The Victory</h3>
           <p style={{ lineHeight: "1.8", marginBottom: "0", fontSize: "1.02rem", color: "#f9fafb" }}>
-            But we pushed through because we both believed in this mission. We learned more in building SciHub than we could have in any 
-            classroom. Niharika's technical brilliance combined with my creative vision created something extraordinary. We proved that 
-            age is just a number when you have determination, and that two 15-year-olds can build something that genuinely helps people. 
-            This isn't just a project for us—it's our legacy, our passion, and proof of what's possible when young people are given the 
-            space to dream big and work hard.
+            Building SciHub wasn't easy. There were long nights, frustrating bugs, and moments of doubt. We had to learn database management, API integration, and responsive design while balancing school and other responsibilities. But we pushed through because we believed in the mission. We proved that age is just a number—and that two determined 15-year-olds can build something that truly helps people.
           </p>
         </div>
 
