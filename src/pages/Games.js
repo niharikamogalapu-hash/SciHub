@@ -11,7 +11,7 @@ import { addGameScore, logActivity, checkAndUnlockAchievements } from "../utils/
 
 function Games({ onGameWin }) {
   const [user, setUser] = useState(null);
-  const [selectedTopic, setSelectedTopic] = useState("Biology");
+  const [selectedTopic, setSelectedTopic] = useState("AP Biology");
   const [isLoading, setIsLoading] = useState(true);
   const [playerCoins, setPlayerCoins] = useState(0);
   const [activeGame, setActiveGame] = useState(null);
@@ -45,7 +45,7 @@ function Games({ onGameWin }) {
       }
     } else {
       // First time - only unlock the first game of each topic (game_number: 1)
-      // IDs: 1 (Biology), 11 (Chemistry), 21 (Physics), 31 (Env Sci), 41 (Economics), 51 (History), 61 (Geography), 71 (Psychology)
+      // IDs: 1 (AP Biology), 11 (AP Chemistry), 21 (AP Physics), 31 (AP Env Sci), 41 (Economics), 51 (History), 61 (AP Geography), 71 (AP Psychology)
       const initialUnlocked = new Set([1, 11, 21, 31, 41, 51, 61, 71]);
       setUnlockedGames(initialUnlocked);
       localStorage.setItem("unlockedGames", JSON.stringify(Array.from(initialUnlocked)));
@@ -58,7 +58,7 @@ function Games({ onGameWin }) {
   // First game of each lesson is FREE (coin_cost: 0)
   // Other games cost coins and reward more based on difficulty
   const gamesByTopic = {
-    Biology: [
+    "AP Biology": [
       { id: 1, game_number: 1, title: "Cell Structure Master", description: "Identify cell organelles and their functions. Match organelles to their descriptions.", lesson: "Introduction to Biology", base_reward: 15, coin_cost: 0, difficulty: "Easy" },
       { id: 2, game_number: 2, title: "Photosynthesis Puzzle", description: "Guide plants through photosynthesis. Learn light and dark reactions.", lesson: "Photosynthesis & Cellular Respiration", base_reward: 30, coin_cost: 10, difficulty: "Medium" },
       { id: 3, game_number: 3, title: "Evolution Match", description: "Connect species to their evolutionary adaptations. Understand natural selection.", lesson: "Evolution & Natural Selection", base_reward: 60, coin_cost: 20, difficulty: "Medium" },
@@ -70,7 +70,7 @@ function Games({ onGameWin }) {
       { id: 9, game_number: 9, title: "Immune Response", description: "Learn how immune cells fight infections and disease.", lesson: "Immune System & Disease", base_reward: 3840, coin_cost: 1280, difficulty: "Hard" },
       { id: 10, game_number: 10, title: "Taxonomy Challenge", description: "Classify organisms using the binomial nomenclature system.", lesson: "Classification & Taxonomy", base_reward: 7680, coin_cost: 2560, difficulty: "Expert" },
     ],
-    Chemistry: [
+    "AP Chemistry": [
       { id: 11, game_number: 1, title: "Periodic Table Master", description: "Learn elements, symbols, and periodic trends.", lesson: "Atomic Structure & Periodic Table", base_reward: 15, coin_cost: 0, difficulty: "Easy" },
       { id: 12, game_number: 2, title: "Electron Configuration", description: "Fill electron shells with correct orbital arrangement.", lesson: "Electrons & Energy Levels", base_reward: 30, coin_cost: 10, difficulty: "Medium" },
       { id: 13, game_number: 3, title: "Bonding Builder", description: "Form ionic, covalent, and metallic bonds.", lesson: "Chemical Bonding", base_reward: 60, coin_cost: 20, difficulty: "Hard" },
@@ -82,7 +82,7 @@ function Games({ onGameWin }) {
       { id: 19, game_number: 9, title: "Thermochemistry Lab", description: "Calculate enthalpy and predict reaction energy changes.", lesson: "Thermochemistry & Energy", base_reward: 3840, coin_cost: 1280, difficulty: "Expert" },
       { id: 20, game_number: 10, title: "Kinetics Inspector", description: "Understand reaction rates and activation energy.", lesson: "Reaction Kinetics", base_reward: 7680, coin_cost: 2560, difficulty: "Hard" },
     ],
-    Physics: [
+    "AP Physics": [
       { id: 21, game_number: 1, title: "Force & Motion", description: "Apply Newton's laws to solve physics problems.", lesson: "Forces & Newton's Laws", base_reward: 15, coin_cost: 0, difficulty: "Easy" },
       { id: 22, game_number: 2, title: "Kinematics Calculator", description: "Calculate distance, velocity, and acceleration.", lesson: "Motion & Kinematics", base_reward: 30, coin_cost: 10, difficulty: "Medium" },
       { id: 23, game_number: 3, title: "Energy Transformer", description: "Convert between kinetic and potential energy.", lesson: "Work & Energy", base_reward: 60, coin_cost: 20, difficulty: "Medium" },
@@ -94,7 +94,7 @@ function Games({ onGameWin }) {
       { id: 29, game_number: 9, title: "Magnetism Field", description: "Visualize magnetic fields and electromagnetic forces.", lesson: "Magnetism & Electromagnetism", base_reward: 3840, coin_cost: 1280, difficulty: "Hard" },
       { id: 30, game_number: 10, title: "Quantum Quest", description: "Explore quantum mechanics and atomic models.", lesson: "Modern Physics & Quantum", base_reward: 7680, coin_cost: 2560, difficulty: "Expert" },
     ],
-    "Environmental Science": [
+    "AP Environmental Science": [
       { id: 31, game_number: 1, title: "Biome Explorer", description: "Identify biomes and their characteristics worldwide.", lesson: "Earth's Biomes", base_reward: 15, coin_cost: 0, difficulty: "Easy" },
       { id: 32, game_number: 2, title: "Water Cycle Tracker", description: "Follow water through evaporation, condensation, precipitation.", lesson: "Water Cycle & Hydrosphere", base_reward: 30, coin_cost: 10, difficulty: "Medium" },
       { id: 33, game_number: 3, title: "Nutrient Cycling", description: "Track nitrogen, phosphorus, and carbon cycles.", lesson: "Nutrient Cycles", base_reward: 60, coin_cost: 20, difficulty: "Medium" },
@@ -106,7 +106,7 @@ function Games({ onGameWin }) {
       { id: 39, game_number: 9, title: "Renewable Energy", description: "Learn about solar, wind, and sustainable energy sources.", lesson: "Renewable & Sustainable Resources", base_reward: 3840, coin_cost: 1280, difficulty: "Hard" },
       { id: 40, game_number: 10, title: "Ecosystem Manager", description: "Balance human needs with ecosystem health.", lesson: "Human Impact & Sustainability", base_reward: 7680, coin_cost: 2560, difficulty: "Expert" },
     ],
-    Economics: [
+    "Economics": [
       { id: 41, game_number: 1, title: "Supply & Demand", description: "Balance markets and find equilibrium prices.", lesson: "Supply, Demand & Markets", base_reward: 15, coin_cost: 0, difficulty: "Easy" },
       { id: 42, game_number: 2, title: "Business Tycoon", description: "Run a virtual business with profit and loss.", lesson: "Business & Entrepreneurship", base_reward: 30, coin_cost: 10, difficulty: "Medium" },
       { id: 43, game_number: 3, title: "Budget Manager", description: "Create household and government budgets.", lesson: "Personal & Government Finance", base_reward: 60, coin_cost: 20, difficulty: "Medium" },
@@ -118,7 +118,7 @@ function Games({ onGameWin }) {
       { id: 49, game_number: 9, title: "Labor Economics", description: "Understand wages, employment, and worker rights.", lesson: "Labor Economics", base_reward: 3840, coin_cost: 1280, difficulty: "Hard" },
       { id: 50, game_number: 10, title: "Economic Systems", description: "Compare capitalism, socialism, and mixed economies.", lesson: "Economic Systems & Theory", base_reward: 7680, coin_cost: 2560, difficulty: "Expert" },
     ],
-    History: [
+    "History": [
       { id: 51, game_number: 1, title: "Timeline Constructor", description: "Arrange historical events in correct order.", lesson: "Ancient Civilizations", base_reward: 15, coin_cost: 0, difficulty: "Easy" },
       { id: 52, game_number: 2, title: "Medieval Kingdoms", description: "Learn about feudalism and medieval society.", lesson: "Medieval Period", base_reward: 30, coin_cost: 10, difficulty: "Medium" },
       { id: 53, game_number: 3, title: "Renaissance Trivia", description: "Explore art, science, and culture rebirth.", lesson: "Renaissance & Reformation", base_reward: 60, coin_cost: 20, difficulty: "Medium" },
@@ -130,7 +130,7 @@ function Games({ onGameWin }) {
       { id: 59, game_number: 9, title: "Modern History Map", description: "Trace contemporary historical movements and events.", lesson: "Modern History & Globalization", base_reward: 3840, coin_cost: 1280, difficulty: "Hard" },
       { id: 60, game_number: 10, title: "Historical Figures", description: "Match leaders and thinkers with their achievements.", lesson: "Key Historical Figures", base_reward: 7680, coin_cost: 2560, difficulty: "Expert" },
     ],
-    "Human Geography": [
+    "AP Human Geography": [
       { id: 61, game_number: 1, title: "Map Master", description: "Identify countries, capitals, and geographic features.", lesson: "World Geography & Maps", base_reward: 15, coin_cost: 0, difficulty: "Easy" },
       { id: 62, game_number: 2, title: "Culture Explorer", description: "Learn about different cultures and traditions worldwide.", lesson: "Cultural Geography", base_reward: 30, coin_cost: 10, difficulty: "Medium" },
       { id: 63, game_number: 3, title: "Population Analyzer", description: "Study population distribution and demographics.", lesson: "Population & Demographics", base_reward: 60, coin_cost: 20, difficulty: "Medium" },
@@ -142,7 +142,7 @@ function Games({ onGameWin }) {
       { id: 69, game_number: 9, title: "Climate & Landscape", description: "Explore climate zones and landforms.", lesson: "Climate & Landforms", base_reward: 3840, coin_cost: 1280, difficulty: "Hard" },
       { id: 70, game_number: 10, title: "Development Compass", description: "Compare economic development across regions.", lesson: "Development & Inequality", base_reward: 7680, coin_cost: 2560, difficulty: "Expert" },
     ],
-    Psychology: [
+    "AP Psychology": [
       { id: 71, game_number: 1, title: "Cognitive Bias Detector", description: "Identify common thinking patterns and biases.", lesson: "Introduction to Psychology", base_reward: 15, coin_cost: 0, difficulty: "Easy" },
       { id: 72, game_number: 2, title: "Memory Mastermind", description: "Learn and test different types of memory.", lesson: "Sensation & Perception", base_reward: 30, coin_cost: 10, difficulty: "Medium" },
       { id: 73, game_number: 3, title: "Learning Pathways", description: "Understand classical and operant conditioning.", lesson: "Learning & Conditioning", base_reward: 60, coin_cost: 20, difficulty: "Medium" },

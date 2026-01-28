@@ -21,12 +21,12 @@ function Resources({ branch }) {
     ];
 
     const mockSubsciences = [
-      { id: 1, science_id: 1, name: 'Biology', code: 'biology', emoji: '🧬', color: '#10b981', lightColor: 'rgba(16, 185, 129, 0.1)', description: 'Study of living organisms and life processes' },
-      { id: 2, science_id: 1, name: 'Chemistry', code: 'chemistry', emoji: '⚗️', color: '#0ea5e9', lightColor: 'rgba(6, 182, 212, 0.1)', description: 'Study of matter and chemical reactions' },
-      { id: 3, science_id: 1, name: 'Physics', code: 'physics', emoji: '⚡', color: '#f59e0b', lightColor: 'rgba(245, 158, 11, 0.1)', description: 'Study of matter, energy, and forces' },
-      { id: 4, science_id: 1, name: 'Environmental Science', code: 'environmental-science', emoji: '🌍', color: '#14b8a6', lightColor: 'rgba(20, 184, 166, 0.1)', description: 'Study of ecosystems and sustainability' },
-      { id: 5, science_id: 2, name: 'Psychology', code: 'psychology', emoji: '🧠', color: '#a855f7', lightColor: 'rgba(168, 85, 247, 0.1)', description: 'Study of human behavior and mind' },
-      { id: 6, science_id: 2, name: 'Human Geography', code: 'human-geography', emoji: '🌎', color: '#ef4444', lightColor: 'rgba(239, 68, 68, 0.1)', description: 'How people interact with places and environments' },
+      { id: 1, science_id: 1, name: 'AP Biology', code: 'biology', emoji: '🧬', color: '#10b981', lightColor: 'rgba(16, 185, 129, 0.1)', description: 'Study of living organisms and life processes' },
+      { id: 2, science_id: 1, name: 'AP Chemistry', code: 'chemistry', emoji: '⚗️', color: '#0ea5e9', lightColor: 'rgba(6, 182, 212, 0.1)', description: 'Study of matter and chemical reactions' },
+      { id: 3, science_id: 1, name: 'AP Physics', code: 'physics', emoji: '⚡', color: '#f59e0b', lightColor: 'rgba(245, 158, 11, 0.1)', description: 'Study of matter, energy, and forces' },
+      { id: 4, science_id: 1, name: 'AP Environmental Science', code: 'environmental-science', emoji: '🌍', color: '#14b8a6', lightColor: 'rgba(20, 184, 166, 0.1)', description: 'Study of ecosystems and sustainability' },
+      { id: 5, science_id: 2, name: 'AP Psychology', code: 'psychology', emoji: '🧠', color: '#a855f7', lightColor: 'rgba(168, 85, 247, 0.1)', description: 'Study of human behavior and mind' },
+      { id: 6, science_id: 2, name: 'AP Human Geography', code: 'human-geography', emoji: '🌎', color: '#ef4444', lightColor: 'rgba(239, 68, 68, 0.1)', description: 'How people interact with places and environments' },
       { id: 7, science_id: 2, name: 'History', code: 'history', emoji: '📜', color: '#f59e0b', lightColor: 'rgba(245, 158, 11, 0.1)', description: 'Study of past events and civilizations' },
       { id: 8, science_id: 2, name: 'Economics', code: 'economics', emoji: '💹', color: '#14b8a6', lightColor: 'rgba(20, 184, 166, 0.1)', description: 'Study of production, consumption, and resources' }
     ];

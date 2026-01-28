@@ -27,6 +27,9 @@ function Mission() {
           <p style={{ fontSize: "1.1rem", color: "#9ca3af", maxWidth: "700px", margin: "0 auto", lineHeight: "1.8" }}>
             SciHub exists to make science learning engaging, collaborative, and accessible for every student. We combine AI support, interactive tools, and live tutoring to help learners build confidence, curiosity, and mastery — one concept at a time.
           </p>
+          <p style={{ fontSize: "1rem", color: "#7dd3fc", maxWidth: "700px", margin: "1.5rem auto 0", lineHeight: "1.7", fontStyle: "italic" }}>
+            <strong>Our Focus:</strong> We recognize that AP science courses—AP Biology, AP Chemistry, AP Physics, AP Environmental Science, AP Human Geography, and AP Psychology—have some of the highest failure rates among high school students. SciHub is specifically designed to support AP learners with targeted practice, game-based learning, and expert tutoring to help students master these challenging subjects and succeed on the AP exam.
+          </p>
         </div>
 
         {/* Mission Pillars Grid */}

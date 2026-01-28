@@ -7,13 +7,13 @@ const tutors = [
   {
     id: "t1",
     name: "Dr. Rivera",
-    subject: "Biology",
+    subject: "AP Biology",
     description: "Cell biology and genetics, great for visual learners.",
   },
   {
     id: "t2",
     name: "Mr. Chen",
-    subject: "Physics",
+    subject: "AP Physics",
     description: "Mechanics, forces, and problem-solving strategies.",
   },
   {

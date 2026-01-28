@@ -6,15 +6,15 @@ const mockTutors = [
   {
     id: 1,
     name: "Sarah (Peer Tutor)",
-    specialty: "Biology – cells, genetics",
-    subject: "Biology",
+    specialty: "AP Biology – cells, genetics",
+    subject: "AP Biology",
     bio: "Student tutor who knows what it feels like to struggle at first.",
   },
   {
     id: 2,
     name: "Dr. James Wilson",
-    specialty: "Biology – ecology, evolution",
-    subject: "Biology",
+    specialty: "AP Biology – ecology, evolution",
+    subject: "AP Biology",
     bio: "PhD in evolutionary biology with 8 years of teaching experience.",
   },
 
@@ -22,15 +22,15 @@ const mockTutors = [
   {
     id: 3,
     name: "Ms. Chen",
-    specialty: "Chemistry – reactions, atoms",
-    subject: "Chemistry",
+    specialty: "AP Chemistry – reactions, atoms",
+    subject: "AP Chemistry",
     bio: "Makes chemistry feel like solving puzzles instead of memorizing formulas.",
   },
   {
     id: 4,
     name: "Prof. Ahmed Hassan",
-    specialty: "Chemistry – organic, molecular structure",
-    subject: "Chemistry",
+    specialty: "AP Chemistry – organic, molecular structure",
+    subject: "AP Chemistry",
     bio: "Specializes in breaking down complex organic reactions into simple steps.",
   },
 
@@ -38,15 +38,15 @@ const mockTutors = [
   {
     id: 5,
     name: "Mr. Patel",
-    specialty: "Physics – forces, motion",
-    subject: "Physics",
+    specialty: "AP Physics – forces, motion",
+    subject: "AP Physics",
     bio: "Uses real-life examples to explain physics step-by-step.",
   },
   {
     id: 6,
     name: "Elena Rodriguez",
-    specialty: "Physics – electricity, magnetism, optics",
-    subject: "Physics",
+    specialty: "AP Physics – electricity, magnetism, optics",
+    subject: "AP Physics",
     bio: "Passionate about making physics intuitive through demonstrations.",
   },
 
@@ -54,15 +54,15 @@ const mockTutors = [
   {
     id: 7,
     name: "Marcus Green",
-    specialty: "Environmental Science – ecosystems, climate",
-    subject: "Environmental Science",
+    specialty: "AP Environmental Science – ecosystems, climate",
+    subject: "AP Environmental Science",
     bio: "Combines field experience with classroom teaching for deep understanding.",
   },
   {
     id: 8,
     name: "Dr. Lisa Park",
-    specialty: "Environmental Science – sustainability, conservation",
-    subject: "Environmental Science",
+    specialty: "AP Environmental Science – sustainability, conservation",
+    subject: "AP Environmental Science",
     bio: "Advocates for practical solutions to real environmental challenges.",
   },
 
@@ -86,15 +86,15 @@ const mockTutors = [
   {
     id: 11,
     name: "Carlos Mendez",
-    specialty: "Human Geography – culture, societies",
-    subject: "Human Geography",
+    specialty: "AP Human Geography – culture, societies",
+    subject: "AP Human Geography",
     bio: "Explores the fascinating connections between people and places worldwide.",
   },
   {
     id: 12,
     name: "Sophie Laurent",
-    specialty: "Human Geography – urban systems, migration",
-    subject: "Human Geography",
+    specialty: "AP Human Geography – urban systems, migration",
+    subject: "AP Human Geography",
     bio: "Makes geography concepts accessible and relevant to daily life.",
   },
 
@@ -118,15 +118,15 @@ const mockTutors = [
   {
     id: 15,
     name: "Dr. Nathan Cohen",
-    specialty: "Psychology – cognitive science, behavior",
-    subject: "Psychology",
+    specialty: "AP Psychology – cognitive science, behavior",
+    subject: "AP Psychology",
     bio: "Helps students understand themselves and others through psychology.",
   },
   {
     id: 16,
     name: "Dr. Amanda Walsh",
-    specialty: "Psychology – development, mental health",
-    subject: "Psychology",
+    specialty: "AP Psychology – development, mental health",
+    subject: "AP Psychology",
     bio: "Compassionate tutor who connects psychology theory to real-world applications.",
   },
 ];

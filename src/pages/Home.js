@@ -275,14 +275,14 @@ function Home() {
           scrollBehavior: "smooth",
         }}>
           {[
-            { icon: "⚛️", subject: "Physics" },
-            { icon: "🧪", subject: "Chemistry" },
-            { icon: "🧬", subject: "Biology" },
-            { icon: "🌍", subject: "Environmental Science" },
+            { icon: "⚛️", subject: "AP Physics" },
+            { icon: "🧪", subject: "AP Chemistry" },
+            { icon: "🧬", subject: "AP Biology" },
+            { icon: "🌍", subject: "AP Environmental Science" },
             { icon: "💰", subject: "Economics" },
             { icon: "📜", subject: "History" },
-            { icon: "🗺️", subject: "Human Geography" },
-            { icon: "🧠", subject: "Psychology" },
+            { icon: "🗺️", subject: "AP Human Geography" },
+            { icon: "🧠", subject: "AP Psychology" },
           ].map((item, i) => (
             <div
               key={i}
