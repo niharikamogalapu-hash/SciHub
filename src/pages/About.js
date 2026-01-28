@@ -22,7 +22,7 @@ function About() {
         <div className="card slide-up" style={{ marginBottom: "2rem", padding: "2rem" }}>
           <h2 style={{ fontSize: "1.8rem", marginTop: "0", marginBottom: "1rem", color: "#38bdf8" }}>Why We Built This</h2>
           <p style={{ lineHeight: "1.8", marginBottom: "0", fontSize: "1.02rem", color: "#f9fafb" }}>
-            We built SciHub because science education needed a change. We noticed that AP classes—AP Biology, AP Chemistry, AP Physics, AP Environmental Science, AP Human Geography, and AP Psychology—have some of the highest failure rates among high school students. Too many students find these courses intimidating or feel unprepared for the AP exam. We wanted to create a platform where learning feels like an adventure, not a chore—where complex AP concepts become clear, students get targeted practice, and every learner feels confident and supported.
+            We watched our classmates struggle with AP classes and saw how many felt lost and discouraged. AP Biology, AP Chemistry, AP Physics, AP Environmental Science, AP Human Geography, and AP Psychology are notoriously difficult—students were stressed, unprepared, and often gave up before the exam. We knew there had to be a better way. So we built SciHub to turn that struggle around: a place where AP concepts are broken down into bite-sized games, where practice is actually fun, and where every student can build real confidence and mastery.
           </p>
         </div>
 

@@ -14,7 +14,7 @@ function SocialScience() {
   const sciences = [
     {
       id: "psychology",
-      title: "Psychology",
+      title: "AP Psychology",
       icon: "🧠",
       emoji: "🧠",
       color: "from-purple-500 to-pink-600",
@@ -26,7 +26,7 @@ function SocialScience() {
     },
     {
       id: "human-geography",
-      title: "Human Geography",
+      title: "AP Human Geography",
       icon: "🌎",
       emoji: "🌎",
       color: "from-red-500 to-orange-600",
@@ -78,7 +78,7 @@ function SocialScience() {
         }}>
           <h1 style={{ fontSize: "3.5rem", margin: "0 0 20px 0", fontWeight: "800" }}>🌐 Social Science</h1>
           <p style={{ fontSize: "1.2rem", margin: 0, opacity: 0.95, maxWidth: "600px" }}>
-            Explore Psychology, History, Human Geography and Economics. Understand people, societies and the forces that shape our world.
+            Explore AP Psychology, History, AP Human Geography and Economics. Understand people, societies and the forces that shape our world.
           </p>
         </header>
 

@@ -49,14 +49,14 @@ function Resources({ branch }) {
       emoji: '🌿',
       title: 'Natural Science',
       gradient: 'linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)',
-      description: 'Biology, Chemistry, Physics, Environmental Science — explore the natural world.',
+      description: 'AP Biology, AP Chemistry, AP Physics, AP Environmental Science — explore the natural world.',
       color: '#10b981'
     },
     social: {
       emoji: '🌐',
       title: 'Social Science',
       gradient: 'linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #f43f5e 100%)',
-      description: 'Psychology, History, Human Geography, Economics — study people and societies.',
+      description: 'AP Psychology, History, AP Human Geography, Economics — study people and societies.',
       color: '#a855f7'
     }
   };

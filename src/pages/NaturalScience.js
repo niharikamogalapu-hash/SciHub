@@ -14,7 +14,7 @@ function NaturalScience() {
   const sciences = [
     {
       id: "biology",
-      title: "Biology",
+      title: "AP Biology",
       icon: "🧬",
       emoji: "🧬",
       color: "from-green-500 to-emerald-600",
@@ -26,7 +26,7 @@ function NaturalScience() {
     },
     {
       id: "chemistry",
-      title: "Chemistry",
+      title: "AP Chemistry",
       icon: "⚗️",
       emoji: "⚗️",
       color: "from-blue-500 to-cyan-600",
@@ -38,7 +38,7 @@ function NaturalScience() {
     },
     {
       id: "physics",
-      title: "Physics",
+      title: "AP Physics",
       icon: "⚡",
       emoji: "⚡",
       color: "from-yellow-500 to-orange-600",
@@ -50,7 +50,7 @@ function NaturalScience() {
     },
     {
       id: "environmental-science",
-      title: "Environmental Science",
+      title: "AP Environmental Science",
       icon: "🌍",
       emoji: "🌍",
       color: "from-teal-500 to-green-600",
@@ -78,7 +78,7 @@ function NaturalScience() {
         }}>
           <h1 style={{ fontSize: "3.5rem", margin: "0 0 20px 0", fontWeight: "800" }}>🌿 Natural Science</h1>
           <p style={{ fontSize: "1.2rem", margin: 0, opacity: 0.95, maxWidth: "600px" }}>
-            Explore Biology, Chemistry, Physics and Environmental Science. Build knowledge of the natural world with engaging lessons and interactive learning.
+            Explore AP Biology, AP Chemistry, AP Physics and AP Environmental Science. Build knowledge of the natural world with engaging lessons and interactive learning.
           </p>
         </header>
 
@@ -96,7 +96,7 @@ function NaturalScience() {
               color: "#d1fae5"
             }}>
               <p style={{ margin: 0, fontSize: "1.05rem", lineHeight: "1.6" }}>
-                Start with <strong>Biology</strong> as your foundation — it's the key to understanding everything! From there, we'll guide you through Chemistry, Physics, and Environmental Science in a logical progression that builds on what you've learned.
+                Start with <strong>AP Biology</strong> as your foundation — it's the key to understanding everything! From there, we'll guide you through AP Chemistry, AP Physics, and AP Environmental Science in a logical progression that builds on what you've learned.
               </p>
             </div>
 
