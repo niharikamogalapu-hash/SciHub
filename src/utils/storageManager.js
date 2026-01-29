@@ -962,3 +962,406 @@ export const clearGameProgress = (userId, gameId) => {
     console.error(`❌ Error clearing game progress:`, error);
   }
 };
+
+/**
+ * Track daily progress snapshot
+ * @param {string|number} userId - The user ID
+ * @returns {boolean} True if snapshot recorded
+ */
+export const recordDailyProgressSnapshot = (userId) => {
+  try {
+    const storageKey = getUserStorageKey(userId, "progress_history");
+    const history = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    const stats = getDashboardStats(userId);
+    
+    // Check if already recorded today
+    const today = new Date().toDateString();
+    const lastEntry = history[history.length - 1];
+    if (lastEntry && lastEntry.date === today) {
+      // Update today's entry
+      history[history.length - 1] = {
+        date: today,
+        timestamp: new Date().toISOString(),
+        xp: stats.xp || 0,
+        coins: stats.coins || 0,
+        lessonsCompleted: stats.lessonsCompleted || 0,
+        gamesCompleted: stats.totalGameScore || 0,
+        streak: stats.streak || 0,
+      };
+    } else {
+      // Add new day entry
+      history.push({
+        date: today,
+        timestamp: new Date().toISOString(),
+        xp: stats.xp || 0,
+        coins: stats.coins || 0,
+        lessonsCompleted: stats.lessonsCompleted || 0,
+        gamesCompleted: stats.totalGameScore || 0,
+        streak: stats.streak || 0,
+      });
+    }
+    
+    localStorage.setItem(storageKey, JSON.stringify(history));
+    console.log(`✅ Daily progress snapshot recorded for ${userId}`);
+    return true;
+  } catch (error) {
+    console.error(`❌ Error recording progress snapshot:`, error);
+    return false;
+  }
+};
+
+/**
+ * Get progress growth history
+ * @param {string|number} userId - The user ID
+ * @param {number} days - Number of days to retrieve (default 30)
+ * @returns {array} Array of progress snapshots
+ */
+export const getProgressHistory = (userId, days = 30) => {
+  try {
+    const storageKey = getUserStorageKey(userId, "progress_history");
+    let history = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    
+    // If no history, create initial entry
+    if (history.length === 0) {
+      recordDailyProgressSnapshot(userId);
+      history = JSON.parse(localStorage.getItem(storageKey) || "[]");
+    }
+    
+    // Return last N days
+    return history.slice(-days);
+  } catch (error) {
+    console.error(`❌ Error retrieving progress history:`, error);
+    return [];
+  }
+};
+
+/**
+ * Calculate growth metrics
+ * @param {string|number} userId - The user ID
+ * @returns {object} Growth statistics
+ */
+export const calculateGrowthMetrics = (userId) => {
+  try {
+    const history = getProgressHistory(userId, 30);
+    if (history.length < 2) {
+      return {
+        xpGrowth: 0,
+        xpGrowthPercent: 0,
+        coinGrowth: 0,
+        coinGrowthPercent: 0,
+        lessonsGrowth: 0,
+        gamesGrowth: 0,
+        avgDailyXP: 0,
+        avgDailyCoins: 0,
+        mostActiveDays: [],
+      };
+    }
+    
+    const firstEntry = history[0];
+    const lastEntry = history[history.length - 1];
+    
+    const xpGrowth = lastEntry.xp - firstEntry.xp;
+    const coinGrowth = lastEntry.coins - firstEntry.coins;
+    const lessonsGrowth = lastEntry.lessonsCompleted - firstEntry.lessonsCompleted;
+    const gamesGrowth = lastEntry.gamesCompleted - firstEntry.gamesCompleted;
+    
+    const avgDailyXP = Math.round(xpGrowth / history.length);
+    const avgDailyCoins = Math.round(coinGrowth / history.length);
+    
+    return {
+      xpGrowth: xpGrowth,
+      xpGrowthPercent: firstEntry.xp > 0 ? Math.round((xpGrowth / firstEntry.xp) * 100) : 100,
+      coinGrowth: coinGrowth,
+      coinGrowthPercent: firstEntry.coins > 0 ? Math.round((coinGrowth / firstEntry.coins) * 100) : 100,
+      lessonsGrowth: lessonsGrowth,
+      gamesGrowth: gamesGrowth,
+      avgDailyXP: avgDailyXP,
+      avgDailyCoins: avgDailyCoins,
+      historyLength: history.length,
+    };
+  } catch (error) {
+    console.error(`❌ Error calculating growth metrics:`, error);
+    return {};
+  }
+};
+
+
+/**
+ * Track study time in minutes
+ * @param {string|number} userId - The user ID
+ * @param {number} minutes - Minutes spent studying
+ * @returns {number} Total study minutes
+ */
+export const addStudyTime = (userId, minutes = 1) => {
+  try {
+    const storageKey = getUserStorageKey(userId, "study_time_minutes");
+    const currentTime = parseInt(localStorage.getItem(storageKey) || "0");
+    const newTime = currentTime + minutes;
+    localStorage.setItem(storageKey, newTime.toString());
+    console.log(`✅ Added ${minutes} minutes to study time. Total: ${newTime} minutes`);
+    return newTime;
+  } catch (error) {
+    console.error(`❌ Error adding study time:`, error);
+    return 0;
+  }
+};
+
+/**
+ * Get total study time in hours
+ * @param {string|number} userId - The user ID
+ * @returns {object} Study time data {totalMinutes, totalHours, totalDays}
+ */
+export const getStudyTime = (userId) => {
+  try {
+    const storageKey = getUserStorageKey(userId, "study_time_minutes");
+    const totalMinutes = parseInt(localStorage.getItem(storageKey) || "0");
+    const totalHours = (totalMinutes / 60).toFixed(1);
+    const totalDays = (totalMinutes / (60 * 24)).toFixed(1);
+    return { totalMinutes, totalHours, totalDays };
+  } catch (error) {
+    console.error(`❌ Error getting study time:`, error);
+    return { totalMinutes: 0, totalHours: 0, totalDays: 0 };
+  }
+};
+
+/**
+ * Calculate AP Exam Readiness percentage based on lessons & games completed
+ * @param {string|number} userId - The user ID
+ * @returns {object} Readiness data {overallPercentage, bySubject}
+ */
+export const getAPExamReadiness = (userId) => {
+  try {
+    const stats = getDashboardStats(userId);
+    const completedKey = getUserStorageKey(userId, "completed_lessons");
+    const completedLessons = JSON.parse(localStorage.getItem(completedKey) || "[]");
+    
+    // Estimate: 80 total lessons across all subjects (10 per subject)
+    // Each completed lesson = 1.25% progress
+    const totalLessons = 80;
+    const lessonProgress = (completedLessons.length / totalLessons) * 100;
+    
+    // Games completed: 80 total games, each = 1.25% progress
+    const totalGames = 80;
+    const gamesProgress = ((stats.totalGameScore || 0) / 5000) * 100; // Assuming max 5000 points
+    
+    // Combined readiness (60% lessons, 40% games)
+    const overallPercentage = Math.min(100, (lessonProgress * 0.6) + (gamesProgress * 0.4));
+    
+    // Break down by subject
+    const subjects = {
+      "AP Biology": Math.min(100, (completedLessons.filter(l => l.category === "biology").length / 10) * 100),
+      "AP Chemistry": Math.min(100, (completedLessons.filter(l => l.category === "chemistry").length / 10) * 100),
+      "AP Physics": Math.min(100, (completedLessons.filter(l => l.category === "physics").length / 10) * 100),
+      "AP Environmental Science": Math.min(100, (completedLessons.filter(l => l.category === "environmental").length / 10) * 100),
+      "AP Psychology": Math.min(100, (completedLessons.filter(l => l.category === "psychology").length / 10) * 100),
+      "AP Economics": Math.min(100, (completedLessons.filter(l => l.category === "economics").length / 10) * 100),
+      "AP Human Geography": Math.min(100, (completedLessons.filter(l => l.category === "geography").length / 10) * 100),
+      "AP History": Math.min(100, (completedLessons.filter(l => l.category === "history").length / 10) * 100),
+    };
+    
+    return { overallPercentage: Math.round(overallPercentage), bySubject: subjects };
+  } catch (error) {
+    console.error(`❌ Error calculating AP readiness:`, error);
+    return { overallPercentage: 0, bySubject: {} };
+  }
+};
+
+/**
+ * Get career connections for a subject
+ * @param {string} subject - The subject name
+ * @returns {array} Career paths related to subject
+ */
+export const getCareerConnections = (subject) => {
+  const careerMap = {
+    "AP Biology": [
+      { title: "Doctor/Physician", description: "Diagnose and treat diseases" },
+      { title: "Research Scientist", description: "Conduct medical and biological research" },
+      { title: "Nurse", description: "Patient care in hospitals and clinics" },
+      { title: "Biologist", description: "Study organisms and ecosystems" },
+      { title: "Genetic Counselor", description: "Help patients understand genetic disorders" }
+    ],
+    "AP Chemistry": [
+      { title: "Pharmacist", description: "Dispense medications and advise patients" },
+      { title: "Chemical Engineer", description: "Design chemical manufacturing processes" },
+      { title: "Materials Scientist", description: "Develop new materials for industry" },
+      { title: "Environmental Scientist", description: "Monitor and protect the environment" },
+      { title: "Forensic Scientist", description: "Analyze evidence at crime scenes" }
+    ],
+    "AP Physics": [
+      { title: "Engineer", description: "Design and build structures and machines" },
+      { title: "Physicist", description: "Study matter, energy, and forces" },
+      { title: "Astronomer", description: "Study space and celestial objects" },
+      { title: "Renewable Energy Specialist", description: "Design sustainable energy systems" },
+      { title: "Medical Physicist", description: "Apply physics to healthcare" }
+    ],
+    "AP Environmental Science": [
+      { title: "Environmental Consultant", description: "Advise businesses on environmental impact" },
+      { title: "Climate Scientist", description: "Study climate change and weather patterns" },
+      { title: "Conservation Officer", description: "Protect natural resources and wildlife" },
+      { title: "Sustainability Manager", description: "Implement green practices in organizations" },
+      { title: "Urban Planner", description: "Design sustainable cities and communities" }
+    ],
+    "AP Psychology": [
+      { title: "Clinical Psychologist", description: "Diagnose and treat mental health disorders" },
+      { title: "Counselor", description: "Help people navigate life challenges" },
+      { title: "Human Resources Manager", description: "Manage employee well-being and culture" },
+      { title: "UX Researcher", description: "Understand how people interact with products" },
+      { title: "Sports Psychologist", description: "Improve athletic performance mentally" }
+    ],
+    "AP Economics": [
+      { title: "Economist", description: "Analyze economic trends and policy" },
+      { title: "Financial Advisor", description: "Help clients manage their finances" },
+      { title: "Business Analyst", description: "Improve business operations and profitability" },
+      { title: "Policy Maker", description: "Develop economic and social policies" },
+      { title: "Investment Banker", description: "Manage corporate and personal investments" }
+    ],
+    "AP Human Geography": [
+      { title: "Urban Planner", description: "Design communities and infrastructure" },
+      { title: "Geographer", description: "Study human societies and their environments" },
+      { title: "International Development Officer", description: "Help developing countries improve living standards" },
+      { title: "Journalist", description: "Report on global issues and communities" },
+      { title: "NGO Director", description: "Lead organizations addressing social issues" }
+    ],
+    "AP History": [
+      { title: "Historian", description: "Research and document historical events" },
+      { title: "Museum Curator", description: "Preserve and display historical artifacts" },
+      { title: "Lawyer", description: "Practice law with historical perspective" },
+      { title: "Diplomat", description: "Represent country in international relations" },
+      { title: "Teacher", description: "Educate students about history and culture" }
+    ]
+  };
+  
+  return careerMap[subject] || [];
+};
+
+/**
+ * Generate a study certificate
+ * @param {string|number} userId - The user ID
+ * @param {string} userName - The student's name
+ * @returns {object} Certificate data for printing
+ */
+export const generateStudyCertificate = (userId, userName) => {
+  try {
+    const studyTime = getStudyTime(userId);
+    const readiness = getAPExamReadiness(userId);
+    const stats = getDashboardStats(userId);
+    
+    return {
+      studentName: userName,
+      dateIssued: new Date().toLocaleDateString(),
+      studyHours: studyTime.totalHours,
+      lessonsCompleted: stats.lessonsCompleted || 0,
+      gamesCompleted: stats.totalGameScore || 0,
+      examReadiness: readiness.overallPercentage,
+      certificateId: `CERT-${userId}-${Date.now()}`,
+      message: `This certifies that ${userName} has demonstrated dedication to AP exam preparation through ${studyTime.totalHours} hours of study, ${stats.lessonsCompleted} lessons completed, and ${readiness.overallPercentage}% AP Exam Readiness.`
+    };
+  } catch (error) {
+    console.error(`❌ Error generating certificate:`, error);
+    return null;
+  }
+};
+
+/**
+ * Level/Rank system configuration
+ * XP thresholds for each rank
+ */
+const RANK_TIERS = [
+  { rank: 0, name: "Novice", emoji: "🌱", color: "#6b7280", minXP: 0, maxXP: 499 },
+  { rank: 1, name: "Apprentice", emoji: "🔵", color: "#3b82f6", minXP: 500, maxXP: 999 },
+  { rank: 2, name: "Scholar", emoji: "🟣", color: "#8b5cf6", minXP: 1000, maxXP: 1999 },
+  { rank: 3, name: "Expert", emoji: "🟡", color: "#f59e0b", minXP: 2000, maxXP: 4999 },
+  { rank: 4, name: "Master", emoji: "🔴", color: "#ef4444", minXP: 5000, maxXP: 9999 },
+  { rank: 5, name: "Sage", emoji: "⭐", color: "#fbbf24", minXP: 10000, maxXP: Infinity },
+];
+
+/**
+ * Calculate user's current rank/level based on XP
+ * @param {string|number} userId - The user ID
+ * @returns {object} Rank information {rank, name, emoji, color, currentXP, nextLevelXP, progress}
+ */
+export const getUserRank = (userId) => {
+  try {
+    const stats = getDashboardStats(userId);
+    const currentXP = stats.xp || 0;
+    
+    // Find current rank
+    let currentRank = RANK_TIERS[0];
+    for (let tier of RANK_TIERS) {
+      if (currentXP >= tier.minXP && currentXP <= tier.maxXP) {
+        currentRank = tier;
+        break;
+      }
+    }
+    
+    // Calculate progress to next rank
+    const nextRank = RANK_TIERS[currentRank.rank + 1] || currentRank;
+    const minXPForCurrentRank = currentRank.minXP;
+    const minXPForNextRank = nextRank.minXP;
+    const xpInCurrentRank = currentXP - minXPForCurrentRank;
+    const xpNeededForNextRank = minXPForNextRank - minXPForCurrentRank;
+    const progressPercent = Math.min(100, (xpInCurrentRank / xpNeededForNextRank) * 100);
+    
+    return {
+      ...currentRank,
+      currentXP: currentXP,
+      nextLevelXP: minXPForNextRank,
+      xpUntilNextRank: Math.max(0, minXPForNextRank - currentXP),
+      progressPercent: Math.round(progressPercent),
+      isMaxRank: currentRank.rank === RANK_TIERS.length - 1,
+    };
+  } catch (error) {
+    console.error(`❌ Error calculating user rank:`, error);
+    return RANK_TIERS[0];
+  }
+};
+
+/**
+ * Get all rank tiers
+ * @returns {array} All rank information
+ */
+export const getAllRankTiers = () => {
+  return RANK_TIERS;
+};
+
+/**
+ * Check if user reached a new rank and return it
+ * @param {string|number} userId - The user ID
+ * @returns {object|null} New rank info if reached, null otherwise
+ */
+export const checkRankUp = (userId) => {
+  try {
+    const storageKey = getUserStorageKey(userId, "last_rank");
+    const lastRank = parseInt(localStorage.getItem(storageKey) || "0");
+    const currentRank = getUserRank(userId);
+    
+    if (currentRank.rank > lastRank) {
+      // Update stored rank
+      localStorage.setItem(storageKey, currentRank.rank.toString());
+      console.log(`🎉 User ${userId} ranked up to ${currentRank.name}!`);
+      return currentRank;
+    }
+    return null;
+  } catch (error) {
+    console.error(`❌ Error checking rank up:`, error);
+    return null;
+  }
+};
+
+/**
+ * Get rank progression roadmap
+ * @returns {array} All ranks with XP requirements
+ */
+export const getRankRoadmap = () => {
+  return RANK_TIERS.map((tier, idx) => ({
+    rank: idx,
+    name: tier.name,
+    emoji: tier.emoji,
+    color: tier.color,
+    minXP: tier.minXP,
+    maxXP: tier.maxXP === Infinity ? "Unlimited" : tier.maxXP,
+    description: `Reach ${tier.minXP.toLocaleString()} XP to become a ${tier.name}`,
+  }));
+};
+
+

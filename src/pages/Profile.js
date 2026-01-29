@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
+import UserRank from "../components/UserRank";
 
 function Profile({ user, onUpdate, onLogout }) {
   const [firstName, setFirstName] = useState(user?.firstName || "");
@@ -55,6 +56,9 @@ function Profile({ user, onUpdate, onLogout }) {
           <h1 style={{ fontSize: "2.8rem", margin: "0 0 12px 0", fontWeight: "800" }}>Your Profile</h1>
           <p style={{ fontSize: "1.1rem", margin: 0, opacity: 0.95 }}>Manage your account settings and preferences</p>
         </header>
+
+        {/* USER RANK SECTION */}
+        {currentUser && <UserRank userId={currentUser.id} />}
 
         {/* Profile Grid */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "30px", marginBottom: "40px" }}>

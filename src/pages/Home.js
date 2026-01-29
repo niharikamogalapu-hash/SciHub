@@ -54,25 +54,21 @@ function Home() {
 
   const features = [
     {
-      icon: "🎮",
       title: "Interactive Games",
       desc: "Master science concepts through engaging games and challenges",
       color: "#38bdf8"
     },
     {
-      icon: "👨‍🏫",
       title: "Live Tutors",
       desc: "Connect with real tutors for personalized help anytime",
       color: "#a855f7"
     },
     {
-      icon: "📝",
       title: "AI Worksheets",
       desc: "Generate custom worksheets with instant feedback",
       color: "#ec4899"
     },
     {
-      icon: "📊",
       title: "Progress Tracking",
       desc: "Watch your growth with detailed analytics and insights",
       color: "#38bdf8"
@@ -113,10 +109,10 @@ function Home() {
         <h2 style={{ fontSize: "2rem", textAlign: "center", color: "#f9fafb", marginBottom: "3rem" }}>Why Students Love SciHub</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem" }}>
           {[
-            { stat: stats[0], label: "Student Satisfaction", icon: "😊" },
-            { stat: stats[1], label: "Score Improvement", icon: "📈" },
-            { stat: stats[2], label: "Learning Retention", icon: "🧠" },
-            { stat: stats[3], label: "Problem Solved", icon: "✅" },
+            { stat: stats[0], label: "Student Satisfaction" },
+            { stat: stats[1], label: "Score Improvement" },
+            { stat: stats[2], label: "Learning Retention" },
+            { stat: stats[3], label: "Problem Solved" },
           ].map((item, i) => (
             <div
               key={i}
@@ -131,7 +127,6 @@ function Home() {
                 opacity: 0,
               }}
             >
-              <div style={{ fontSize: "2.5rem", marginBottom: "0.8rem" }}>{item.icon}</div>
               <h3 style={{ fontSize: "2.5rem", fontWeight: "700", marginBottom: "0.5rem", color: "#38bdf8" }}>
                 {item.stat}%
               </h3>
@@ -167,9 +162,6 @@ function Home() {
                 opacity: 0,
               }}
             >
-              <div style={{ fontSize: "2.8rem", marginBottom: "1rem", display: "inline-block", transform: hoveredFeature === i ? "scale(1.2) rotate(10deg)" : "scale(1) rotate(0deg)", transition: "transform 0.3s ease" }}>
-                {feature.icon}
-              </div>
               <h3 style={{ fontSize: "1.4rem", marginTop: "0", marginBottom: "0.8rem", color: feature.color }}>
                 {feature.title}
               </h3>
@@ -226,9 +218,9 @@ function Home() {
         <h2 style={{ fontSize: "2rem", textAlign: "center", color: "#f9fafb", marginBottom: "3rem" }}>What Students Say</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem" }}>
           {[
-            { name: "Sarah Chen", quote: "SciHub made science fun! My grades went up 2 letters in just a month.", avatar: "👩" },
-            { name: "Marcus Johnson", quote: "The live tutors are amazing. They explain things in a way that actually makes sense.", avatar: "👨" },
-            { name: "Aisha Patel", quote: "Games are so addictive! I didn't realize I was learning until my test scores showed it.", avatar: "👩" },
+            { name: "Sarah Chen", quote: "SciHub made science fun! My grades went up 2 letters in just a month." },
+            { name: "Marcus Johnson", quote: "The live tutors are amazing. They explain things in a way that actually makes sense." },
+            { name: "Aisha Patel", quote: "Games are so addictive! I didn't realize I was learning until my test scores showed it." },
           ].map((testimonial, i) => (
             <div
               key={i}
@@ -242,12 +234,9 @@ function Home() {
                 opacity: 0,
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", marginBottom: "1.5rem" }}>
-                <div style={{ fontSize: "2.5rem", marginRight: "1rem" }}>{testimonial.avatar}</div>
-                <div>
-                  <h4 style={{ marginBottom: "0.2rem", color: "#f9fafb" }}>{testimonial.name}</h4>
-                  <div style={{ fontSize: "1.2rem", color: "#fbbf24" }}>⭐⭐⭐⭐⭐</div>
-                </div>
+              <div style={{ marginBottom: "1.5rem" }}>
+                <h4 style={{ marginBottom: "0.2rem", color: "#f9fafb" }}>{testimonial.name}</h4>
+                <div style={{ fontSize: "1.2rem", color: "#fbbf24" }}>★★★★★</div>
               </div>
               <p style={{ color: "#9ca3af", lineHeight: "1.7", fontStyle: "italic", marginBottom: "0" }}>
                 "{testimonial.quote}"
@@ -275,14 +264,14 @@ function Home() {
           scrollBehavior: "smooth",
         }}>
           {[
-            { icon: "⚛️", subject: "AP Physics" },
-            { icon: "🧪", subject: "AP Chemistry" },
-            { icon: "🧬", subject: "AP Biology" },
-            { icon: "🌍", subject: "AP Environmental Science" },
-            { icon: "💰", subject: "Economics" },
-            { icon: "📜", subject: "History" },
-            { icon: "🗺️", subject: "AP Human Geography" },
-            { icon: "🧠", subject: "AP Psychology" },
+            { subject: "AP Physics" },
+            { subject: "AP Chemistry" },
+            { subject: "AP Biology" },
+            { subject: "AP Environmental Science" },
+            { subject: "Economics" },
+            { subject: "History" },
+            { subject: "AP Human Geography" },
+            { subject: "AP Psychology" },
           ].map((item, i) => (
             <div
               key={i}
@@ -306,8 +295,7 @@ function Home() {
                 e.currentTarget.style.boxShadow = "none";
               }}
             >
-              <div style={{ fontSize: "2.5rem", marginBottom: "0.8rem" }}>{item.icon}</div>
-              <p style={{ color: "#f9fafb", fontWeight: "600", marginBottom: "0" }}>{item.subject}</p>
+              <p style={{ color: "#f9fafb", fontWeight: "600", marginBottom: "0", fontSize: "1.1rem" }}>{item.subject}</p>
             </div>
           ))}
         </div>
@@ -323,21 +311,20 @@ function Home() {
       }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center" }}>
           <div>
-            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>🎯 Features</h2>
+            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>Features</h2>
             <p style={{ color: "#9ca3af", marginBottom: "1.5rem", lineHeight: "1.7", fontSize: "0.95rem" }}>
               Discover all the tools and features SciHub offers to make your science learning journey engaging and effective. From interactive games to AI-powered worksheets, we have everything you need to succeed.
             </p>
             <ul style={{ color: "#9ca3af", marginBottom: "2rem" }}>
-              <li style={{ marginBottom: "0.8rem" }}>✨ Multiple learning methods for different styles</li>
-              <li style={{ marginBottom: "0.8rem" }}>🎯 Tools designed for real improvement</li>
-              <li style={{ marginBottom: "0.8rem" }}>📊 Track your progress every step of the way</li>
-              <li>🚀 Continuously updated with new features</li>
+              <li style={{ marginBottom: "0.8rem" }}>Multiple learning methods for different styles</li>
+              <li style={{ marginBottom: "0.8rem" }}>Tools designed for real improvement</li>
+              <li style={{ marginBottom: "0.8rem" }}>Track your progress every step of the way</li>
+              <li>Continuously updated with new features</li>
             </ul>
             <Link to="/features" className="primary-btn">
               Explore Features →
             </Link>
           </div>
-          <div style={{ fontSize: "4rem", textAlign: "center", animation: "float 3s ease-in-out infinite" }}>⚙️</div>
         </div>
       </div>
 
@@ -349,18 +336,17 @@ function Home() {
         marginTop: "4rem",
         marginBottom: "4rem",
       }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center" }}>
-          <div style={{ fontSize: "4rem", textAlign: "center", animation: "float 3s ease-in-out infinite", order: "-1" }}>🎨</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem", alignItems: "center" }}>
           <div>
-            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>✨ About Us</h2>
+            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>About Us</h2>
             <p style={{ color: "#9ca3af", marginBottom: "1.5rem", lineHeight: "1.7", fontSize: "0.95rem" }}>
               Learn about SciHub's story, our values, and what drives us to create the best science learning platform. We believe every student deserves access to quality education that makes learning fun and engaging.
             </p>
             <ul style={{ color: "#9ca3af", marginBottom: "2rem" }}>
-              <li style={{ marginBottom: "0.8rem" }}>🌟 Student-driven platform built with passion</li>
-              <li style={{ marginBottom: "0.8rem" }}>🤝 Community-focused approach to learning</li>
-              <li style={{ marginBottom: "0.8rem" }}>💡 Innovative solutions for education</li>
-              <li>🎓 Commitment to accessibility for all</li>
+              <li style={{ marginBottom: "0.8rem" }}>Student-driven platform built with passion</li>
+              <li style={{ marginBottom: "0.8rem" }}>Community-focused approach to learning</li>
+              <li style={{ marginBottom: "0.8rem" }}>Innovative solutions for education</li>
+              <li>Commitment to accessibility for all</li>
             </ul>
             <Link to="/about" className="primary-btn">
               Learn Our Story →
@@ -377,23 +363,22 @@ function Home() {
         marginTop: "4rem",
         marginBottom: "4rem",
       }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem", alignItems: "center" }}>
           <div>
-            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>🚀 Our Mission</h2>
+            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>Our Mission</h2>
             <p style={{ color: "#9ca3af", marginBottom: "1.5rem", lineHeight: "1.7", fontSize: "0.95rem" }}>
               Discover why we built SciHub and what we're working towards. Our mission is to transform science education by making it accessible, engaging, and effective for every student around the world.
             </p>
             <ul style={{ color: "#9ca3af", marginBottom: "2rem" }}>
-              <li style={{ marginBottom: "0.8rem" }}>🎯 Accessible learning for everyone</li>
-              <li style={{ marginBottom: "0.8rem" }}>💪 Powered by community and collaboration</li>
-              <li style={{ marginBottom: "0.8rem" }}>🌱 Sustainable growth in science education</li>
-              <li>🤖 Leveraging AI to enhance learning</li>
+              <li style={{ marginBottom: "0.8rem" }}>Accessible learning for everyone</li>
+              <li style={{ marginBottom: "0.8rem" }}>Powered by community and collaboration</li>
+              <li style={{ marginBottom: "0.8rem" }}>Sustainable growth in science education</li>
+              <li>Leveraging AI to enhance learning</li>
             </ul>
             <Link to="/mission" className="primary-btn">
               Read Our Mission →
             </Link>
           </div>
-          <div style={{ fontSize: "4rem", textAlign: "center", animation: "float 3s ease-in-out infinite" }}>🎯</div>
         </div>
       </div>
 
@@ -405,18 +390,17 @@ function Home() {
         marginTop: "4rem",
         marginBottom: "4rem",
       }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center" }}>
-          <div style={{ fontSize: "4rem", textAlign: "center", animation: "float 3s ease-in-out infinite", order: "-1" }}>👥</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem", alignItems: "center" }}>
           <div>
-            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>� Meet the Team</h2>
+            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>Meet the Team</h2>
             <p style={{ color: "#9ca3af", marginBottom: "1.5rem", lineHeight: "1.7", fontSize: "0.95rem" }}>
               Get to know the talented team behind SciHub. Built by passionate students and educators, our team is dedicated to transforming science education and making learning accessible to everyone.
             </p>
             <ul style={{ color: "#9ca3af", marginBottom: "2rem" }}>
-              <li style={{ marginBottom: "0.8rem" }}>🌟 Student creators with a mission</li>
-              <li style={{ marginBottom: "0.8rem" }}>💡 Diverse expertise across science and tech</li>
-              <li style={{ marginBottom: "0.8rem" }}>🤝 Passionate about helping students succeed</li>
-              <li>🚀 Committed to continuous innovation</li>
+              <li style={{ marginBottom: "0.8rem" }}>Student creators with a mission</li>
+              <li style={{ marginBottom: "0.8rem" }}>Diverse expertise across science and tech</li>
+              <li style={{ marginBottom: "0.8rem" }}>Passionate about helping students succeed</li>
+              <li>Committed to continuous innovation</li>
             </ul>
             <Link to="/about-tutors" className="primary-btn">
               Meet the Team →
@@ -434,7 +418,7 @@ function Home() {
         textAlign: "center",
         marginBottom: "4rem",
       }}>
-        <h2 style={{ fontSize: "2rem", marginTop: "0", marginBottom: "1rem", color: "#f9fafb" }}>🚀 Ready to Transform Your Science Learning?</h2>
+        <h2 style={{ fontSize: "2rem", marginTop: "0", marginBottom: "1rem", color: "#f9fafb" }}>Ready to Transform Your Science Learning?</h2>
         <p style={{ fontSize: "1.05rem", color: "#9ca3af", marginBottom: "2rem", maxWidth: "600px", margin: "0 auto 2rem" }}>
           Join thousands of students who are improving their grades and falling in love with science. Start your journey today!
         </p>

@@ -2295,8 +2295,6 @@ export default function Lesson() {
       
       if (success) {
         console.log(`✅ Video ${videoId} progress saved to localStorage for lesson ${lesson.id} - Subject: ${lesson?.title}`);
-        // Notify dashboard of video watched
-        window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
       } else {
         console.error(`❌ Failed to save video progress to localStorage`);
       }
@@ -2304,6 +2302,13 @@ export default function Lesson() {
       // Award XP and coins for watching video
       addXP(user.id, 10);
       addCoins(user.id, 5);
+      console.log(`💰 Awarded 5 coins and 10 XP for watching video ${videoId}`);
+      
+      // Notify dashboard of video watched - AFTER coins are added
+      // Use setTimeout to ensure storage is synced before dashboard reads it
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+      }, 100);
       
       // Mark intro as completed if this is lesson 1 (Cell Structure) and video 1
       if (lesson.id === 1 && videoId === 1) {
@@ -2348,6 +2353,8 @@ export default function Lesson() {
       try {
         localStorage.setItem("scihub_qna_questions", JSON.stringify(updated));
         console.log("✅ Question saved to localStorage:", updated.length, "questions");
+        // Dispatch event so other users/tabs can see the new question
+        window.dispatchEvent(new CustomEvent("qnaUpdate"));
       } catch (error) {
         console.error("❌ Error saving question to localStorage:", error);
       }
@@ -2414,6 +2421,8 @@ export default function Lesson() {
         try {
           localStorage.setItem("scihub_qna_questions", JSON.stringify(storedQuestions));
           console.log("✅ Answer saved to localStorage");
+          // Dispatch event so other users/tabs can see the new answer
+          window.dispatchEvent(new CustomEvent("qnaUpdate"));
         } catch (error) {
           console.error("❌ Error saving answer to localStorage:", error);
         }
@@ -2849,10 +2858,17 @@ export default function Lesson() {
           </div>
           <div style={{ background: "rgba(0, 0, 0, 0.2)", borderRadius: "8px", height: "10px", overflow: "hidden" }}>
             <div style={{
-              width: `${(Object.keys(watchedVideos).length / 5) * 25 + (bookedSession ? 25 : 0) + (step3Completed ? 25 : 0) + (step4Completed ? 12.5 : 0) + (step5Completed ? 12.5 : 0)}%`,
+              width: `${
+                (Object.keys(watchedVideos).length / 5) * 16.67 +        // Step 1: 16.67%
+                (bookedSession ? 16.67 : 0) +                           // Step 2: 16.67%
+                (step3Completed ? 16.67 : 0) +                         // Step 3: 16.67%
+                (step4Completed ? 16.67 : 0) +                         // Step 4: 16.67%
+                (step5Completed ? 16.67 : 0) +                         // Step 5: 16.67%
+                (step6Completed ? 16.66 : 0)                           // Step 6: 16.66%
+              }%`,
               height: "100%",
               background: "linear-gradient(90deg, #86efac, #22c55e)",
-              transition: "width 0.3s ease",
+              transition: "width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
             }}></div>
           </div>
           <div style={{ color: "#6b7280", fontSize: "0.8rem", marginTop: "0.5rem" }}>
@@ -3208,7 +3224,10 @@ export default function Lesson() {
                         addCoins(user.id, 10);
                       }
                       // Notify dashboard of worksheet submission
-                      window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+                      // Use setTimeout to ensure storage is synced before dashboard reads it
+                      setTimeout(() => {
+                        window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+                      }, 100);
                     }}
                     disabled={worksheet1Submitted || Object.keys(worksheet1Answers).length < 7}
                   >
@@ -3276,7 +3295,10 @@ export default function Lesson() {
                         addCoins(user.id, 10);
                       }
                       // Notify dashboard of worksheet submission
-                      window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+                      // Use setTimeout to ensure storage is synced before dashboard reads it
+                      setTimeout(() => {
+                        window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+                      }, 100);
                     }}
                     disabled={worksheet2Submitted || Object.keys(worksheet2Answers).length < 7}
                   >

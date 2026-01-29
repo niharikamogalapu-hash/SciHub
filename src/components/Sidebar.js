@@ -175,6 +175,7 @@ function Sidebar({ user, onLogout }) {
         {/* Dashboard */}
         <NavLink
           to="/dashboard"
+          onClick={() => setCollapsed(true)}
           className={({ isActive }) => isActive ? "active" : ""}
           style={({ isActive }) => ({
             display: "flex",
@@ -210,6 +211,7 @@ function Sidebar({ user, onLogout }) {
         {/* Resources */}
         <NavLink
           to="/resources"
+          onClick={() => setCollapsed(true)}
           className={({ isActive }) => isActive ? "active" : ""}
           style={({ isActive }) => ({
             display: "flex",
@@ -245,6 +247,7 @@ function Sidebar({ user, onLogout }) {
         {/* Community Q&A */}
         <NavLink
           to="/qna"
+          onClick={() => setCollapsed(true)}
           className={({ isActive }) => isActive ? "active" : ""}
           style={({ isActive }) => ({
             display: "flex",
@@ -280,6 +283,7 @@ function Sidebar({ user, onLogout }) {
         {/* Games */}
         <NavLink
           to="/games"
+          onClick={() => setCollapsed(true)}
           className={({ isActive }) => isActive ? "active" : ""}
           style={({ isActive }) => ({
             display: "flex",
@@ -315,6 +319,7 @@ function Sidebar({ user, onLogout }) {
         {/* Unit Tests */}
         <NavLink
           to="/unit-tests"
+          onClick={() => setCollapsed(true)}
           className={({ isActive }) => isActive ? "active" : ""}
           style={({ isActive }) => ({
             display: "flex",
@@ -360,6 +365,7 @@ function Sidebar({ user, onLogout }) {
         {/* Profile */}
         <NavLink
           to="/profile"
+          onClick={() => setCollapsed(true)}
           className={({ isActive }) => isActive ? "active" : ""}
           style={({ isActive }) => ({
             display: "flex",

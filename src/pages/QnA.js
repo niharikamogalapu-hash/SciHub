@@ -43,14 +43,15 @@ function formatDate(date) {
 }
 
 // Get user-specific storage key for Q&A data
+// CHANGED: Using global shared key so all users see the same Q&A posts
 function getQnAStorageKey(userId) {
-  return getUserStorageKey(userId, "qna_questions");
+  return "scihub_qna_questions"; // Global shared key, not user-specific
 }
 
-// Get questions from localStorage for specific user
+// Get questions from localStorage - SHARED across all users
 function getStoredQuestions(userId) {
   try {
-    const storageKey = getQnAStorageKey(userId);
+    const storageKey = "scihub_qna_questions"; // Global shared key
     const stored = localStorage.getItem(storageKey);
     if (stored) {
       const questions = JSON.parse(stored);
@@ -71,10 +72,10 @@ function getStoredQuestions(userId) {
   }
 }
 
-// Save questions to localStorage for specific user
+// Save questions to localStorage - SHARED across all users
 function saveQuestions(userId, questions) {
   try {
-    const storageKey = getQnAStorageKey(userId);
+    const storageKey = "scihub_qna_questions"; // Global shared key
     // Convert Date objects to ISO strings for proper serialization
     const serialized = questions.map(q => ({
       ...q,
@@ -85,7 +86,7 @@ function saveQuestions(userId, questions) {
       })),
     }));
     localStorage.setItem(storageKey, JSON.stringify(serialized));
-    console.log(`✅ Q&A questions saved for user ${userId}:`, serialized.length, "questions");
+    console.log(`✅ Q&A questions saved globally:`, serialized.length, "questions (shared with all users)");
   } catch (error) {
     console.error("❌ Error saving to localStorage:", error);
   }
@@ -192,6 +193,34 @@ function QnA() {
       const stored = getStoredQuestions(user.id);
       setQuestions(stored);
     }
+
+    // Listen for storage changes from other tabs or pages
+    const handleStorageChange = (e) => {
+      if (e.key === "scihub_qna_questions" || e.key === null) {
+        console.log("🔄 Q&A questions updated in another tab/page - refreshing");
+        if (user && user.id) {
+          const updated = getStoredQuestions(user.id);
+          setQuestions(updated);
+        }
+      }
+    };
+
+    // Listen for custom events from same tab
+    const handleQnAUpdate = () => {
+      console.log("📢 Q&A update event received - refreshing");
+      if (user && user.id) {
+        const updated = getStoredQuestions(user.id);
+        setQuestions(updated);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("qnaUpdate", handleQnAUpdate);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("qnaUpdate", handleQnAUpdate);
+    };
   }, [user?.id]);
 
   const handlePostQuestion = (e) => {
@@ -213,6 +242,8 @@ function QnA() {
     setQuestions(updated);
     if (user && user.id) {
       saveQuestions(user.id, updated);
+      // Dispatch event so other tabs/pages can refresh
+      window.dispatchEvent(new CustomEvent("qnaUpdate"));
     }
     console.log("✅ New question posted and saved:", question.title);
     setNewQuestionTitle("");
@@ -245,6 +276,8 @@ function QnA() {
     setQuestions(updatedQuestions);
     if (user && user.id) {
       saveQuestions(user.id, updatedQuestions);
+      // Dispatch event so other tabs/pages can refresh
+      window.dispatchEvent(new CustomEvent("qnaUpdate"));
     }
     console.log("✅ Reply posted and saved to question:", selectedQuestion.id);
     setSelectedQuestion(updatedQuestions.find((q) => q.id === selectedQuestion.id));

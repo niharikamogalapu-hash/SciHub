@@ -161,10 +161,8 @@ function App() {
       addNotification("Logged out successfully!");
       console.log("✅ Logout successful, navigating to home...");
       
-      // Navigate after a short delay to ensure state clears
-      setTimeout(() => {
-        navigate("/", { replace: true });
-      }, 100);
+      // Navigate immediately without delay
+      navigate("/", { replace: true });
     } catch (error) {
       console.error("❌ Logout error:", error);
       addNotification("Error logging out");
