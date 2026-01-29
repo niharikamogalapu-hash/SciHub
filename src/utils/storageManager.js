@@ -1031,9 +1031,9 @@ export const getAPExamReadiness = (userId) => {
       "AP Physics": Math.min(100, (completedLessons.filter(l => l.category === "physics").length / 10) * 100),
       "AP Environmental Science": Math.min(100, (completedLessons.filter(l => l.category === "environmental").length / 10) * 100),
       "AP Psychology": Math.min(100, (completedLessons.filter(l => l.category === "psychology").length / 10) * 100),
-      "AP Economics": Math.min(100, (completedLessons.filter(l => l.category === "economics").length / 10) * 100),
+      "Economics": Math.min(100, (completedLessons.filter(l => l.category === "economics").length / 10) * 100),
       "AP Human Geography": Math.min(100, (completedLessons.filter(l => l.category === "geography").length / 10) * 100),
-      "AP History": Math.min(100, (completedLessons.filter(l => l.category === "history").length / 10) * 100),
+      "History": Math.min(100, (completedLessons.filter(l => l.category === "history").length / 10) * 100),
     };
     
     return { overallPercentage: Math.round(overallPercentage), bySubject: subjects };
@@ -1085,7 +1085,7 @@ export const getCareerConnections = (subject) => {
       { title: "UX Researcher", description: "Understand how people interact with products" },
       { title: "Sports Psychologist", description: "Improve athletic performance mentally" }
     ],
-    "AP Economics": [
+    "Economics": [
       { title: "Economist", description: "Analyze economic trends and policy" },
       { title: "Financial Advisor", description: "Help clients manage their finances" },
       { title: "Business Analyst", description: "Improve business operations and profitability" },
@@ -1099,7 +1099,7 @@ export const getCareerConnections = (subject) => {
       { title: "Journalist", description: "Report on global issues and communities" },
       { title: "NGO Director", description: "Lead organizations addressing social issues" }
     ],
-    "AP History": [
+    "History": [
       { title: "Historian", description: "Research and document historical events" },
       { title: "Museum Curator", description: "Preserve and display historical artifacts" },
       { title: "Lawyer", description: "Practice law with historical perspective" },

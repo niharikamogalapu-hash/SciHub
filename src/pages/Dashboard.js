@@ -221,6 +221,54 @@ function Dashboard() {
       <Sidebar />
 
       <main className="dashboard-main">
+        {/* XP, Coins, Lessons - Move to Top */}
+        {!loading && stats && (
+          <div className="dashboard-stats-grid dashboard-stats-wide">
+            {/* XP Card */}
+            <div className="stat-card stat-card-tall stat-card-wide">
+              <div className="stat-icon">📊</div>
+              <div className="stat-label">Total XP</div>
+              <div className="stat-value">{stats.xp || 0}</div>
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ width: `${xpProgress}%` }}></div>
+              </div>
+              <div className="progress-text">
+                <span>Next Level</span>
+                <span>{Math.floor(stats.xp % 1000)} / 1000</span>
+              </div>
+              <div className="stat-explanation">Earn XP by completing lessons, games, and activities. Level up as you learn!</div>
+            </div>
+
+            {/* Coins Card */}
+            <div className="stat-card coins-card stat-card-tall stat-card-wide">
+              <div className="stat-icon">💰</div>
+              <div className="stat-label">Coins</div>
+              <div className="stat-value">{stats.coins}</div>
+              <div style={{ color: "#6b7280", fontSize: "0.85rem", padding: "0.5rem 0.75rem", background: "rgba(252, 211, 77, 0.1)", borderRadius: "8px" }}>
+                🎁 Earn from games & lessons
+              </div>
+              <div className="stat-explanation">Coins are rewards for playing games and finishing lessons. Use them for cool features!</div>
+            </div>
+
+            {/* Lessons Card */}
+            <div className="stat-card lessons-card stat-card-tall stat-card-wide">
+              <div className="stat-icon">📚</div>
+              <div className="stat-label">Lessons</div>
+              <div className="stat-value">
+                {stats?.lessonsCompleted || 0}/{totalLessons}
+              </div>
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ background: "linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%)", width: `${lessonProgress}%` }}></div>
+              </div>
+              <div className="progress-text">
+                <span>Progress</span>
+                <span>{Math.floor(lessonProgress)}%</span>
+              </div>
+              <div className="stat-explanation">Track your lesson progress. Complete more lessons to boost your knowledge!</div>
+            </div>
+          </div>
+        )}
+
         {/* HERO SECTION */}
         <header className="dashboard-hero">
           <div>
@@ -240,53 +288,8 @@ function Dashboard() {
           </div>
         ) : stats ? (
           <>
-            {/* TALLER STATS ROW AT BOTTOM */}
-            <div style={{ height: "40px" }} />
+            {/* Game Score Card */}
             <div className="dashboard-stats-grid dashboard-stats-tall">
-              {/* XP Card */}
-              <div className="stat-card stat-card-tall">
-                <div className="stat-icon">📊</div>
-                <div className="stat-label">Total XP</div>
-                <div className="stat-value">{stats.xp || 0}</div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: `${xpProgress}%` }}></div>
-                </div>
-                <div className="progress-text">
-                  <span>Next Level</span>
-                  <span>{Math.floor(stats.xp % 1000)} / 1000</span>
-                </div>
-                <div className="stat-explanation">Earn XP by completing lessons, games, and activities. Level up as you learn!</div>
-              </div>
-
-              {/* Coins Card */}
-              <div className="stat-card coins-card stat-card-tall">
-                <div className="stat-icon">💰</div>
-                <div className="stat-label">Coins</div>
-                <div className="stat-value">{stats.coins}</div>
-                <div style={{ color: "#6b7280", fontSize: "0.85rem", padding: "0.5rem 0.75rem", background: "rgba(252, 211, 77, 0.1)", borderRadius: "8px" }}>
-                  🎁 Earn from games & lessons
-                </div>
-                <div className="stat-explanation">Coins are rewards for playing games and finishing lessons. Use them for cool features!</div>
-              </div>
-
-              {/* Lessons Card */}
-              <div className="stat-card lessons-card stat-card-tall">
-                <div className="stat-icon">📚</div>
-                <div className="stat-label">Lessons</div>
-                <div className="stat-value">
-                  {stats?.lessonsCompleted || 0}/{totalLessons}
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ background: "linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%)", width: `${lessonProgress}%` }}></div>
-                </div>
-                <div className="progress-text">
-                  <span>Progress</span>
-                  <span>{Math.floor(lessonProgress)}%</span>
-                </div>
-                <div className="stat-explanation">Track your lesson progress. Complete more lessons to boost your knowledge!</div>
-              </div>
-
-              {/* Game Score Card */}
               <div className="stat-card games-card stat-card-tall">
                 <div className="stat-icon">🎮</div>
                 <div className="stat-label">Game Score</div>

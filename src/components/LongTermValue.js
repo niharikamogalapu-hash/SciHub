@@ -237,9 +237,9 @@ function LongTermValue({ userId, userName }) {
                 <option>AP Physics</option>
                 <option>AP Environmental Science</option>
                 <option>AP Psychology</option>
-                <option>AP Economics</option>
+                <option>Economics</option>
                 <option>AP Human Geography</option>
-                <option>AP History</option>
+                <option>History</option>
               </select>
             </div>
 
