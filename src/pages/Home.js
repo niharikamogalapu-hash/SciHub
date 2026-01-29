@@ -106,7 +106,7 @@ function Home() {
 
       {/* Animated Stats Section */}
       <div style={{ marginTop: "4rem", marginBottom: "4rem" }}>
-        <h2 style={{ fontSize: "2rem", textAlign: "center", color: "#f9fafb", marginBottom: "3rem" }}>📊 Why Students Love SciHub</h2>
+        <h2 style={{ fontSize: "2rem", textAlign: "center", color: "#f9fafb", marginBottom: "3rem" }}>Why Students Love SciHub</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "2rem" }}>
           {[
             { stat: stats[0], label: "Student Satisfaction" },
@@ -138,7 +138,7 @@ function Home() {
 
       {/* Features Section */}
       <div style={{ marginTop: "4rem", marginBottom: "4rem" }}>
-        <h2 style={{ fontSize: "2rem", textAlign: "center", color: "#f9fafb", marginBottom: "3rem" }}>🎯 What You Get</h2>
+        <h2 style={{ fontSize: "2rem", textAlign: "center", color: "#f9fafb", marginBottom: "3rem" }}>What You Get</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem" }}>
           {features.map((feature, i) => (
             <div
@@ -182,7 +182,7 @@ function Home() {
         marginTop: "4rem",
         marginBottom: "4rem",
       }}>
-        <h2 style={{ fontSize: "2rem", textAlign: "center", color: "#f9fafb", marginBottom: "3rem" }}>🎬 How It Works</h2>
+        <h2 style={{ fontSize: "2rem", textAlign: "center", color: "#f9fafb", marginBottom: "3rem" }}>How It Works</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "2rem" }}>
           {[
             { number: "1", title: "Sign Up", desc: "Create your free account in seconds" },
@@ -215,7 +215,7 @@ function Home() {
 
       {/* Testimonials Section */}
       <div style={{ marginTop: "4rem", marginBottom: "4rem" }}>
-        <h2 style={{ fontSize: "2rem", textAlign: "center", color: "#f9fafb", marginBottom: "3rem" }}>⭐ What Students Say</h2>
+        <h2 style={{ fontSize: "2rem", textAlign: "center", color: "#f9fafb", marginBottom: "3rem" }}>What Students Say</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem" }}>
           {[
             { name: "Sarah Chen", quote: "SciHub made science fun! My grades went up 2 letters in just a month." },
@@ -254,7 +254,7 @@ function Home() {
         marginTop: "4rem",
         marginBottom: "4rem",
       }}>
-        <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginBottom: "1.5rem", marginTop: "0" }}>🔬 Science & Social Studies Subjects</h2>
+        <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginBottom: "1.5rem", marginTop: "0" }}>Science & Social Studies Subjects</h2>
         <p style={{ color: "#9ca3af", marginBottom: "2rem", fontSize: "0.95rem" }}>Master topics across multiple disciplines</p>
         <div style={{
           display: "flex",
@@ -311,7 +311,7 @@ function Home() {
       }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center" }}>
           <div>
-            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>✨ Features</h2>
+            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>Features</h2>
             <p style={{ color: "#9ca3af", marginBottom: "1.5rem", lineHeight: "1.7", fontSize: "0.95rem" }}>
               Discover all the tools and features SciHub offers to make your science learning journey engaging and effective. From interactive games to AI-powered worksheets, we have everything you need to succeed.
             </p>
@@ -338,7 +338,7 @@ function Home() {
       }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem", alignItems: "center" }}>
           <div>
-            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>👥 About Us</h2>
+            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>About Us</h2>
             <p style={{ color: "#9ca3af", marginBottom: "1.5rem", lineHeight: "1.7", fontSize: "0.95rem" }}>
               Learn about SciHub's story, our values, and what drives us to create the best science learning platform. We believe every student deserves access to quality education that makes learning fun and engaging.
             </p>
@@ -365,7 +365,7 @@ function Home() {
       }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem", alignItems: "center" }}>
           <div>
-            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>🚀 Our Mission</h2>
+            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>Our Mission</h2>
             <p style={{ color: "#9ca3af", marginBottom: "1.5rem", lineHeight: "1.7", fontSize: "0.95rem" }}>
               Discover why we built SciHub and what we're working towards. Our mission is to transform science education by making it accessible, engaging, and effective for every student around the world.
             </p>
@@ -392,7 +392,7 @@ function Home() {
       }}>
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "3rem", alignItems: "center" }}>
           <div>
-            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>🎓 Meet the Team</h2>
+            <h2 style={{ fontSize: "2rem", color: "#f9fafb", marginTop: "0", marginBottom: "1rem" }}>Meet the Team</h2>
             <p style={{ color: "#9ca3af", marginBottom: "1.5rem", lineHeight: "1.7", fontSize: "0.95rem" }}>
               Get to know the talented team behind SciHub. Built by passionate students and educators, our team is dedicated to transforming science education and making learning accessible to everyone.
             </p>
@@ -418,7 +418,7 @@ function Home() {
         textAlign: "center",
         marginBottom: "4rem",
       }}>
-        <h2 style={{ fontSize: "2rem", marginTop: "0", marginBottom: "1rem", color: "#f9fafb" }}>💡 Ready to Transform Your Science Learning?</h2>
+        <h2 style={{ fontSize: "2rem", marginTop: "0", marginBottom: "1rem", color: "#f9fafb" }}>Ready to Transform Your Science Learning?</h2>
         <p style={{ fontSize: "1.05rem", color: "#9ca3af", marginBottom: "2rem", maxWidth: "600px", margin: "0 auto 2rem" }}>
           Join thousands of students who are improving their grades and falling in love with science. Start your journey today!
         </p>

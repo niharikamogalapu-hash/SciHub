@@ -221,23 +221,11 @@ function Dashboard() {
       <Sidebar />
 
       <main className="dashboard-main">
-        {/* HERO SECTION */}
-        <header className="dashboard-hero">
-          <div>
-            <h1>Welcome back, {user.firstName}! 👋</h1>
-            <p>Keep up your streak and continue mastering new subjects</p>
-          </div>
-          <div className="dashboard-streak">
-            <div className="dashboard-streak-number">🔥 {stats?.streak || 0}</div>
-            <div className="dashboard-streak-label">Day Streak</div>
-          </div>
-        </header>
-
-        {/* XP, Coins, Lessons - Classic Layout Below Hero */}
+        {/* XP, Coins, Lessons - Move to Top */}
         {!loading && stats && (
-          <div className="dashboard-stats-grid">
+          <div className="dashboard-stats-grid dashboard-stats-wide">
             {/* XP Card */}
-            <div className="stat-card">
+            <div className="stat-card stat-card-tall stat-card-wide">
               <div className="stat-icon">📊</div>
               <div className="stat-label">Total XP</div>
               <div className="stat-value">{stats.xp || 0}</div>
@@ -252,7 +240,7 @@ function Dashboard() {
             </div>
 
             {/* Coins Card */}
-            <div className="stat-card coins-card">
+            <div className="stat-card coins-card stat-card-tall stat-card-wide">
               <div className="stat-icon">💰</div>
               <div className="stat-label">Coins</div>
               <div className="stat-value">{stats.coins}</div>
@@ -263,7 +251,7 @@ function Dashboard() {
             </div>
 
             {/* Lessons Card */}
-            <div className="stat-card lessons-card">
+            <div className="stat-card lessons-card stat-card-tall stat-card-wide">
               <div className="stat-icon">📚</div>
               <div className="stat-label">Lessons</div>
               <div className="stat-value">
@@ -281,6 +269,18 @@ function Dashboard() {
           </div>
         )}
 
+        {/* HERO SECTION */}
+        <header className="dashboard-hero">
+          <div>
+            <h1>Welcome back, {user.firstName}! 👋</h1>
+            <p>Keep up your streak and continue mastering new subjects</p>
+          </div>
+          <div className="dashboard-streak">
+            <div className="dashboard-streak-number">🔥 {stats?.streak || 0}</div>
+            <div className="dashboard-streak-label">Day Streak</div>
+          </div>
+        </header>
+
         {loading ? (
           <div className="loading-indicator">
             <div className="loading-emoji">⏳</div>
@@ -289,8 +289,8 @@ function Dashboard() {
         ) : stats ? (
           <>
             {/* Game Score Card */}
-            <div className="dashboard-stats-grid">
-              <div className="stat-card games-card">
+            <div className="dashboard-stats-grid dashboard-stats-tall">
+              <div className="stat-card games-card stat-card-tall">
                 <div className="stat-icon">🎮</div>
                 <div className="stat-label">Game Score</div>
                 <div className="stat-value">{stats.totalGameScore || 0}</div>

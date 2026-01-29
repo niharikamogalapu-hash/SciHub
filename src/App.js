@@ -29,7 +29,6 @@ import ScienceDetail from "./pages/ScienceDetail";
 // Tutoring + games
 import Schedule from "./pages/Schedule";
 import Games from "./pages/Games";
-import LongTermValuePage from "./pages/LongTermValuePage";
 
 // Profile
 import Profile from "./pages/Profile";
@@ -162,8 +161,10 @@ function App() {
       addNotification("Logged out successfully!");
       console.log("✅ Logout successful, navigating to home...");
       
-      // Navigate immediately without delay
-      navigate("/", { replace: true });
+      // Navigate after a short delay to ensure state clears
+      setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 100);
     } catch (error) {
       console.error("❌ Logout error:", error);
       addNotification("Error logging out");
@@ -350,12 +351,6 @@ function App() {
               <Route
                 path="/games/:subId"
                 element={<Games onGameWin={handleGameWin} />}
-              />
-
-              {/* Learning Journey */}
-              <Route
-                path="/learning-journey"
-                element={<LongTermValuePage />}
               />
 
               {/* Q & A */}

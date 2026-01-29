@@ -60,34 +60,107 @@ function Sidebar({ user, onLogout }) {
         marginBottom: "30px",
         gap: "12px"
       }}>
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "40px",
-            height: "40px",
-            background: collapsed ? "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)" : "rgba(139, 92, 246, 0.1)",
-            border: collapsed ? "none" : "1px solid rgba(139, 92, 246, 0.3)",
-            borderRadius: "10px",
-            color: collapsed ? "white" : "#8b5cf6",
-            cursor: "pointer",
-            fontSize: "1.2rem",
-            transition: "all 200ms ease",
-            padding: 0,
-            boxShadow: "0 6px 20px rgba(139, 92, 246, 0.3)"
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.1)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        >
-          {collapsed ? "›" : "‹"}
-        </button>
+        {collapsed ? (
+          <button
+            onClick={() => setCollapsed(false)}
+            aria-label="Expand sidebar"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "40px",
+              height: "40px",
+              background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)",
+              border: "none",
+              borderRadius: "10px",
+              color: "white",
+              cursor: "pointer",
+              fontSize: "1.2rem",
+              transition: "all 200ms ease",
+              padding: 0,
+              boxShadow: "0 6px 20px rgba(139, 92, 246, 0.3)"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "scale(1.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+            }}
+          >
+            ›
+          </button>
+        ) : (
+          <>
+            <button
+              onClick={handleLogoClick}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                background: "none",
+                border: "none",
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: "700",
+                fontSize: "1rem",
+                transition: "all 200ms ease",
+                padding: 0,
+                flexShrink: 0
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.05)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+              }}
+            >
+              <div style={{
+                width: "40px",
+                height: "40px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)",
+                borderRadius: "10px",
+                fontSize: "1.4rem",
+                flexShrink: 0,
+                boxShadow: "0 6px 20px rgba(139, 92, 246, 0.3)"
+              }}>
+                🔬
+              </div>
+              <span style={{ fontSize: "0.95rem" }}>SciHub</span>
+            </button>
+            <button
+              onClick={() => setCollapsed(true)}
+              aria-label="Collapse sidebar"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "38px",
+                height: "38px",
+                background: "rgba(139, 92, 246, 0.1)",
+                border: "1px solid rgba(139, 92, 246, 0.3)",
+                borderRadius: "8px",
+                color: "#8b5cf6",
+                cursor: "pointer",
+                fontSize: "1rem",
+                transition: "all 200ms ease",
+                padding: 0
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(139, 92, 246, 0.2)";
+                e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(139, 92, 246, 0.1)";
+                e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.3)";
+              }}
+            >
+              ‹
+            </button>
+          </>
+        )}
       </div>
 
       {/* Navigation */}
@@ -272,41 +345,6 @@ function Sidebar({ user, onLogout }) {
         >
           <span style={{ fontSize: "1.3rem" }}>📝</span>
           {!collapsed && <span>Unit Tests</span>}
-        </NavLink>
-
-        {/* Learning Journey */}
-        <NavLink
-          to="/learning-journey"
-          className={({ isActive }) => isActive ? "active" : ""}
-          style={({ isActive }) => ({
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            padding: collapsed ? "10px" : "10px 14px",
-            color: isActive ? "#34d399" : "#cbd5e1",
-            textDecoration: "none",
-            fontWeight: "500",
-            fontSize: "0.9rem",
-            transition: "all 200ms ease",
-            borderRadius: "8px",
-            background: isActive ? "rgba(52, 211, 153, 0.15)" : "transparent",
-            borderLeft: isActive ? "3px solid #34d399" : "3px solid transparent",
-            minHeight: "44px",
-            justifyContent: collapsed ? "center" : "flex-start"
-          })}
-          onMouseEnter={(e) => {
-            if (!e.currentTarget.classList.contains("active")) {
-              e.currentTarget.style.background = "rgba(52, 211, 153, 0.08)";
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!e.currentTarget.classList.contains("active")) {
-              e.currentTarget.style.background = "transparent";
-            }
-          }}
-        >
-          <span style={{ fontSize: "1.3rem" }}>📈</span>
-          {!collapsed && <span>Learning Journey</span>}
         </NavLink>
       </nav>
 

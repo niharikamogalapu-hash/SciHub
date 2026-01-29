@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 
 function Features() {
   const [hoveredFeature, setHoveredFeature] = useState(null);
@@ -234,35 +233,33 @@ function Features() {
         </div>
 
         {/* CTA Banner */}
-        <Link to="/signup" style={{ textDecoration: "none" }}>
-          <div className="slide-up" style={{
-            background: "linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)",
-            borderRadius: "20px",
-            padding: "3rem 2.5rem",
-            textAlign: "center",
-            cursor: "pointer",
-            transition: "all 0.3s ease",
-            animation: `slideUp 0.6s ease forwards`,
-            animationDelay: "0.6s",
-            opacity: 0,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "translateY(-8px)";
-            e.currentTarget.style.boxShadow = "0 20px 60px rgba(56, 189, 248, 0.4)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = "0 10px 30px rgba(56, 189, 248, 0.2)";
-          }}
-          >
-            <h2 style={{ fontSize: "2rem", color: "#fff", marginTop: "0", marginBottom: "1rem", fontWeight: "700" }}>
-              Ready to Experience the Difference?
-            </h2>
-            <p style={{ fontSize: "1.1rem", color: "rgba(255, 255, 255, 0.9)", marginBottom: "0", maxWidth: "600px", margin: "0 auto" }}>
-              Join thousands of students transforming their science learning with SciHub's powerful feature suite.
-            </p>
-          </div>
-        </Link>
+        <div className="slide-up" style={{
+          background: "linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)",
+          borderRadius: "20px",
+          padding: "3rem 2.5rem",
+          textAlign: "center",
+          cursor: "pointer",
+          transition: "all 0.3s ease",
+          animation: `slideUp 0.6s ease forwards`,
+          animationDelay: "0.6s",
+          opacity: 0,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "translateY(-8px)";
+          e.currentTarget.style.boxShadow = "0 20px 60px rgba(56, 189, 248, 0.4)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.boxShadow = "0 10px 30px rgba(56, 189, 248, 0.2)";
+        }}
+        >
+          <h2 style={{ fontSize: "2rem", color: "#fff", marginTop: "0", marginBottom: "1rem", fontWeight: "700" }}>
+            Ready to Experience the Difference?
+          </h2>
+          <p style={{ fontSize: "1.1rem", color: "rgba(255, 255, 255, 0.9)", marginBottom: "0", maxWidth: "600px", margin: "0 auto" }}>
+            Join thousands of students transforming their science learning with SciHub's powerful feature suite.
+          </p>
+        </div>
       </div>
 
       <style>{`

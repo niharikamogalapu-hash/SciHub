@@ -1,17 +1,16 @@
-
 import React from "react";
 import Sidebar from "../components/Sidebar";
 import LongTermValue from "../components/LongTermValue";
-import "../pages/Dashboard.css";
+import "./LongTermValuePage.css";
 
 function LongTermValuePage() {
   const user = JSON.parse(localStorage.getItem("user") || "null") || null;
 
   if (!user) {
     return (
-      <div className="dashboard-page">
+      <div style={{ display: "flex", minHeight: "100vh", background: "#0f172a" }}>
         <Sidebar />
-        <main className="dashboard-main">
+        <main className="ltv-page-main">
           <h1 style={{ color: "#60a5fa", textAlign: "center" }}>Please log in to view your learning journey</h1>
         </main>
       </div>
@@ -19,11 +18,12 @@ function LongTermValuePage() {
   }
 
   return (
-    <div className="dashboard-page">
+    <div style={{ display: "flex", minHeight: "100vh", background: "#0f172a" }}>
       <Sidebar />
-      <main className="dashboard-main">
+      
+      <main className="ltv-page-main">
         {/* Hero Section */}
-        <header className="dashboard-hero">
+        <header className="ltv-page-hero">
           <div>
             <h1>📈 Your Learning Journey</h1>
             <p>Track your AP exam readiness, explore career paths, and celebrate your progress</p>
@@ -31,12 +31,12 @@ function LongTermValuePage() {
         </header>
 
         {/* Long-Term Value Component */}
-        <section className="dashboard-section">
+        <section className="ltv-page-content">
           <LongTermValue userId={user?.id} userName={user?.firstName} />
         </section>
 
         {/* Footer Section */}
-        <footer className="dashboard-section" style={{ marginTop: '2rem' }}>
+        <footer className="ltv-page-footer">
           <div className="footer-message">
             <h3>🎯 Your Dedication Matters</h3>
             <p>Every lesson completed, every game played, and every hour studied brings you closer to AP exam success. Keep pushing forward!</p>
