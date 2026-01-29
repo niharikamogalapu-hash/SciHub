@@ -87,10 +87,11 @@
 
 
 .dashboard-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: flex;
+  justify-content: center;
   gap: 1.5rem;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
 /* Wider stats row for top section */
@@ -101,10 +102,10 @@
 }
 
 .stat-card-wide {
-  min-width: 320px;
-  max-width: 500px;
-  width: 100%;
-  flex: 1 1 320px;
+  width: 240px;
+  min-width: 200px;
+  max-width: 260px;
+  flex: 0 0 240px;
 }
 
 .dashboard-stats-tall {
