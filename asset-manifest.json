@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/SciHub/static/css/main.6a2d76e0.css",
-    "main.js": "/SciHub/static/js/main.ae6653bc.js",
+    "main.css": "/SciHub/static/css/main.768cc3bd.css",
+    "main.js": "/SciHub/static/js/main.62c507de.js",
     "index.html": "/SciHub/index.html",
-    "main.6a2d76e0.css.map": "/SciHub/static/css/main.6a2d76e0.css.map",
-    "main.ae6653bc.js.map": "/SciHub/static/js/main.ae6653bc.js.map"
+    "main.768cc3bd.css.map": "/SciHub/static/css/main.768cc3bd.css.map",
+    "main.62c507de.js.map": "/SciHub/static/js/main.62c507de.js.map"
   },
   "entrypoints": [
-    "static/css/main.6a2d76e0.css",
-    "static/js/main.ae6653bc.js"
+    "static/css/main.768cc3bd.css",
+    "static/js/main.62c507de.js"
   ]
 }
