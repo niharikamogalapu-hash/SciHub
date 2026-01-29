@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import UserRank from "../components/UserRank";
-import LongTermValue from "../components/LongTermValue";
-import ProgressGrowthTracker from "../components/ProgressGrowthTracker";
 import "./Dashboard.css";
 import {
   getDashboardStats,
@@ -10,7 +7,6 @@ import {
   getActivityLog,
   getUserAchievementProgress,
   checkAndUnlockAchievements,
-  recordDailyProgressSnapshot,
 } from "../utils/storageManager";
 
 function Dashboard() {
@@ -32,9 +28,6 @@ function Dashboard() {
     }
 
     try {
-      // Record daily progress snapshot for growth tracker
-      recordDailyProgressSnapshot(user.id);
-
       // Load stats from localStorage using storageManager
       const userStats = getDashboardStats(user.id);
       console.log("💰 Dashboard stats loaded:", userStats);
@@ -247,9 +240,6 @@ function Dashboard() {
           </div>
         ) : stats ? (
           <>
-            {/* USER RANK SECTION */}
-            <UserRank userId={user.id} />
-
             {/* TOP STATS ROW */}
             <div className="dashboard-stats-grid">
               {/* XP Card */}
@@ -505,46 +495,6 @@ function Dashboard() {
                 )}
               </div>
             </div>
-
-            {/* PROGRESS GROWTH TRACKER SECTION */}
-            <section style={{
-              marginTop: "3rem",
-              padding: "2rem",
-              background: "linear-gradient(135deg, rgba(96, 165, 250, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%)",
-              border: "1px solid rgba(96, 165, 250, 0.2)",
-              borderRadius: "16px",
-              animation: "slideUp 0.8s ease-out 0.4s both"
-            }}>
-              <ProgressGrowthTracker userId={user?.id} />
-            </section>
-
-            {/* LONG-TERM VALUE SECTION */}
-            <section style={{
-              marginTop: "3rem",
-              padding: "2rem",
-              background: "linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)",
-              border: "1px solid rgba(99, 102, 241, 0.2)",
-              borderRadius: "16px",
-              animation: "slideUp 0.8s ease-out 0.5s both"
-            }}>
-              <h2 style={{
-                fontSize: "1.8rem",
-                marginTop: 0,
-                marginBottom: "1rem",
-                color: "#60a5fa",
-                textShadow: "0 0 20px rgba(96, 165, 250, 0.3)"
-              }}>
-                📈 Your Learning Journey
-              </h2>
-              <p style={{
-                color: "#cbd5e1",
-                marginBottom: "2rem",
-                fontSize: "1rem"
-              }}>
-                Track your AP exam readiness, explore career connections, and celebrate your progress!
-              </p>
-              <LongTermValue userId={user?.id} userName={user?.firstName} />
-            </section>
           </>
         ) : (
           <p style={{ color: "#9ca3af", textAlign: "center" }}>No stats available. Please refresh.</p>

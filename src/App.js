@@ -29,6 +29,7 @@ import ScienceDetail from "./pages/ScienceDetail";
 // Tutoring + games
 import Schedule from "./pages/Schedule";
 import Games from "./pages/Games";
+import LongTermValuePage from "./pages/LongTermValuePage";
 
 // Profile
 import Profile from "./pages/Profile";
@@ -349,6 +350,12 @@ function App() {
               <Route
                 path="/games/:subId"
                 element={<Games onGameWin={handleGameWin} />}
+              />
+
+              {/* Learning Journey */}
+              <Route
+                path="/learning-journey"
+                element={<LongTermValuePage />}
               />
 
               {/* Q & A */}

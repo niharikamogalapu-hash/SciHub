@@ -175,7 +175,6 @@ function Sidebar({ user, onLogout }) {
         {/* Dashboard */}
         <NavLink
           to="/dashboard"
-          onClick={() => setCollapsed(true)}
           className={({ isActive }) => isActive ? "active" : ""}
           style={({ isActive }) => ({
             display: "flex",
@@ -211,7 +210,6 @@ function Sidebar({ user, onLogout }) {
         {/* Resources */}
         <NavLink
           to="/resources"
-          onClick={() => setCollapsed(true)}
           className={({ isActive }) => isActive ? "active" : ""}
           style={({ isActive }) => ({
             display: "flex",
@@ -247,7 +245,6 @@ function Sidebar({ user, onLogout }) {
         {/* Community Q&A */}
         <NavLink
           to="/qna"
-          onClick={() => setCollapsed(true)}
           className={({ isActive }) => isActive ? "active" : ""}
           style={({ isActive }) => ({
             display: "flex",
@@ -283,7 +280,6 @@ function Sidebar({ user, onLogout }) {
         {/* Games */}
         <NavLink
           to="/games"
-          onClick={() => setCollapsed(true)}
           className={({ isActive }) => isActive ? "active" : ""}
           style={({ isActive }) => ({
             display: "flex",
@@ -319,7 +315,6 @@ function Sidebar({ user, onLogout }) {
         {/* Unit Tests */}
         <NavLink
           to="/unit-tests"
-          onClick={() => setCollapsed(true)}
           className={({ isActive }) => isActive ? "active" : ""}
           style={({ isActive }) => ({
             display: "flex",
@@ -351,6 +346,41 @@ function Sidebar({ user, onLogout }) {
           <span style={{ fontSize: "1.3rem" }}>📝</span>
           {!collapsed && <span>Unit Tests</span>}
         </NavLink>
+
+        {/* Learning Journey */}
+        <NavLink
+          to="/learning-journey"
+          className={({ isActive }) => isActive ? "active" : ""}
+          style={({ isActive }) => ({
+            display: "flex",
+            alignItems: "center",
+            gap: "12px",
+            padding: collapsed ? "10px" : "10px 14px",
+            color: isActive ? "#34d399" : "#cbd5e1",
+            textDecoration: "none",
+            fontWeight: "500",
+            fontSize: "0.9rem",
+            transition: "all 200ms ease",
+            borderRadius: "8px",
+            background: isActive ? "rgba(52, 211, 153, 0.15)" : "transparent",
+            borderLeft: isActive ? "3px solid #34d399" : "3px solid transparent",
+            minHeight: "44px",
+            justifyContent: collapsed ? "center" : "flex-start"
+          })}
+          onMouseEnter={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "rgba(52, 211, 153, 0.08)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!e.currentTarget.classList.contains("active")) {
+              e.currentTarget.style.background = "transparent";
+            }
+          }}
+        >
+          <span style={{ fontSize: "1.3rem" }}>📈</span>
+          {!collapsed && <span>Learning Journey</span>}
+        </NavLink>
       </nav>
 
       {/* Bottom Section */}
@@ -365,7 +395,6 @@ function Sidebar({ user, onLogout }) {
         {/* Profile */}
         <NavLink
           to="/profile"
-          onClick={() => setCollapsed(true)}
           className={({ isActive }) => isActive ? "active" : ""}
           style={({ isActive }) => ({
             display: "flex",

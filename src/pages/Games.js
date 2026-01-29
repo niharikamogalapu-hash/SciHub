@@ -1927,26 +1927,26 @@ function Games({ onGameWin }) {
       ]
     },
     75: {
-      type: "drag",
+      type: "dragdrop",
       title: "Adolescent Development",
       description: "Match adolescent changes from Lesson 75 videos to their domains",
-      pairs: [
-        { term: "Physical Development", pairs: ["Puberty: growth spurt, hormonal changes (testosterone, estrogen)", "Secondary sexual characteristics: body hair, voice changes", "Brain development: prefrontal cortex (judgment) lags limbic system (emotion)"] },
-        { term: "Cognitive Development", pairs: ["Formal operational thinking (Piaget): abstract, hypotheticals, idealism", "Risk assessment underdeveloped relative to thrill-seeking: explains recklessness", "Metacognition: thinking about thinking; identity questions 'Who am I?'"] },
-        { term: "Social-Emotional Development", pairs: ["Identity vs. role confusion (Erikson): exploring beliefs, values, sexuality", "Peer relationships crucial; peer pressure increases; family relationships shift", "Autonomy increasing; parent conflict peaks mid-adolescence before resolution"] }
+      dropZones: [
+        { name: "Physical Development", items: ["Puberty: growth spurt, hormonal changes (testosterone, estrogen)", "Secondary sexual characteristics: body hair, voice changes", "Brain development: prefrontal cortex (judgment) lags limbic system (emotion)"] },
+        { name: "Cognitive Development", items: ["Formal operational thinking (Piaget): abstract, hypotheticals, idealism", "Risk assessment underdeveloped relative to thrill-seeking: explains recklessness", "Metacognition: thinking about thinking; identity questions 'Who am I?'"] },
+        { name: "Social-Emotional Development", items: ["Identity vs. role confusion (Erikson): exploring beliefs, values, sexuality", "Peer relationships crucial; peer pressure increases; family relationships shift", "Autonomy increasing; parent conflict peaks mid-adolescence before resolution"] }
       ]
     },
     76: {
       type: "matching",
       title: "Adult Development & Aging",
       description: "Match adult life stages from Lesson 76 videos with their characteristics",
-      pairs: [
-        { term: "Early Adulthood (18-40)", answer: "Intimacy vs. isolation (Erikson): forming deep relationships, partnerships; identity solidifying; peak physical ability" },
-        { term: "Middle Adulthood (40-65)", answer: "Generativity vs. stagnation (Erikson): contribution (parenting, mentoring, work); midlife reassessment; still cognitively capable" },
-        { term: "Late Adulthood (65+)", answer: "Integrity vs. despair (Erikson): life review, acceptance or regret; cognitive changes (speed slows, wisdom grows); biological decline" },
-        { term: "Physical Aging", answer: "Cellular (telomere shortening), organ decline, sensory changes; gender differences (women: menopause; men: gradual decline)" },
-        { term: "Cognitive Aging", answer: "Fluid intelligence (speed, reasoning) declines; crystallized intelligence (knowledge, judgment) stable or improves with age/experience" },
-        { term: "Social-Emotional Development", answer: "Relationships selective (quality over quantity); emotional regulation improves; purpose/meaning-making increases" }
+      matchPairs: [
+        { answer: "adult1", term: "Early Adulthood (18-40)", definition: "Intimacy vs. isolation (Erikson): forming deep relationships, partnerships; identity solidifying; peak physical ability" },
+        { answer: "adult2", term: "Middle Adulthood (40-65)", definition: "Generativity vs. stagnation (Erikson): contribution (parenting, mentoring, work); midlife reassessment; still cognitively capable" },
+        { answer: "adult3", term: "Late Adulthood (65+)", definition: "Integrity vs. despair (Erikson): life review, acceptance or regret; cognitive changes (speed slows, wisdom grows); biological decline" },
+        { answer: "adult4", term: "Physical Aging", definition: "Cellular (telomere shortening), organ decline, sensory changes; gender differences (women: menopause; men: gradual decline)" },
+        { answer: "adult5", term: "Cognitive Aging", definition: "Fluid intelligence (speed, reasoning) declines; crystallized intelligence (knowledge, judgment) stable or improves with age/experience" },
+        { answer: "adult6", term: "Social-Emotional Development", definition: "Relationships selective (quality over quantity); emotional regulation improves; purpose/meaning-making increases" }
       ]
     },
     77: {
