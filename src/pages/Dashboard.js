@@ -240,10 +240,11 @@ function Dashboard() {
           </div>
         ) : stats ? (
           <>
-            {/* TOP STATS ROW */}
-            <div className="dashboard-stats-grid">
+            {/* TALLER STATS ROW AT BOTTOM */}
+            <div style={{ height: "40px" }} />
+            <div className="dashboard-stats-grid dashboard-stats-tall">
               {/* XP Card */}
-              <div className="stat-card">
+              <div className="stat-card stat-card-tall">
                 <div className="stat-icon">📊</div>
                 <div className="stat-label">Total XP</div>
                 <div className="stat-value">{stats.xp || 0}</div>
@@ -254,20 +255,22 @@ function Dashboard() {
                   <span>Next Level</span>
                   <span>{Math.floor(stats.xp % 1000)} / 1000</span>
                 </div>
+                <div className="stat-explanation">Earn XP by completing lessons, games, and activities. Level up as you learn!</div>
               </div>
 
               {/* Coins Card */}
-              <div className="stat-card coins-card">
+              <div className="stat-card coins-card stat-card-tall">
                 <div className="stat-icon">💰</div>
                 <div className="stat-label">Coins</div>
                 <div className="stat-value">{stats.coins}</div>
                 <div style={{ color: "#6b7280", fontSize: "0.85rem", padding: "0.5rem 0.75rem", background: "rgba(252, 211, 77, 0.1)", borderRadius: "8px" }}>
                   🎁 Earn from games & lessons
                 </div>
+                <div className="stat-explanation">Coins are rewards for playing games and finishing lessons. Use them for cool features!</div>
               </div>
 
               {/* Lessons Card */}
-              <div className="stat-card lessons-card">
+              <div className="stat-card lessons-card stat-card-tall">
                 <div className="stat-icon">📚</div>
                 <div className="stat-label">Lessons</div>
                 <div className="stat-value">
@@ -280,16 +283,18 @@ function Dashboard() {
                   <span>Progress</span>
                   <span>{Math.floor(lessonProgress)}%</span>
                 </div>
+                <div className="stat-explanation">Track your lesson progress. Complete more lessons to boost your knowledge!</div>
               </div>
 
               {/* Game Score Card */}
-              <div className="stat-card games-card">
+              <div className="stat-card games-card stat-card-tall">
                 <div className="stat-icon">🎮</div>
                 <div className="stat-label">Game Score</div>
                 <div className="stat-value">{stats.totalGameScore || 0}</div>
                 <div style={{ color: "#6b7280", fontSize: "0.85rem", padding: "0.5rem 0.75rem", background: "rgba(168, 85, 247, 0.1)", borderRadius: "8px" }}>
                   📈 +250 this week
                 </div>
+                <div className="stat-explanation">Your total score from all games. Play more to increase your score and earn rewards!</div>
               </div>
             </div>
 
