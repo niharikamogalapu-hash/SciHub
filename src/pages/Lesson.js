@@ -1958,7 +1958,7 @@ export default function Lesson() {
   // Timeline steps for Lesson 1
   const timelineSteps = [
     { id: 1, title: "Watch 5 Videos", completed: Object.keys(watchedVideos).length === 5, current: Object.keys(watchedVideos).length < 5 },
-    { id: 2, title: "Book a Tutor", completed: !!bookedSession, current: Object.keys(watchedVideos).length === 5 && !bookedSession },
+    { id: 2, title: "Book a Student Tutor", completed: !!bookedSession, current: Object.keys(watchedVideos).length === 5 && !bookedSession },
     { id: 3, title: "Do 2 Worksheets", completed: step3Completed, current: !!bookedSession && !step3Completed },
     { id: 4, title: "Q&A Post", completed: step4Completed, current: step3Completed && !step4Completed },
     { id: 5, title: "Complete Game", completed: step5Completed, current: step4Completed && !step5Completed },
@@ -1979,13 +1979,13 @@ export default function Lesson() {
     const mockTutors = [
       {
         id: 101,
-        name: "Dr. Sarah Mitchell",
-        bio: "Expert in Biology with 10+ years of teaching experience. Specializes in cellular biology and genetics.",
+        name: "Sarah Mitchell (Student Tutor)",
+        bio: "Student tutor specializing in cellular biology and genetics. Peer-to-peer support!",
       },
       {
         id: 102,
-        name: "Prof. James Chen",
-        bio: "Passionate educator with a focus on interactive learning. Great at breaking down complex concepts.",
+        name: "James Chen (Student Tutor)",
+        bio: "Student tutor focused on interactive learning and breaking down complex concepts for fellow students.",
       },
     ];
 
@@ -3020,23 +3020,45 @@ export default function Lesson() {
               <div className="step2-layout">
                 {/* Tutors Selection - Top */}
                 <div className="tutors-selection-step2">
-                  <h3>Select a Tutor</h3>
+                  <h3>Select a Student Tutor</h3>
                   <div className="tutors-row">
-                    {tutors.map((tutor) => {
-                      const isSelected = selectedTutor?.id === tutor.id;
-
-                      return (
-                        <div
-                          key={tutor.id}
-                          className={`tutor-card-step2 ${isSelected ? "selected" : ""}`}
-                          onClick={() => setSelectedTutor(isSelected ? null : tutor)}
-                        >
-                          <div className="tutor-avatar-step2">{tutor.name.charAt(0).toUpperCase()}</div>
-                          <h4>{tutor.name}</h4>
-                          <p className="tutor-bio-step2">{tutor.bio || "Expert tutor"}</p>
-                        </div>
-                      );
-                    })}
+                    {tutors
+                      .filter(tutor => {
+                        // Match by subject exactly as shown in About Tutors
+                        if (tutor.subject && lesson && lesson.category) {
+                          // Map lesson category to About Tutors subject
+                          const categoryMap = {
+                            biology: "AP Biology",
+                            chemistry: "AP Chemistry",
+                            physics: "AP Physics",
+                            environmental: "AP Environmental Science",
+                            history: "History",
+                            economics: "Economics",
+                            geography: "AP Human Geography",
+                            psychology: "AP Psychology"
+                          };
+                          const lessonSubject = categoryMap[lesson.category.toLowerCase()] || lesson.category;
+                          return tutor.subject === lessonSubject;
+                        }
+                        return true;
+                      })
+                      .map((tutor) => {
+                        const isSelected = selectedTutor?.id === tutor.id;
+                        // Remove '(Student Tutor)' from name for About Tutors match
+                        const displayName = tutor.name.replace(/\s*\(Student Tutor\)/, "");
+                        return (
+                          <div
+                            key={tutor.id}
+                            className={`tutor-card-step2 ${isSelected ? "selected" : ""}`}
+                            onClick={() => setSelectedTutor(isSelected ? null : tutor)}
+                          >
+                            <div className="tutor-avatar-step2">{displayName.charAt(0).toUpperCase()}</div>
+                            <h4>{displayName}</h4>
+                            <p className="tutor-specialty-step2">{tutor.specialty}</p>
+                            <p className="tutor-bio-step2">{tutor.bio || "Expert tutor"}</p>
+                          </div>
+                        );
+                      })}
                   </div>
                 </div>
 

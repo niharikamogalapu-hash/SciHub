@@ -5,30 +5,30 @@ const mockTutors = [
   // Biology Tutors
   {
     id: 1,
-    name: "Sarah (Peer Tutor)",
+    name: "Sarah (Student Tutor)",
     specialty: "AP Biology – cells, genetics",
     subject: "AP Biology",
-    bio: "Student tutor who knows what it feels like to struggle at first.",
+    bio: "Student tutor who knows what it feels like to struggle at first. Peer-to-peer support!",
   },
   {
     id: 2,
-    name: "Dr. James Wilson",
+    name: "James Wilson (Student Tutor)",
     specialty: "AP Biology – ecology, evolution",
     subject: "AP Biology",
-    bio: "PhD in evolutionary biology with 8 years of teaching experience.",
+    bio: "Student tutor passionate about evolutionary biology and helping fellow students succeed.",
   },
 
   // Chemistry Tutors
   {
     id: 3,
-    name: "Ms. Chen",
+    name: "Chen (Student Tutor)",
     specialty: "AP Chemistry – reactions, atoms",
     subject: "AP Chemistry",
     bio: "Makes chemistry feel like solving puzzles instead of memorizing formulas.",
   },
   {
     id: 4,
-    name: "Prof. Ahmed Hassan",
+    name: "Ahmed Hassan (Student Tutor)",
     specialty: "AP Chemistry – organic, molecular structure",
     subject: "AP Chemistry",
     bio: "Specializes in breaking down complex organic reactions into simple steps.",
@@ -37,14 +37,14 @@ const mockTutors = [
   // Physics Tutors
   {
     id: 5,
-    name: "Mr. Patel",
+    name: "Patel (Student Tutor)",
     specialty: "AP Physics – forces, motion",
     subject: "AP Physics",
     bio: "Uses real-life examples to explain physics step-by-step.",
   },
   {
     id: 6,
-    name: "Elena Rodriguez",
+    name: "Elena Rodriguez (Student Tutor)",
     specialty: "AP Physics – electricity, magnetism, optics",
     subject: "AP Physics",
     bio: "Passionate about making physics intuitive through demonstrations.",
@@ -53,14 +53,14 @@ const mockTutors = [
   // Environmental Science Tutors
   {
     id: 7,
-    name: "Marcus Green",
+    name: "Marcus Green (Student Tutor)",
     specialty: "AP Environmental Science – ecosystems, climate",
     subject: "AP Environmental Science",
     bio: "Combines field experience with classroom teaching for deep understanding.",
   },
   {
     id: 8,
-    name: "Dr. Lisa Park",
+    name: "Lisa Park (Student Tutor)",
     specialty: "AP Environmental Science – sustainability, conservation",
     subject: "AP Environmental Science",
     bio: "Advocates for practical solutions to real environmental challenges.",
@@ -69,14 +69,14 @@ const mockTutors = [
   // History Tutors
   {
     id: 9,
-    name: "Mr. David Thompson",
+    name: "David Thompson (Student Tutor)",
     specialty: "History – world history, civilizations",
     subject: "History",
     bio: "Brings history to life through engaging narratives and primary sources.",
   },
   {
     id: 10,
-    name: "Professor Margaret Flynn",
+    name: "Margaret Flynn (Student Tutor)",
     specialty: "History – American history, social movements",
     subject: "History",
     bio: "Expert in connecting historical events to modern-day relevance.",
@@ -85,14 +85,14 @@ const mockTutors = [
   // Human Geography Tutors
   {
     id: 11,
-    name: "Carlos Mendez",
+    name: "Carlos Mendez (Student Tutor)",
     specialty: "AP Human Geography – culture, societies",
     subject: "AP Human Geography",
     bio: "Explores the fascinating connections between people and places worldwide.",
   },
   {
     id: 12,
-    name: "Sophie Laurent",
+    name: "Sophie Laurent (Student Tutor)",
     specialty: "AP Human Geography – urban systems, migration",
     subject: "AP Human Geography",
     bio: "Makes geography concepts accessible and relevant to daily life.",
@@ -101,14 +101,14 @@ const mockTutors = [
   // Economics Tutors
   {
     id: 13,
-    name: "Mr. Robert Kim",
+    name: "Robert Kim (Student Tutor)",
     specialty: "Economics – microeconomics, markets",
     subject: "Economics",
     bio: "Demystifies economics with real-world examples and case studies.",
   },
   {
     id: 14,
-    name: "Dr. Patricia Garcia",
+    name: "Patricia Garcia (Student Tutor)",
     specialty: "Economics – macroeconomics, policy",
     subject: "Economics",
     bio: "Explains global economics in a way that makes sense to everyone.",
@@ -117,14 +117,14 @@ const mockTutors = [
   // Psychology Tutors
   {
     id: 15,
-    name: "Dr. Nathan Cohen",
+    name: "Nathan Cohen (Student Tutor)",
     specialty: "AP Psychology – cognitive science, behavior",
     subject: "AP Psychology",
     bio: "Helps students understand themselves and others through psychology.",
   },
   {
     id: 16,
-    name: "Dr. Amanda Walsh",
+    name: "Amanda Walsh (Student Tutor)",
     specialty: "AP Psychology – development, mental health",
     subject: "AP Psychology",
     bio: "Compassionate tutor who connects psychology theory to real-world applications.",
@@ -277,17 +277,17 @@ function Tutoring({ onBookSession }) {
 
   return (
     <section className="page fade-in">
-      <h1 className="slide-up">Choose Your Tutor & Book a Session</h1>
+      <h1 className="slide-up">Choose Your Student Tutor & Book a Session</h1>
       <p className="slide-up" style={{ maxWidth: "700px" }}>
-        Pick the teacher or tutor whose style fits you best, then select an available time slot.
+        Pick the student tutor whose style fits you best, then select an available time slot. All tutors are fellow students ready to help you succeed!
       </p>
 
       <div className="tutoring-container-main slide-up">
         {/* Tutors Selection */}
         <div className="tutors-list-main">
-          <h3>Available Tutors</h3>
+          <h3>Available Student Tutors</h3>
           {tutors.length === 0 ? (
-            <p className="muted">Loading tutors...</p>
+            <p className="muted">Loading student tutors...</p>
           ) : (
             tutors.map((tutor) => {
               const isSelected = selectedTutor?.id === tutor.id;
@@ -399,7 +399,7 @@ function Tutoring({ onBookSession }) {
             {bookedSession && (
               <div className="booked-confirmation">
                 <h3>✓ Session Booked!</h3>
-                <p className="booked-tutor">Tutor: {selectedTutor.name}</p>
+                <p className="booked-tutor">Student Tutor: {selectedTutor.name}</p>
                 <p className="booked-time">Time: {new Date(bookedSession.session_time).toLocaleString()}</p>
               </div>
             )}

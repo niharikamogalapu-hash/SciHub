@@ -1,23 +1,56 @@
 import React, { useState, useEffect } from "react";
 
 const teamMembers = [
-  { name: "Niharika", role: "Founder & Lead Developer", emoji: "💻", desc: "Built the entire SciHub platform from scratch with brilliant technical expertise.", color: "#38bdf8" },
-  { name: "Parimita", role: "Founder & Creative Director", emoji: "🎨", desc: "Shaped SciHub's vision, curriculum, and creative direction with innovative ideas.", color: "#a855f7" },
-  { name: "Karthikashree", role: "Quality Assurance & Testing Specialist", emoji: "🐛", desc: "Dedicated QA specialist who found critical bugs and helped refine the platform, ensuring quality and reliability.", color: "#10b981" },
-  { name: "Mr. Patel", role: "Biology Specialist", emoji: "🧬", desc: "Expert in cellular biology, genetics, and ecology with 15+ years of teaching experience.", color: "#22c55e" },
-  { name: "Ms. Chen", role: "Chemistry & Physics Specialist", emoji: "⚛️", desc: "Passionate about making complex chemistry and physics concepts clear and engaging.", color: "#ec4899" },
-  { name: "Dr. Alex Rivers", role: "Environmental Science Specialist", emoji: "🌍", desc: "Specialist in Earth Systems and sustainability with focus on real-world applications.", color: "#06b6d4" },
-  { name: "Prof. Emma Rodriguez", role: "Social Sciences Specialist", emoji: "🌐", desc: "Expert in Economics, History, Geography, and Psychology with 12+ years of experience.", color: "#f59e0b" },
-  { name: "Sarah", role: "Peer Tutor", emoji: "📚", desc: "High school student and science enthusiast who understands student challenges firsthand.", color: "#fbbf24" },
-  { name: "Alex", role: "Peer Tutor", emoji: "✨", desc: "College freshman passionate about science education and helping peers succeed.", color: "#8b5cf6" },
+  { name: "Sarah Mitchell", role: "Student Tutor - AP Biology", emoji: "🧬", desc: "Student tutor who knows what it feels like to struggle at first. Peer-to-peer support!", color: "#38bdf8" },
+  { name: "James Wilson ", role: "Student Tutor - AP Biology", emoji: "🧬", desc: "Student tutor passionate about evolutionary biology and helping fellow students succeed.", color: "#22c55e" },
+  { name: "Chen ", role: "Student Tutor - AP Chemistry", emoji: "⚛️", desc: "Makes chemistry feel like solving puzzles instead of memorizing formulas.", color: "#ec4899" },
+  { name: "Ahmed Hassan ", role: "Student Tutor - AP Chemistry", emoji: "⚛️", desc: "Specializes in breaking down complex organic reactions into simple steps.", color: "#a855f7" },
+  { name: "Patel ", role: "Student Tutor - AP Physics", emoji: "🧲", desc: "Uses real-life examples to explain physics step-by-step.", color: "#fbbf24" },
+  { name: "Elena Rodriguez ", role: "Student Tutor - AP Physics", emoji: "🧲", desc: "Passionate about making physics intuitive through demonstrations.", color: "#8b5cf6" },
+  { name: "Marcus Green ", role: "Student Tutor - AP Environmental Science", emoji: "🌍", desc: "Combines field experience with classroom teaching for deep understanding.", color: "#06b6d4" },
+  { name: "Lisa Park ", role: "Student Tutor - AP Environmental Science", emoji: "🌱", desc: "Advocates for practical solutions to real environmental challenges.", color: "#10b981" },
+  { name: "David Thompson ", role: "Student Tutor - History", emoji: "📜", desc: "Brings history to life through engaging narratives and primary sources.", color: "#f59e0b" },
+  { name: "Margaret Flynn ", role: "Student Tutor - History", emoji: "📜", desc: "Expert in connecting historical events to modern-day relevance.", color: "#a855f7" },
+  { name: "Carlos Mendez ", role: "Student Tutor - AP Human Geography", emoji: "🌐", desc: "Explores the fascinating connections between people and places worldwide.", color: "#38bdf8" },
+  { name: "Sophie Laurent ", role: "Student Tutor - AP Human Geography", emoji: "🌐", desc: "Makes geography concepts accessible and relevant to daily life.", color: "#22c55e" },
+  { name: "Robert Kim ", role: "Student Tutor - Economics", emoji: "💸", desc: "Demystifies economics with real-world examples and case studies.", color: "#fbbf24" },
+  { name: "Patricia Garcia ", role: "Student Tutor - Economics", emoji: "💸", desc: "Explains global economics in a way that makes sense to everyone.", color: "#ec4899" },
+  { name: "Nathan Cohen ", role: "Student Tutor - AP Psychology", emoji: "🧠", desc: "Helps students understand themselves and others through psychology.", color: "#06b6d4" },
+  { name: "Amanda Walsh ", role: "Student Tutor - AP Psychology", emoji: "🧠", desc: "Compassionate tutor who connects psychology theory to real-world applications.", color: "#a855f7" },
 ];
 
 function AboutTutors() {
   const [hoveredMember, setHoveredMember] = useState(null);
+  const [hoveredFounder, setHoveredFounder] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Founders data in same format as tutors
+  const founders = [
+    {
+      name: "Niharika",
+      role: "Founder & Lead Developer",
+      emoji: "💻",
+      desc: "Built the entire SciHub platform from scratch with brilliant technical expertise.",
+      color: "#38bdf8"
+    },
+    {
+      name: "Parimita",
+      role: "Founder & Creative Director",
+      emoji: "🎨",
+      desc: "Shaped SciHub's vision, curriculum, and creative direction with innovative ideas.",
+      color: "#a855f7"
+    },
+    {
+      name: "Karthikashree",
+      role: "Quality Assurance & Testing Specialist",
+      emoji: "🐛",
+      desc: "Dedicated QA specialist who found critical bugs and helped refine the platform, ensuring quality and reliability.",
+      color: "#22c55e"
+    }
+  ];
 
   return (
     <section className="page fade-in">
@@ -29,6 +62,66 @@ function AboutTutors() {
           </h1>
           <p style={{ fontSize: "1.1rem", color: "#9ca3af", maxWidth: "700px", margin: "0 auto", lineHeight: "1.8" }}>
             The passionate educators and developers behind SciHub, dedicated to making science learning engaging and accessible for every student.
+          </p>
+        </div>
+
+        {/* Founders Grid - visually matches tutors */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem", marginBottom: "4rem" }}>
+          {founders.map((founder, i) => (
+            <div
+              key={i}
+              className="card"
+              onMouseEnter={() => setHoveredFounder(i)}
+              onMouseLeave={() => setHoveredFounder(null)}
+              style={{
+                padding: "2.5rem",
+                cursor: "pointer",
+                transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                transform: hoveredFounder === i ? "translateY(-12px) scale(1.02)" : "translateY(0) scale(1)",
+                boxShadow: hoveredFounder === i 
+                  ? `0 25px 70px ${founder.color}40, 0 0 40px ${founder.color}20` 
+                  : "0 10px 30px rgba(15, 23, 42, 0.5)",
+                border: hoveredFounder === i 
+                  ? `2px solid ${founder.color}` 
+                  : "1px solid rgba(56, 189, 248, 0.2)",
+                background: hoveredFounder === i
+                  ? `radial-gradient(circle at top left, ${founder.color}15 0%, transparent 60%)`
+                  : "transparent",
+                animation: `slideUp 0.6s ease forwards`,
+                animationDelay: `${i * 0.08}s`,
+                opacity: 0,
+                borderRadius: "16px",
+              }}
+            >
+              <div style={{ 
+                fontSize: "3.2rem", 
+                marginBottom: "1.2rem", 
+                display: "inline-block", 
+                transform: hoveredFounder === i ? "scale(1.3) rotate(15deg)" : "scale(1) rotate(0deg)", 
+                transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                textShadow: hoveredFounder === i ? `0 0 20px ${founder.color}60` : "none",
+              }}>
+                {founder.emoji}
+              </div>
+              <h3 style={{ fontSize: "1.4rem", marginTop: "0", marginBottom: "0.5rem", color: founder.color, fontWeight: "700" }}>
+                {founder.name}
+              </h3>
+              <p style={{ color: founder.color, fontWeight: "600", marginTop: "0", marginBottom: "1rem", fontSize: "0.9rem", opacity: "0.9" }}>
+                {founder.role}
+              </p>
+              <p style={{ color: "#9ca3af", marginBottom: "0", lineHeight: "1.7", fontSize: "0.95rem" }}>
+                {founder.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+        {/* Header */}
+        <div className="slide-up" style={{ marginBottom: "4rem", textAlign: "center" }}>
+          <h1 style={{ fontSize: "3.5rem", fontWeight: "700", marginBottom: "1rem", marginTop: "0", background: "linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+            Meet the Tutors
+          </h1>
+          <p style={{ fontSize: "1.1rem", color: "#9ca3af", maxWidth: "700px", margin: "0 auto", lineHeight: "1.8" }}>
+            The educators behind SciHub, they love to include all student and make them understand the core concepts of AP.
           </p>
         </div>
 

@@ -55,111 +55,83 @@ function Sidebar({ user, onLogout }) {
       <div style={{
         display: "flex",
         alignItems: "center",
-        justifyContent: collapsed ? "center" : "space-between",
+        justifyContent: "flex-start",
         padding: collapsed ? "16px 12px" : "16px 20px",
         marginBottom: "30px",
         gap: "12px"
       }}>
-        {collapsed ? (
+        <button
+          onClick={() => setCollapsed((prev) => !prev)}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "40px",
+            height: "40px",
+            background: collapsed
+              ? "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)"
+              : "rgba(139, 92, 246, 0.1)",
+            border: collapsed
+              ? "none"
+              : "1px solid rgba(139, 92, 246, 0.3)",
+            borderRadius: "10px",
+            color: collapsed ? "white" : "#8b5cf6",
+            cursor: "pointer",
+            fontSize: "1.2rem",
+            transition: "all 200ms ease",
+            padding: 0,
+            boxShadow: collapsed ? "0 6px 20px rgba(139, 92, 246, 0.3)" : "none"
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "scale(1.1)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+          }}
+        >
+          {collapsed ? "›" : "‹"}
+        </button>
+        {!collapsed && (
           <button
-            onClick={() => setCollapsed(false)}
-            aria-label="Expand sidebar"
+            onClick={handleLogoClick}
             style={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              width: "40px",
-              height: "40px",
-              background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)",
+              gap: "10px",
+              background: "none",
               border: "none",
-              borderRadius: "10px",
-              color: "white",
+              color: "#fff",
               cursor: "pointer",
-              fontSize: "1.2rem",
+              fontWeight: "700",
+              fontSize: "1rem",
               transition: "all 200ms ease",
               padding: 0,
-              boxShadow: "0 6px 20px rgba(139, 92, 246, 0.3)"
+              flexShrink: 0
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "scale(1.1)";
+              e.currentTarget.style.transform = "scale(1.05)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "scale(1)";
             }}
           >
-            ›
+            <div style={{
+              width: "40px",
+              height: "40px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)",
+              borderRadius: "10px",
+              fontSize: "1.4rem",
+              flexShrink: 0,
+              boxShadow: "0 6px 20px rgba(139, 92, 246, 0.3)"
+            }}>
+              🔬
+            </div>
+            <span style={{ fontSize: "0.95rem" }}>SciHub</span>
           </button>
-        ) : (
-          <>
-            <button
-              onClick={handleLogoClick}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                background: "none",
-                border: "none",
-                color: "#fff",
-                cursor: "pointer",
-                fontWeight: "700",
-                fontSize: "1rem",
-                transition: "all 200ms ease",
-                padding: 0,
-                flexShrink: 0
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-              }}
-            >
-              <div style={{
-                width: "40px",
-                height: "40px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)",
-                borderRadius: "10px",
-                fontSize: "1.4rem",
-                flexShrink: 0,
-                boxShadow: "0 6px 20px rgba(139, 92, 246, 0.3)"
-              }}>
-                🔬
-              </div>
-              <span style={{ fontSize: "0.95rem" }}>SciHub</span>
-            </button>
-            <button
-              onClick={() => setCollapsed(true)}
-              aria-label="Collapse sidebar"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "38px",
-                height: "38px",
-                background: "rgba(139, 92, 246, 0.1)",
-                border: "1px solid rgba(139, 92, 246, 0.3)",
-                borderRadius: "8px",
-                color: "#8b5cf6",
-                cursor: "pointer",
-                fontSize: "1rem",
-                transition: "all 200ms ease",
-                padding: 0
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(139, 92, 246, 0.2)";
-                e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.5)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(139, 92, 246, 0.1)";
-                e.currentTarget.style.borderColor = "rgba(139, 92, 246, 0.3)";
-              }}
-            >
-              ‹
-            </button>
-          </>
         )}
       </div>
 
