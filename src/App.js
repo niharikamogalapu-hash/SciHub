@@ -334,8 +334,8 @@ function App() {
               />
 
              
-              {/* Lesson Detail Page */}
-              <Route path="/lesson/:lessonId" element={<Lesson />} />
+              {/* Lesson Detail Page - force remount on lessonId change */}
+              <Route path="/lesson/:lessonId" element={<Lesson key={window.location.pathname} />} />
 
               {/* Tutoring */}
               <Route

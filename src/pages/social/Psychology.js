@@ -7,6 +7,7 @@ import "../../styles/Lesson.css";
 // Psychology lessons with videos
 const PSYCHOLOGY_LESSONS = [
   {
+    id: 71,
     lesson_number: 1,
     title: "Intro & Research Methods",
     videos: [

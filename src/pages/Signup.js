@@ -14,6 +14,18 @@ function Signup({ onSignup }) {
   const navigate = useNavigate();
 
   function handleSubmit(e) {
+          // --- Remove all lesson worksheet/progress keys for a fresh start ---
+          const keysToRemove = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (
+              key &&
+              (key.startsWith("lesson_") && (key.endsWith("_worksheets") || key.endsWith("_progress") || key.includes("bookedSession")))
+            ) {
+              keysToRemove.push(key);
+            }
+          }
+          keysToRemove.forEach(key => localStorage.removeItem(key));
     e.preventDefault();
     setError("");
 
@@ -51,18 +63,50 @@ function Signup({ onSignup }) {
 
       // Add new user to the registered users list
       registeredUsers.push(newUser);
-      
+
       // Save updated users list to localStorage
       localStorage.setItem("registeredUsers", JSON.stringify(registeredUsers));
-      
+
+      // --- Ensure a fresh start for new user ---
+      // Remove any old user-specific data (shouldn't exist, but for safety)
+      if (window.clearUserData) {
+        window.clearUserData(newUser.id);
+      } else {
+        // Manual clear (in case clearUserData is not globally available)
+        const prefix = `scihub_user_${newUser.id}_`;
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith(prefix)) {
+            keysToRemove.push(key);
+          }
+        }
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+      }
+
+      // Initialize empty dashboard stats and completed lessons for new user
+      const statsKey = `scihub_user_${newUser.id}_dashboard_stats`;
+      const completedLessonsKey = `scihub_user_${newUser.id}_completed_lessons`;
+      localStorage.setItem(statsKey, JSON.stringify({
+        xp: 0,
+        coins: 0,
+        streak: 0,
+        lessonsCompleted: 0,
+        lessonsInProgress: 0,
+        totalGameScore: 0,
+        lastActivityDate: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+      }));
+      localStorage.setItem(completedLessonsKey, JSON.stringify([]));
+
       // Save current logged-in user to localStorage
       localStorage.setItem("user", JSON.stringify(newUser));
-      
+
       console.log("✅ Signup successful:", newUser);
-      
+
       // Call parent signup handler
       onSignup(newUser);
-      
+
       // Redirect to dashboard
       navigate("/dashboard");
     } catch (err) {

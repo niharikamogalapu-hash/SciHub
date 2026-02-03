@@ -7,13 +7,14 @@ import DragDropGame from "../components/games/DragDropGame";
 import BuilderGame from "../components/games/BuilderGame";
 import ReactionGame from "../components/games/ReactionGame";
 import "./Games.css";
-import { addGameScore, logActivity, checkAndUnlockAchievements } from "../utils/storageManager";
+import { addGameScore, addCoins, logActivity, checkAndUnlockAchievements } from "../utils/storageManager";
 
 function Games({ onGameWin }) {
   const [user, setUser] = useState(null);
   const [selectedTopic, setSelectedTopic] = useState("AP Biology");
   const [isLoading, setIsLoading] = useState(true);
   const [playerCoins, setPlayerCoins] = useState(0);
+  const [dashboardStats, setDashboardStats] = useState(null);
   const [activeGame, setActiveGame] = useState(null);
   const [gameType, setGameType] = useState(null);
   const [unlockedGames, setUnlockedGames] = useState(new Set());
@@ -28,7 +29,15 @@ function Games({ onGameWin }) {
         const parsedUser = JSON.parse(savedUser);
         console.log("🎮 Parsed user:", parsedUser);
         setUser(parsedUser);
-        setPlayerCoins(parsedUser.coins || 0);
+        // Always use dashboard stats for coins
+        const stats = window.localStorage.getItem(`scihub_user_${parsedUser.id}_dashboard_stats`);
+        if (stats) {
+          const parsedStats = JSON.parse(stats);
+          setDashboardStats(parsedStats);
+          setPlayerCoins(parsedStats.coins || 0);
+        } else {
+          setPlayerCoins(parsedUser.coins || 0);
+        }
       } catch (e) {
         console.error("🎮 Error parsing user:", e);
       }
@@ -2166,13 +2175,15 @@ function Games({ onGameWin }) {
       }
 
       // Add reward coins
-      newCoins += activeGame.base_reward;
-      setPlayerCoins(newCoins);
 
-      // Update user in localStorage
-      const updatedUser = { ...user, coins: newCoins };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
+      // Add coins using storageManager so dashboard stays in sync
+      addCoins(user.id, activeGame.base_reward);
+      // Sync coins from dashboard stats after update
+      const stats = window.localStorage.getItem(`scihub_user_${user.id}_dashboard_stats`);
+      if (stats) {
+        const parsedStats = JSON.parse(stats);
+        setPlayerCoins(parsedStats.coins || 0);
+      }
 
       // Save game score to dashboard stats using storageManager
       addGameScore(user.id, activeGame.base_reward);

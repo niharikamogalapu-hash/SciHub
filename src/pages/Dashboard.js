@@ -285,10 +285,10 @@ function Dashboard() {
               {/* Game Score Card */}
               <div className="stat-card games-card">
                 <div className="stat-icon">🎮</div>
-                <div className="stat-label">Game Score</div>
-                <div className="stat-value">{stats.totalGameScore || 0}</div>
+                <div className="stat-label">Games Played</div>
+                <div className="stat-value">{stats.gamesPlayed || 0}</div>
                 <div style={{ color: "#6b7280", fontSize: "0.85rem", padding: "0.5rem 0.75rem", background: "rgba(168, 85, 247, 0.1)", borderRadius: "8px" }}>
-                  📈 +250 this week
+                  🎲 Total games completed
                 </div>
               </div>
             </div>

@@ -6,9 +6,16 @@ import "../../styles/Lesson.css";
 
 // Map Chemistry lesson numbers to global lesson IDs
 const CHEMISTRY_LESSON_ID_MAP = {
-  1: 4,  // Atomic Structure
-  2: 5,  // Chemical Bonding
-  3: 6,  // Reactions & Equations
+  1: 11,  // Atomic Structure
+  2: 12,  // Chemical Bonding
+  3: 13,  // Reactions & Equations
+  4: 14,  // Energy & Thermodynamics
+  5: 15,  // Bonding & Molecular Structure
+  6: 16,  // Solutions & Solubility
+  7: 17,  // Acids & Bases
+  8: 18,  // Redox & Electrochemistry
+  9: 19,  // Organic Chemistry
+  10: 20, // Chemistry in Society
 };
 
 // Source: All videos from CrashCourse Chemistry (https://www.youtube.com/@crashcourse)
@@ -20,7 +27,7 @@ const VIDEO_SOURCE = {
 
 const CHEMISTRY_LESSONS = [
   {
-    id: 4,
+    id: 11,
     lesson_number: 1,
     title: "The Foundations of Matter",
     source: VIDEO_SOURCE,
@@ -33,7 +40,7 @@ const CHEMISTRY_LESSONS = [
     ]
   },
   {
-    id: 5,
+    id: 12,
     lesson_number: 2,
     title: "Chemical Math & Reactions",
     videos: [
@@ -45,7 +52,7 @@ const CHEMISTRY_LESSONS = [
     ]
   },
   {
-    id: 6,
+    id: 13,
     lesson_number: 3,
     title: "The Language of Gases",
     videos: [
@@ -57,7 +64,7 @@ const CHEMISTRY_LESSONS = [
     ]
   },
   {
-    id: 7,
+    id: 14,
     lesson_number: 4,
     title: "Energy & Thermodynamics",
     videos: [
@@ -69,7 +76,7 @@ const CHEMISTRY_LESSONS = [
     ]
   },
   {
-    id: 8,
+    id: 15,
     lesson_number: 5,
     title: "Bonding & Molecular Structure",
     videos: [
@@ -81,7 +88,7 @@ const CHEMISTRY_LESSONS = [
     ]
   },
   {
-    id: 9,
+    id: 16,
     lesson_number: 6,
     title: "Phases of Matter",
     videos: [
@@ -93,7 +100,7 @@ const CHEMISTRY_LESSONS = [
     ]
   },
   {
-    id: 10,
+    id: 17,
     lesson_number: 7,
     title: "Acids, Bases, & Kinetics",
     videos: [
@@ -105,7 +112,7 @@ const CHEMISTRY_LESSONS = [
     ]
   },
   {
-    id: 11,
+    id: 18,
     lesson_number: 8,
     title: "Advanced Atomic Theory & Electricity",
     videos: [
@@ -117,7 +124,7 @@ const CHEMISTRY_LESSONS = [
     ]
   },
   {
-    id: 12,
+    id: 19,
     lesson_number: 9,
     title: "Nuclear Chemistry & Organic Intro",
     videos: [
@@ -129,7 +136,7 @@ const CHEMISTRY_LESSONS = [
     ]
   },
   {
-    id: 13,
+    id: 20,
     lesson_number: 10,
     title: "Organic Chemistry & Global Cycles",
     videos: [

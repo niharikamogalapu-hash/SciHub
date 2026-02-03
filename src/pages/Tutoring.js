@@ -1,133 +1,132 @@
+// Mock sessions for each tutor (at least one per tutor in current month)
+const mockSessions = Array.from({ length: 16 }, (_, i) => {
+  const tutorId = i + 1;
+  const today = new Date();
+  const sessionDate = new Date(today.getFullYear(), today.getMonth(), Math.max(2, i + 1));
+  return {
+    id: 100 + tutorId,
+    tutor_id: tutorId,
+    session_time: sessionDate.toISOString(),
+    max_spots: 5,
+    signed_up_count: 0,
+    spots_left: 5,
+  };
+});
 import React, { useState, useEffect } from "react";
 import { bookTutoringSession, logActivity, checkAndUnlockAchievements } from "../utils/storageManager";
 
 const mockTutors = [
-  // Biology Tutors
   {
     id: 1,
-    name: "Sarah (Student Tutor)",
-    specialty: "AP Biology – cells, genetics",
+    name: "Sarah Kim",
+    specialty: "AP Biology – Genetics, Cells",
     subject: "AP Biology",
-    bio: "Student tutor who knows what it feels like to struggle at first. Peer-to-peer support!",
+    bio: "Sarah is a senior who loves helping students master biology concepts. She’s patient and explains things step-by-step.",
   },
   {
     id: 2,
-    name: "James Wilson (Student Tutor)",
-    specialty: "AP Biology – ecology, evolution",
+    name: "James Wilson",
+    specialty: "AP Biology – Ecology, Evolution",
     subject: "AP Biology",
-    bio: "Student tutor passionate about evolutionary biology and helping fellow students succeed.",
+    bio: "James is passionate about evolutionary biology and enjoys making learning fun with real-world examples.",
   },
-
-  // Chemistry Tutors
   {
     id: 3,
-    name: "Chen (Student Tutor)",
-    specialty: "AP Chemistry – reactions, atoms",
+    name: "Chen Liu",
+    specialty: "AP Chemistry – Reactions, Atoms",
     subject: "AP Chemistry",
-    bio: "Makes chemistry feel like solving puzzles instead of memorizing formulas.",
+    bio: "Chen makes chemistry feel like solving puzzles and helps students build strong foundations.",
   },
   {
     id: 4,
-    name: "Ahmed Hassan (Student Tutor)",
-    specialty: "AP Chemistry – organic, molecular structure",
+    name: "Ahmed Hassan",
+    specialty: "AP Chemistry – Organic, Molecular Structure",
     subject: "AP Chemistry",
-    bio: "Specializes in breaking down complex organic reactions into simple steps.",
+    bio: "Ahmed specializes in breaking down complex organic reactions into simple steps for easy understanding.",
   },
-
-  // Physics Tutors
   {
     id: 5,
-    name: "Patel (Student Tutor)",
-    specialty: "AP Physics – forces, motion",
+    name: "Priya Patel",
+    specialty: "AP Physics – Forces, Motion",
     subject: "AP Physics",
-    bio: "Uses real-life examples to explain physics step-by-step.",
+    bio: "Priya uses real-life examples to explain physics and helps students see the connections to everyday life.",
   },
   {
     id: 6,
-    name: "Elena Rodriguez (Student Tutor)",
-    specialty: "AP Physics – electricity, magnetism, optics",
+    name: "Elena Rodriguez",
+    specialty: "AP Physics – Electricity, Magnetism, Optics",
     subject: "AP Physics",
-    bio: "Passionate about making physics intuitive through demonstrations.",
+    bio: "Elena is passionate about making physics intuitive through hands-on demonstrations and clear explanations.",
   },
-
-  // Environmental Science Tutors
   {
     id: 7,
-    name: "Marcus Green (Student Tutor)",
-    specialty: "AP Environmental Science – ecosystems, climate",
+    name: "Marcus Green",
+    specialty: "AP Environmental Science – Ecosystems, Climate",
     subject: "AP Environmental Science",
-    bio: "Combines field experience with classroom teaching for deep understanding.",
+    bio: "Marcus combines field experience with classroom teaching for a deep understanding of environmental science.",
   },
   {
     id: 8,
-    name: "Lisa Park (Student Tutor)",
-    specialty: "AP Environmental Science – sustainability, conservation",
+    name: "Lisa Park",
+    specialty: "AP Environmental Science – Sustainability, Conservation",
     subject: "AP Environmental Science",
-    bio: "Advocates for practical solutions to real environmental challenges.",
+    bio: "Lisa advocates for practical solutions to real environmental challenges and inspires students to take action.",
   },
-
-  // History Tutors
   {
     id: 9,
-    name: "David Thompson (Student Tutor)",
-    specialty: "History – world history, civilizations",
+    name: "David Thompson",
+    specialty: "History – World History, Civilizations",
     subject: "History",
-    bio: "Brings history to life through engaging narratives and primary sources.",
+    bio: "David brings history to life through engaging stories and primary sources, making the past relevant today.",
   },
   {
     id: 10,
-    name: "Margaret Flynn (Student Tutor)",
-    specialty: "History – American history, social movements",
+    name: "Margaret Flynn",
+    specialty: "History – American History, Social Movements",
     subject: "History",
-    bio: "Expert in connecting historical events to modern-day relevance.",
+    bio: "Margaret connects historical events to modern-day issues and encourages critical thinking.",
   },
-
-  // Human Geography Tutors
   {
     id: 11,
-    name: "Carlos Mendez (Student Tutor)",
-    specialty: "AP Human Geography – culture, societies",
+    name: "Carlos Mendez",
+    specialty: "AP Human Geography – Culture, Societies",
     subject: "AP Human Geography",
-    bio: "Explores the fascinating connections between people and places worldwide.",
+    bio: "Carlos explores the connections between people and places, making geography concepts accessible.",
   },
   {
     id: 12,
-    name: "Sophie Laurent (Student Tutor)",
-    specialty: "AP Human Geography – urban systems, migration",
+    name: "Sophie Laurent",
+    specialty: "AP Human Geography – Urban Systems, Migration",
     subject: "AP Human Geography",
-    bio: "Makes geography concepts accessible and relevant to daily life.",
+    bio: "Sophie makes geography relevant to daily life and helps students understand global patterns.",
   },
-
-  // Economics Tutors
   {
     id: 13,
-    name: "Robert Kim (Student Tutor)",
-    specialty: "Economics – microeconomics, markets",
+    name: "Robert Kim",
+    specialty: "Economics – Microeconomics, Markets",
     subject: "Economics",
-    bio: "Demystifies economics with real-world examples and case studies.",
+    bio: "Robert demystifies economics with real-world examples and case studies for practical understanding.",
   },
   {
     id: 14,
-    name: "Patricia Garcia (Student Tutor)",
-    specialty: "Economics – macroeconomics, policy",
+    name: "Patricia Garcia",
+    specialty: "Economics – Macroeconomics, Policy",
     subject: "Economics",
-    bio: "Explains global economics in a way that makes sense to everyone.",
+    bio: "Patricia explains global economics in a way that makes sense to everyone and encourages curiosity.",
   },
-
-  // Psychology Tutors
   {
     id: 15,
-    name: "Nathan Cohen (Student Tutor)",
-    specialty: "AP Psychology – cognitive science, behavior",
+    name: "Nathan Cohen",
+    specialty: "AP Psychology – Cognitive Science, Behavior",
     subject: "AP Psychology",
-    bio: "Helps students understand themselves and others through psychology.",
+    bio: "Nathan helps students understand themselves and others through psychology and interactive activities.",
   },
   {
     id: 16,
-    name: "Amanda Walsh (Student Tutor)",
-    specialty: "AP Psychology – development, mental health",
+    name: "Amanda Walsh",
+    specialty: "AP Psychology – Development, Mental Health",
     subject: "AP Psychology",
-    bio: "Compassionate tutor who connects psychology theory to real-world applications.",
+    bio: "Amanda connects psychology theory to real-world applications and supports students’ well-being.",
   },
 ];
 
@@ -152,10 +151,14 @@ function Tutoring({ onBookSession }) {
         // Fetch all sessions
         const sessRes = await fetch("http://localhost:8080/sessions");
         const sessData = await sessRes.json();
-        const normalized = (sessData.sessions || []).map((ss) => ({
+        let normalized = (sessData.sessions || []).map((ss) => ({
           ...ss,
           spots_left: ss.max_spots - (ss.signed_up_count || ss.signed_up || 0),
         }));
+        // If no sessions from backend, use mockSessions
+        if (!normalized || normalized.length === 0) {
+          normalized = mockSessions;
+        }
         setSessions(normalized);
       } catch (err) {
         console.error("Failed to load data:", err);

@@ -472,10 +472,11 @@ export const getCompletedLessons = (userId) => {
  */
 export const addGameScore = (userId, score = 0) => {
   const stats = getDashboardStats(userId);
-  stats.totalGameScore = (stats.totalGameScore || 0) + score;
-  console.log(`✅ Added ${score} to game score. Total: ${stats.totalGameScore}`);
+  // Increment gamesPlayed count
+  stats.gamesPlayed = (stats.gamesPlayed || 0) + 1;
+  console.log(`✅ Incremented games played. Total games played: ${stats.gamesPlayed}`);
   return setDashboardStats(userId, stats);
-};
+}
 
 /**
  * Book a tutoring session

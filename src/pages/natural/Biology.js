@@ -6,9 +6,16 @@ import "../../styles/Lesson.css";
 
 // Map Biology lesson numbers to global lesson IDs
 const BIOLOGY_LESSON_ID_MAP = {
-  1: 1,  // Cell Structure & Function
-  2: 2,  // Photosynthesis
-  3: 3,  // Genetics & Evolution
+  1: 1,
+  2: 2,
+  3: 3,
+  4: 4,
+  5: 5,
+  6: 6,
+  7: 7,
+  8: 8,
+  9: 9,
+  10: 10,
 };
 
 // Source: All videos from CrashCourse Biology (https://www.youtube.com/@crashcourse)

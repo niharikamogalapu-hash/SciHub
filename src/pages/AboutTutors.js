@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const teamMembers = [
+export const teamMembers = [
   { name: "Sarah Mitchell", role: "Student Tutor - AP Biology", emoji: "🧬", desc: "Student tutor who knows what it feels like to struggle at first. Peer-to-peer support!", color: "#38bdf8" },
   { name: "James Wilson ", role: "Student Tutor - AP Biology", emoji: "🧬", desc: "Student tutor passionate about evolutionary biology and helping fellow students succeed.", color: "#22c55e" },
   { name: "Chen ", role: "Student Tutor - AP Chemistry", emoji: "⚛️", desc: "Makes chemistry feel like solving puzzles instead of memorizing formulas.", color: "#ec4899" },
@@ -18,6 +18,16 @@ const teamMembers = [
   { name: "Nathan Cohen ", role: "Student Tutor - AP Psychology", emoji: "🧠", desc: "Helps students understand themselves and others through psychology.", color: "#06b6d4" },
   { name: "Amanda Walsh ", role: "Student Tutor - AP Psychology", emoji: "🧠", desc: "Compassionate tutor who connects psychology theory to real-world applications.", color: "#a855f7" },
 ];
+
+// ...existing code...
+export function getTutorsBySubject(subject) {
+  // Extract subject from role and match
+  return teamMembers.filter(member => {
+    const match = member.role.match(/-\s*(.+)$/);
+    const memberSubject = match ? match[1].trim().toLowerCase() : "other";
+    return memberSubject === subject.trim().toLowerCase();
+  });
+}
 
 function AboutTutors() {
   const [hoveredMember, setHoveredMember] = useState(null);
@@ -51,6 +61,16 @@ function AboutTutors() {
       color: "#22c55e"
     }
   ];
+
+  // Group tutors by subject
+  const subjectMap = {};
+  teamMembers.forEach((member) => {
+    // Extract subject from role (e.g., "Student Tutor - AP Biology" => "AP Biology")
+    const match = member.role.match(/-\s*(.+)$/);
+    const subject = match ? match[1].trim() : "Other";
+    if (!subjectMap[subject]) subjectMap[subject] = [];
+    subjectMap[subject].push(member);
+  });
 
   return (
     <section className="page fade-in">
@@ -115,7 +135,8 @@ function AboutTutors() {
             </div>
           ))}
         </div>
-        {/* Header */}
+
+        {/* Tutors grouped by subject */}
         <div className="slide-up" style={{ marginBottom: "4rem", textAlign: "center" }}>
           <h1 style={{ fontSize: "3.5rem", fontWeight: "700", marginBottom: "1rem", marginTop: "0", background: "linear-gradient(135deg, #38bdf8 0%, #a855f7 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
             Meet the Tutors
@@ -125,56 +146,63 @@ function AboutTutors() {
           </p>
         </div>
 
-        {/* Team Members Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem", marginBottom: "4rem" }}>
-          {teamMembers.map((member, i) => (
-            <div
-              key={i}
-              className="card"
-              onMouseEnter={() => setHoveredMember(i)}
-              onMouseLeave={() => setHoveredMember(null)}
-              style={{
-                padding: "2.5rem",
-                cursor: "pointer",
-                transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                transform: hoveredMember === i ? "translateY(-12px) scale(1.02)" : "translateY(0) scale(1)",
-                boxShadow: hoveredMember === i 
-                  ? `0 25px 70px ${member.color}40, 0 0 40px ${member.color}20` 
-                  : "0 10px 30px rgba(15, 23, 42, 0.5)",
-                border: hoveredMember === i 
-                  ? `2px solid ${member.color}` 
-                  : "1px solid rgba(56, 189, 248, 0.2)",
-                background: hoveredMember === i
-                  ? `radial-gradient(circle at top left, ${member.color}15 0%, transparent 60%)`
-                  : "transparent",
-                animation: `slideUp 0.6s ease forwards`,
-                animationDelay: `${i * 0.08}s`,
-                opacity: 0,
-                borderRadius: "16px",
-              }}
-            >
-              <div style={{ 
-                fontSize: "3.2rem", 
-                marginBottom: "1.2rem", 
-                display: "inline-block", 
-                transform: hoveredMember === i ? "scale(1.3) rotate(15deg)" : "scale(1) rotate(0deg)", 
-                transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                textShadow: hoveredMember === i ? `0 0 20px ${member.color}60` : "none",
-              }}>
-                {member.emoji}
-              </div>
-              <h3 style={{ fontSize: "1.4rem", marginTop: "0", marginBottom: "0.5rem", color: member.color, fontWeight: "700" }}>
-                {member.name}
-              </h3>
-              <p style={{ color: member.color, fontWeight: "600", marginTop: "0", marginBottom: "1rem", fontSize: "0.9rem", opacity: "0.9" }}>
-                {member.role}
-              </p>
-              <p style={{ color: "#9ca3af", marginBottom: "0", lineHeight: "1.7", fontSize: "0.95rem" }}>
-                {member.desc}
-              </p>
+        {/* Render tutors by subject */}
+        {Object.keys(subjectMap).map((subject, idx) => (
+          <div key={subject} style={{ marginBottom: "3rem" }}>
+            <h2 style={{ fontSize: "2rem", fontWeight: "700", marginBottom: "1.5rem", color: "#38bdf8", textAlign: "left" }}>
+              {subject}
+            </h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem" }}>
+              {subjectMap[subject].map((member, i) => (
+                <div
+                  key={i}
+                  className="card"
+                  onMouseEnter={() => setHoveredMember(`${subject}-${i}`)}
+                  onMouseLeave={() => setHoveredMember(null)}
+                  style={{
+                    padding: "2.5rem",
+                    cursor: "pointer",
+                    transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                    transform: hoveredMember === `${subject}-${i}` ? "translateY(-12px) scale(1.02)" : "translateY(0) scale(1)",
+                    boxShadow: hoveredMember === `${subject}-${i}` 
+                      ? `0 25px 70px ${member.color}40, 0 0 40px ${member.color}20` 
+                      : "0 10px 30px rgba(15, 23, 42, 0.5)",
+                    border: hoveredMember === `${subject}-${i}` 
+                      ? `2px solid ${member.color}` 
+                      : "1px solid rgba(56, 189, 248, 0.2)",
+                    background: hoveredMember === `${subject}-${i}`
+                      ? `radial-gradient(circle at top left, ${member.color}15 0%, transparent 60%)`
+                      : "transparent",
+                    animation: `slideUp 0.6s ease forwards`,
+                    animationDelay: `${i * 0.08}s`,
+                    opacity: 0,
+                    borderRadius: "16px",
+                  }}
+                >
+                  <div style={{ 
+                    fontSize: "3.2rem", 
+                    marginBottom: "1.2rem", 
+                    display: "inline-block", 
+                    transform: hoveredMember === `${subject}-${i}` ? "scale(1.3) rotate(15deg)" : "scale(1) rotate(0deg)", 
+                    transition: "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                    textShadow: hoveredMember === `${subject}-${i}` ? `0 0 20px ${member.color}60` : "none",
+                  }}>
+                    {member.emoji}
+                  </div>
+                  <h3 style={{ fontSize: "1.4rem", marginTop: "0", marginBottom: "0.5rem", color: member.color, fontWeight: "700" }}>
+                    {member.name}
+                  </h3>
+                  <p style={{ color: member.color, fontWeight: "600", marginTop: "0", marginBottom: "1rem", fontSize: "0.9rem", opacity: "0.9" }}>
+                    {member.role}
+                  </p>
+                  <p style={{ color: "#9ca3af", marginBottom: "0", lineHeight: "1.7", fontSize: "0.95rem" }}>
+                    {member.desc}
+                  </p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
 
         {/* Impact CTA Banner */}
         <div className="slide-up" style={{

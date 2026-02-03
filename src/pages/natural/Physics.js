@@ -6,9 +6,16 @@ import "../../styles/Lesson.css";
 
 // Map Physics lesson numbers to global lesson IDs
 const PHYSICS_LESSON_ID_MAP = {
-  1: 7,  // Force & Motion
-  2: 8,  // Energy & Work
-  3: 9,  // Waves & Sound
+  1: 21,
+  2: 22,
+  3: 23,
+  4: 24,
+  5: 25,
+  6: 26,
+  7: 27,
+  8: 28,
+  9: 29,
+  10: 30,
 };
 
 // Source: All videos from CrashCourse Physics (https://www.youtube.com/@crashcourse)

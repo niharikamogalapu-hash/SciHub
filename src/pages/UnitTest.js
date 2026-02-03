@@ -11,103 +11,73 @@ const unitTests = {
     questions: [
       {
         id: 1,
-        question: "What is the primary function of the rough endoplasmic reticulum?",
-        options: ["Lipid synthesis", "Protein synthesis and processing", "Photosynthesis", "Energy storage"],
+        question: "A student conducts an experiment to test the effect of light intensity on the rate of photosynthesis in Elodea plants. Which variable should be kept constant to ensure valid results?",
+        options: ["Type of plant used", "Amount of CO2 in water", "Distance from light source", "Temperature of water"],
         correct: 1,
-        explanation: "Rough ER is studded with ribosomes and synthesizes proteins destined for the cell membrane or secretion."
+        explanation: "To isolate the effect of light intensity, other factors like CO2 concentration, temperature, and plant type must be kept constant."
       },
       {
         id: 2,
-        question: "During cellular respiration, which stage produces the most ATP?",
-        options: ["Glycolysis", "Citric Acid Cycle", "Electron Transport Chain", "Fermentation"],
-        correct: 2,
-        explanation: "The Electron Transport Chain produces approximately 32-34 ATP per glucose through oxidative phosphorylation."
+        question: "The graph below shows the population growth of bacteria in a closed system. Which phase represents exponential growth? (Assume graph is shown)",
+        options: ["Lag phase", "Log phase", "Stationary phase", "Death phase"],
+        correct: 1,
+        explanation: "The log phase is when bacteria reproduce rapidly and population increases exponentially."
       },
       {
         id: 3,
-        question: "What is the relationship between genotype and phenotype?",
-        options: [
-          "They are the same thing",
-          "Genotype is alleles inherited; phenotype is observable traits",
-          "Phenotype determines genotype only",
-          "They never interact"
-        ],
-        correct: 1,
-        explanation: "Genotype (genetic makeup) + environment = phenotype (observable traits)."
+        question: "A genetic cross between two heterozygous pea plants (Yy) for seed color results in a 3:1 ratio of yellow to green seeds. Which principle does this illustrate?",
+        options: ["Law of Segregation", "Law of Independent Assortment", "Law of Dominance", "Law of Recessiveness"],
+        correct: 0,
+        explanation: "The Law of Segregation states that allele pairs separate during gamete formation, resulting in the observed 3:1 ratio."
       },
       {
         id: 4,
-        question: "In meiosis, when do homologous chromosomes separate?",
-        options: ["Prophase I", "Metaphase I", "Anaphase I", "Anaphase II"],
-        correct: 2,
-        explanation: "Anaphase I: homologous chromosome pairs separate, reducing chromosome number by half."
+        question: "A scientist compares the amino acid sequences of hemoglobin in humans and chimpanzees. What type of evolutionary evidence is this?",
+        options: ["Fossil evidence", "Molecular evidence", "Embryological evidence", "Biogeographical evidence"],
+        correct: 1,
+        explanation: "Molecular evidence involves comparing DNA or protein sequences to determine evolutionary relationships."
       },
       {
         id: 5,
-        question: "What is the function of the rough endoplasmic reticulum in protein transport?",
-        options: [
-          "Breaks down proteins",
-          "Synthesizes and packages proteins for secretion",
-          "Stores proteins only",
-          "Produces ATP for transport"
-        ],
+        question: "In a population of finches, a drought causes only large seeds to be available. Over generations, the average beak size increases. What is this an example of?",
+        options: ["Genetic drift", "Natural selection", "Gene flow", "Mutation"],
         correct: 1,
-        explanation: "Ribosomes on rough ER synthesize proteins; ER transports them to the Golgi for modification and packaging."
+        explanation: "Natural selection favors finches with larger beaks, increasing their frequency in the population."
       },
       {
         id: 6,
-        question: "Which of the following is an example of an invasive species disrupting an ecosystem?",
-        options: [
-          "Wolves in Yellowstone (native reintroduction)",
-          "Zebra mussels clogging water pipes in the Great Lakes",
-          "Bees pollinating native flowers",
-          "Fish migrating seasonally"
-        ],
-        correct: 1,
-        explanation: "Zebra mussels disrupt ecosystems by outcompeting native species and clogging infrastructure."
+        question: "A patient receives a blood transfusion of type A blood, but their blood type is O. What is the likely outcome?",
+        options: ["No reaction", "Mild fever", "Agglutination and immune response", "Improved oxygen delivery"],
+        correct: 2,
+        explanation: "Type O blood has anti-A antibodies, so receiving type A blood causes agglutination and a dangerous immune reaction."
       },
       {
         id: 7,
-        question: "What is density-dependent limiting factor in population growth?",
-        options: [
-          "Hurricane or flood",
-          "Earthquake",
-          "Limited food or space as population increases",
-          "Volcanic eruption"
-        ],
-        correct: 2,
-        explanation: "Density-dependent factors (disease, competition, predation) increase in effect as population density increases."
+        question: "Which of the following is a density-dependent limiting factor in population growth?",
+        options: ["Flood", "Disease", "Earthquake", "Wildfire"],
+        correct: 1,
+        explanation: "Disease spreads more rapidly as population density increases, making it density-dependent."
       },
       {
         id: 8,
-        question: "Which blood type can donate to all other blood types?",
-        options: ["O positive", "O negative", "AB positive", "AB negative"],
-        correct: 1,
-        explanation: "O negative blood lacks A, B, and Rh antigens, so it's the universal donor."
+        question: "A diagram shows a food web in a pond ecosystem. If the population of frogs decreases, what is the most likely effect on the insect population?",
+        options: ["Increase", "Decrease", "No change", "Extinction"],
+        correct: 0,
+        explanation: "Frogs eat insects; fewer frogs means more insects survive, so their population increases."
       },
       {
         id: 9,
-        question: "What is the role of T cells in adaptive immunity?",
-        options: [
-          "Produce antibodies",
-          "Recognize infected cells directly; some kill pathogens, others regulate immune response",
-          "Clot blood",
-          "Transport oxygen"
-        ],
+        question: "A scientist observes that a certain antibiotic is less effective against bacteria after several years of use. What biological process explains this?",
+        options: ["Mutation", "Natural selection", "Gene flow", "Genetic drift"],
         correct: 1,
-        explanation: "T cells: cytotoxic T cells kill infected cells; helper T cells regulate immune response; regulatory T cells suppress it."
+        explanation: "Bacteria with resistance genes survive and reproduce, leading to a population with increased resistance (natural selection)."
       },
       {
         id: 10,
-        question: "Which evolutionary evidence involves comparing DNA sequences between species?",
-        options: [
-          "Fossil records",
-          "Molecular/genetic evidence",
-          "Comparative anatomy",
-          "Biogeography"
-        ],
+        question: "Which organelle is responsible for packaging and modifying proteins for secretion?",
+        options: ["Mitochondria", "Golgi apparatus", "Nucleus", "Lysosome"],
         correct: 1,
-        explanation: "Molecular evidence: organisms with similar DNA sequences share recent common ancestors."
+        explanation: "The Golgi apparatus modifies, sorts, and packages proteins for secretion."
       },
       {
         id: 11,
@@ -1975,7 +1945,7 @@ function UnitTest() {
       else coinsEarned = 20;
 
       if (coinsEarned > 0) {
-        addGameScore(user.id, `${selectedTopic}_unit_test`, coinsEarned);
+        // Do NOT add to game score for unit tests
       }
     }
   };

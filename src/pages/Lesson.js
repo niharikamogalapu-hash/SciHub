@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import "../styles/Lesson.css";
-import { markVideoWatched as saveVideoToStorage, getWatchedVideos, markIntroVideoCompleted, addXP, addCoins, markLessonCompleted, bookTutoringSession, logActivity, setUserData, checkAndUnlockAchievements } from "../utils/storageManager";
+import { markVideoWatched as saveVideoToStorage, getWatchedVideos, markIntroVideoCompleted, addXP, addCoins, markLessonCompleted, bookTutoringSession, logActivity, setUserData, checkAndUnlockAchievements, isLessonCompleted } from "../utils/storageManager";
 
 // Helper function to format dates
 function formatDate(date) {
@@ -52,57 +52,42 @@ export default function Lesson() {
 
   // Helper function to get the appropriate back navigation path based on lesson category
   const getBackNavigationPath = () => {
-    // All lessons data (synced with Lessons.js)
-    const allLessons = [
-      { id: 1, title: "Cell Structure & Function", category: "biology", description: "Learn about cell components and their functions", lesson_number: 1, videos: [
-        { id: 1, title: "Introduction to Biology", url: "https://www.youtube.com/watch?v=tZE_fQFK8EY" },
-        { id: 2, title: "Scientific Method", url: "https://www.youtube.com/watch?v=xOLcZMw0hd4" },
-        { id: 3, title: "What do Biologists Do?", url: "https://www.youtube.com/watch?v=rgZhDoPgzK8" },
-        { id: 4, title: "Organized Life", url: "https://www.youtube.com/watch?v=cjR5zPrVjTc" },
-        { id: 5, title: "Introduction to Ecology", url: "https://www.youtube.com/watch?v=aO3Yp45zmw8" },
-      ] },
-      { id: 2, title: "Photosynthesis", category: "biology", description: "Understand how plants convert sunlight into energy", lesson_number: 2, videos: [
-        { id: 1, title: "Light Reactions", url: "https://www.youtube.com/watch?v=dQCAPalUOL0" },
-        { id: 2, title: "Dark Reactions", url: "https://www.youtube.com/watch?v=h4T8T-p-SdY" },
-      ] },
-      { id: 3, title: "Evolution & Natural Selection", category: "biology", description: "Explore the mechanisms of evolution", lesson_number: 3, videos: [] },
-      { id: 4, title: "Atomic Structure", category: "chemistry", description: "Master the basics of atoms and electrons", lesson_number: 4, videos: [] },
-      { id: 5, title: "Chemical Bonding", category: "chemistry", description: "Learn about different types of chemical bonds", lesson_number: 5, videos: [] },
-      { id: 6, title: "Reactions & Equations", category: "chemistry", description: "Understanding chemical reactions and balancing equations", lesson_number: 6, videos: [] },
-      { id: 7, title: "Force & Motion", category: "physics", description: "Newton's laws and motion fundamentals", lesson_number: 7, videos: [] },
-      { id: 8, title: "Energy & Work", category: "physics", description: "Learn about kinetic and potential energy", lesson_number: 8, videos: [] },
-      { id: 9, title: "Waves & Sound", category: "physics", description: "Understanding waves, frequency, and sound", lesson_number: 9, videos: [] },
-      { id: 10, title: "Climate Change", category: "environmental", description: "Causes and effects of global climate change", lesson_number: 10, videos: [] },
-      { id: 11, title: "Ecosystems & Biodiversity", category: "environmental", description: "Explore biodiversity and ecosystem interactions", lesson_number: 11, videos: [] },
-      { id: 12, title: "World History Overview", category: "history", description: "Major events that shaped world history", lesson_number: 12, videos: [] },
-      { id: 13, title: "Economics Fundamentals", category: "economics", description: "Supply, demand, and market economics", lesson_number: 13, videos: [] },
-    ];
-
+    // Use category from currentLesson or fallback to home
     const categoryMap = {
-      biology: "/biology",
-      chemistry: "/chemistry",
-      physics: "/physics",
-      environmental: "/environmental-science",
-      history: "/history",
-      economics: "/economics",
-      geography: "/human-geography",
-      psychology: "/psychology",
+      biology: "/natural/biology",
+      chemistry: "/natural/chemistry",
+      physics: "/natural/physics",
+      environmental: "/natural/environmental-science",
+      history: "/social/history",
+      economics: "/social/economics",
+      geography: "/social/human-geography",
+      psychology: "/social/psychology",
     };
-    
-    // First try to get category from lesson object
-    let category = currentLesson?.category;
-    console.log("🔙 Back button - lesson.category:", category);
-    
-    // If not found, look it up from allLessons using lesson ID
-    if (!category) {
-      const lessonId = parseInt(currentLesson?.id || currentLesson?.lesson_number);
-      const foundLesson = allLessons.find(l => l.id === lessonId);
-      category = foundLesson?.category || "biology";
-      console.log("🔙 Back button - looked up from allLessons, found category:", category);
+    let lessonIdNum = parseInt(currentLesson?.id || currentLesson?.lesson_number);
+    if (lessonIdNum >= 1 && lessonIdNum <= 10) {
+      return "/natural/biology";
+    } else if (lessonIdNum >= 11 && lessonIdNum <= 20) {
+      return "/natural/chemistry";
+    } else if (lessonIdNum >= 21 && lessonIdNum <= 30) {
+      return "/natural/physics";
+    } else if (lessonIdNum >= 31 && lessonIdNum <= 40) {
+      return "/natural/environmental-science";
+    } else if (lessonIdNum >= 41 && lessonIdNum <= 50) {
+      return "/social/history";
+    } else if (lessonIdNum >= 51 && lessonIdNum <= 60) {
+      return "/social/economics";
+    } else if (lessonIdNum >= 61 && lessonIdNum <= 70) {
+      return "/social/human-geography";
+    } else if (lessonIdNum >= 71 && lessonIdNum <= 80) {
+      return "/social/psychology";
     }
-    
-    const path = categoryMap[category] || "/biology";
-    console.log("🔙 Back button - navigating to:", path);
+    let category = currentLesson?.category;
+    if (!category) {
+      // Fallback: try to find lesson by id in allLessonsData
+      const foundLesson = allLessonsData.find(l => l.id === lessonIdNum);
+      category = foundLesson?.category || null;
+    }
+    const path = categoryMap[category] || "/"; // fallback to home if category missing
     return path;
   };
 
@@ -179,8 +164,8 @@ export default function Lesson() {
   const QNA_STORAGE_KEY = "scihub_qna_questions";
   const [communityPosts, setCommunityPosts] = useState([]);
 
-  // Define all lessons data
-  const allLessonsData = [
+  // Define all lessons data (memoized)
+  const allLessonsData = useMemo(() => [
     { id: 1, title: "Cell Structure & Function", category: "biology", description: "Learn about cell components and their functions", lesson_number: 1, videos: [
       { id: 1, title: "Introduction to Biology", url: "https://www.youtube.com/watch?v=tZE_fQFK8EY" },
       { id: 2, title: "Scientific Method", url: "https://www.youtube.com/watch?v=xOLcZMw0hd4" },
@@ -203,7 +188,7 @@ export default function Lesson() {
     { id: 11, title: "Ecosystems & Biodiversity", category: "environmental", description: "Explore biodiversity and ecosystem interactions", lesson_number: 11, videos: [] },
     { id: 12, title: "World History Overview", category: "history", description: "Major events that shaped world history", lesson_number: 12, videos: [] },
     { id: 13, title: "Economics Fundamentals", category: "economics", description: "Supply, demand, and market economics", lesson_number: 13, videos: [] },
-  ];
+  ], []);
 
   // Synchronously load initial lesson data to avoid null on first render
   let initialLesson = location.state?.lesson;
@@ -231,17 +216,12 @@ export default function Lesson() {
   const [currentLesson, setCurrentLesson] = useState(initialLesson);
   const lesson = currentLesson;
 
-  // Load lesson from state or fetch by ID when lessonId changes
+  // Only update lesson state when lessonId changes
   useEffect(() => {
-    console.log("🔄 Loading lesson for lessonId:", lessonId);
-    
     let lesson = location.state?.lesson;
-    
     if (!lesson) {
-      // Try to find lesson from allLessonsData
       lesson = allLessonsData.find(l => String(l.id) === String(lessonId));
       if (!lesson) {
-        // Last resort fallback
         lesson = {
           id: lessonId,
           lesson_number: 1,
@@ -258,33 +238,21 @@ export default function Lesson() {
         };
       }
     }
-    
-    console.log("✅ Lesson loaded:", lesson);
     setCurrentLesson(lesson);
-    
-    // Reset step to 1 when lesson changes
     setActiveStep(1);
-    // Clear video watched tracking for new lesson
     setWatchedVideos({});
-    // Reset all step completion states
     setStep3Completed(false);
     setStep4Completed(false);
     setStep5Completed(false);
     setStep6Completed(false);
     setLessonXPAwarded(false);
-    // Reset worksheet answers
     setWorksheet1Answers({});
     setWorksheet2Answers({});
     setWorksheet1Submitted(false);
     setWorksheet2Submitted(false);
-    
-    // Cleanup function when component unmounts
-    return () => {
-      console.log("🧹 Cleaning up Lesson component");
-      // Close any open video modal
-      setCurrentVideoPlayer(null);
-    };
-  }, [lessonId, location.state]); // eslint-disable-line react-hooks/exhaustive-deps
+    setCurrentVideoPlayer(null);
+    return () => setCurrentVideoPlayer(null);
+  }, [lessonId, allLessonsData, location.state?.lesson]);
   
   // Cleanup modal on component unmount
   useEffect(() => {
@@ -307,7 +275,6 @@ export default function Lesson() {
       }
       return [];
     };
-    
     const stored = getStoredQuestions();
     // Convert to communityPosts format for display
     const posts = stored.map((q) => ({
@@ -324,6 +291,26 @@ export default function Lesson() {
     }));
     setCommunityPosts(posts);
   }, []);
+
+  // Ensure modals do not block navigation
+  // If a modal is open, close it before navigating away
+  const handleBackButton = () => {
+    if (currentVideoPlayer) {
+      setCurrentVideoPlayer(null); // close modal if open
+      // Wait for modal to close, then try navigation again
+      setTimeout(() => handleBackButton(), 100);
+      return;
+    }
+    const path = getBackNavigationPath();
+    // Try React Router navigation first
+    navigate(path, { replace: true });
+    // Fallback: if still on lesson page after short delay, force navigation
+    setTimeout(() => {
+      if (window.location.pathname === `/lesson/${lessonId}`) {
+        window.location.href = path;
+      }
+    }, 200);
+  };
 
   // Trigger celebration animation when a step is completed
   // (Currently unused - celebration removed in favor of timeline progress visualization)
@@ -1989,33 +1976,30 @@ export default function Lesson() {
       },
     ];
 
-    // Mock sessions data for testing - One hour apart, 9 AM to 5 PM daily
+    // Mock sessions data for testing - One hour apart, 9 AM to 5 PM daily, for the whole year
     const mockSessions = [];
-    const startDate = new Date(2026, 0, 8); // Jan 8, 2026
-    const endDate = new Date(2026, 0, 21);  // Jan 21, 2026
     const sessionHours = [9, 10, 11, 12, 13, 14, 15, 16, 17]; // 9 AM to 5 PM, one hour apart
-
-    const dates = [];
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-      dates.push(new Date(d));
-    }
-    
     let sessionId = 1;
-    dates.forEach((dateObj) => {
-      sessionHours.forEach((hour) => {
-        const tutorIdIndex = sessionId % 2;
-        const tutorId = tutorIdIndex === 0 ? 101 : 102; // Alternate tutors
-        mockSessions.push({
-          id: sessionId,
-          tutor_id: tutorId,
-          session_time: new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate(), hour, 0).toISOString(),
-          max_spots: 5,
-          signed_up_count: Math.floor(Math.random() * 3), // 0-2 people signed up
-          meetLink: "https://meet.google.com/kgc-xqnu-dym", // Google Meet link for all sessions
-        });
-        sessionId += 1;
-      });
-    })
+    for (let month = 0; month < 12; month++) {
+      // For each month, pick 10 random days to have sessions
+      for (let day = 1; day <= 28; day += 3) { // Every 3rd day (roughly 9-10 days per month)
+        for (let i = 0; i < sessionHours.length; i++) {
+          const hour = sessionHours[i];
+          const localSessionId = sessionId;
+          const tutorIdIndex = localSessionId % 2;
+          const tutorId = tutorIdIndex === 0 ? 101 : 102; // Alternate tutors
+          mockSessions.push({
+            id: localSessionId,
+            tutor_id: tutorId,
+            session_time: new Date(2026, month, day, hour, 0).toISOString(),
+            max_spots: 5,
+            signed_up_count: Math.floor(Math.random() * 3), // 0-2 people signed up
+            meetLink: "https://meet.google.com/kgc-xqnu-dym", // Google Meet link for all sessions
+          });
+          sessionId += 1;
+        }
+      }
+    }
 
     async function loadLessonDetails() {
       try {
@@ -2692,11 +2676,7 @@ export default function Lesson() {
       <main className="dashboard-main lesson-main">
 
         {/* Back button */}
-        <button className="back-btn" onClick={() => {
-          const path = getBackNavigationPath();
-          console.log("🔙 Back button clicked, navigating to:", path);
-          navigate(path, { replace: true });
-        }}>
+        <button className="back-btn" onClick={handleBackButton}>
           ← Back
         </button>
 
@@ -2878,7 +2858,7 @@ export default function Lesson() {
             <div style={{ color: "#9ca3af", fontSize: "0.85rem" }}>Test your knowledge with interactive games and earn bonus rewards!</div>
           </div>
           <button
-            onClick={() => navigate("/games", { replace: false })}
+            onClick={() => navigate("/games")}
             style={{
               padding: "0.75rem 1.5rem",
               borderRadius: "8px",
@@ -3434,8 +3414,12 @@ export default function Lesson() {
                 <button 
                   className="games-redirect-btn"
                   onClick={() => {
-                    console.log("🎮 Games button clicked!");
-                    navigate("/games", { replace: false });
+                    console.log('[DEBUG] Go to Games button clicked. navigate:', typeof navigate);
+                    if (typeof navigate === 'function') {
+                      navigate('/games');
+                    } else {
+                      window.location.href = '/games';
+                    }
                   }}
                 >
                   Go to Games Page →
@@ -3481,7 +3465,32 @@ export default function Lesson() {
               </div>
               <div className="step-header-accent"></div>
             </div>
-            
+            {/* Back button for completed lesson */}
+            <button className="back-btn" onClick={() => {
+              const lessonIdNum = parseInt(currentLesson?.id || currentLesson?.lesson_number);
+              let subjectPage = "/";
+              if (lessonIdNum >= 1 && lessonIdNum <= 10) {
+                subjectPage = "/natural/biology";
+              } else if (lessonIdNum >= 11 && lessonIdNum <= 20) {
+                subjectPage = "/natural/chemistry";
+              } else if (lessonIdNum >= 21 && lessonIdNum <= 30) {
+                subjectPage = "/natural/physics";
+              } else if (lessonIdNum >= 31 && lessonIdNum <= 40) {
+                subjectPage = "/natural/environmental-science";
+              } else if (lessonIdNum >= 41 && lessonIdNum <= 50) {
+                subjectPage = "/social/history";
+              } else if (lessonIdNum >= 51 && lessonIdNum <= 60) {
+                subjectPage = "/social/economics";
+              } else if (lessonIdNum >= 61 && lessonIdNum <= 70) {
+                subjectPage = "/social/human-geography";
+              } else if (lessonIdNum >= 71 && lessonIdNum <= 80) {
+                subjectPage = "/social/psychology";
+              }
+              console.log("[BACK BUTTON DEBUG] lessonIdNum:", lessonIdNum, "subjectPage:", subjectPage);
+              window.location.replace(subjectPage);
+            }} style={{marginBottom: '1rem'}}>
+              ← Back
+            </button>
             <div className="completion-section">
               <div className="completion-card">
                 <div className="completion-icon">🎉</div>
@@ -3498,43 +3507,72 @@ export default function Lesson() {
                   className="complete-lesson-btn"
                   onClick={() => {
                     console.log("✅ Completing lesson:", currentLesson?.id);
-                    console.log("📝 Setting step6Completed to true");
-                    
-                    // Mark step 6 as completed - this will trigger the save useEffect
-                    setStep6Completed(true);
-                    
                     const user = JSON.parse(localStorage.getItem("user")) || null;
-                    
-                    // Save lesson completion to localStorage
-                    const completedLessons = JSON.parse(localStorage.getItem("completedLessons") || "[]");
-                    if (!completedLessons.includes(currentLesson?.id)) {
-                      completedLessons.push(currentLesson?.id);
-                      localStorage.setItem("completedLessons", JSON.stringify(completedLessons));
-                      console.log("✅ Lesson completion saved to localStorage:", completedLessons);
-                      
-                      // Call markLessonCompleted to properly update dashboard stats
-                      if (user && user.id) {
-                        markLessonCompleted(user.id, currentLesson?.id, {
-                          title: currentLesson?.title,
-                          category: currentLesson?.category
-                        });
-                        
-                        // Award completion bonus coins and XP
-                        const COMPLETION_BONUS_XP = 50;
-                        const COMPLETION_BONUS_COINS = 25;
-                        addXP(user.id, COMPLETION_BONUS_XP);
-                        addCoins(user.id, COMPLETION_BONUS_COINS);
-                        console.log(`🎉 Lesson completed! Awarded ${COMPLETION_BONUS_XP} XP and ${COMPLETION_BONUS_COINS} coins`);
-                        
-                        // Check for achievement unlocks
-                        const newlyUnlocked = checkAndUnlockAchievements(user.id);
-                        if (newlyUnlocked.length > 0) {
-                          console.log(`🏆 ${newlyUnlocked.length} achievement(s) unlocked!`);
+                    if (user && user.id) {
+                      // Use user-specific completed_lessons key for all logic
+                      markLessonCompleted(user.id, currentLesson?.id, {
+                        title: currentLesson?.title,
+                        category: currentLesson?.category
+                      });
+                      window.dispatchEvent(new CustomEvent("dashboardStorageChange"));
+                      // --- Unlock and start next lesson automatically ---
+                      const nextLessonId = parseInt(currentLesson?.id) + 1;
+                      const completedNext = isLessonCompleted(user.id, nextLessonId);
+                      const nextLessonExists = allLessonsData.some(l => l.id === nextLessonId);
+                      if (nextLessonExists && !completedNext) {
+                        // Mark as started/in progress in localStorage
+                        const inProgressKey = `scihub_user_${user.id}_inprogress_lessons`;
+                        let inProgress = JSON.parse(localStorage.getItem(inProgressKey) || "[]");
+                        if (!inProgress.includes(nextLessonId)) {
+                          inProgress.push(nextLessonId);
+                          localStorage.setItem(inProgressKey, JSON.stringify(inProgress));
                         }
+                        window.dispatchEvent(new CustomEvent("dashboardUpdate", {
+                          detail: {
+                            type: "lessonStarted",
+                            lessonId: nextLessonId
+                          }
+                        }));
+                        setStep6Completed(true);
+                        setTimeout(() => {
+                          navigate(`/lesson/${nextLessonId}`);
+                        }, 700);
+                        return;
                       }
+                      // If no next lesson, fallback to subject page
+                      setStep6Completed(true);
+                      const COMPLETION_BONUS_XP = 50;
+                      const COMPLETION_BONUS_COINS = 25;
+                      addXP(user.id, COMPLETION_BONUS_XP);
+                      addCoins(user.id, COMPLETION_BONUS_COINS);
+                      checkAndUnlockAchievements(user.id);
+                      let subjectPage = "/";
+                      const lessonIdNum = parseInt(currentLesson?.id || currentLesson?.lesson_number);
+                      if (lessonIdNum >= 1 && lessonIdNum <= 10) {
+                        subjectPage = "/natural/biology";
+                      } else if (lessonIdNum >= 11 && lessonIdNum <= 20) {
+                        subjectPage = "/natural/chemistry";
+                      } else if (lessonIdNum >= 21 && lessonIdNum <= 30) {
+                        subjectPage = "/natural/physics";
+                      } else if (lessonIdNum >= 31 && lessonIdNum <= 40) {
+                        subjectPage = "/natural/environmental-science";
+                      } else if (lessonIdNum >= 41 && lessonIdNum <= 50) {
+                        subjectPage = "/social/history";
+                      } else if (lessonIdNum >= 51 && lessonIdNum <= 60) {
+                        subjectPage = "/social/economics";
+                      } else if (lessonIdNum >= 61 && lessonIdNum <= 70) {
+                        subjectPage = "/social/human-geography";
+                      } else if (lessonIdNum >= 71 && lessonIdNum <= 80) {
+                        subjectPage = "/social/psychology";
+                      }
+                      setTimeout(() => {
+                        navigate(subjectPage, { replace: true });
+                      }, 700);
+                      return;
                     }
-                    
-                    // Save lesson completion details
+                    // If no user, just set step6Completed and do not attempt to mark lesson
+                    setStep6Completed(true);
+                    // Save lesson completion details (for non-logged-in users)
                     const lessonCompletion = {
                       lessonId: currentLesson?.id,
                       title: currentLesson?.title,
@@ -3544,8 +3582,6 @@ export default function Lesson() {
                     const allCompletions = JSON.parse(localStorage.getItem("lessonCompletions") || "[]");
                     allCompletions.push(lessonCompletion);
                     localStorage.setItem("lessonCompletions", JSON.stringify(allCompletions));
-                    console.log("✅ Lesson completion details saved:", lessonCompletion);
-                    
                     // Also manually save worksheet state with step6Completed
                     const worksheetKey = `lesson_${currentLesson?.id}_worksheets`;
                     const currentState = JSON.parse(localStorage.getItem(worksheetKey) || "{}");
@@ -3555,9 +3591,6 @@ export default function Lesson() {
                       savedAt: new Date().toISOString(),
                     };
                     localStorage.setItem(worksheetKey, JSON.stringify(stateToSave));
-                    console.log("💾 Saved step6Completed to worksheet state:", stateToSave);
-                    
-                    // Notify dashboard of lesson completion
                     window.dispatchEvent(new CustomEvent("dashboardUpdate", {
                       detail: {
                         type: "lessonCompleted",
@@ -3565,12 +3598,32 @@ export default function Lesson() {
                         lessonTitle: currentLesson?.title
                       }
                     }));
-                    
-                    // Save to user database if user is logged in
                     if (user?.id) {
                       setUserData(user.id, "lessonCompletions", allCompletions);
-                      console.log("✅ Lesson completion saved to user database");
                     }
+                    // Auto-redirect to lesson grid after completion if no next lesson
+                    const lessonIdNum = parseInt(currentLesson?.id || currentLesson?.lesson_number);
+                    let subjectPage = "/";
+                    if (lessonIdNum >= 1 && lessonIdNum <= 10) {
+                      subjectPage = "/natural/biology";
+                    } else if (lessonIdNum >= 11 && lessonIdNum <= 20) {
+                      subjectPage = "/natural/chemistry";
+                    } else if (lessonIdNum >= 21 && lessonIdNum <= 30) {
+                      subjectPage = "/natural/physics";
+                    } else if (lessonIdNum >= 31 && lessonIdNum <= 40) {
+                      subjectPage = "/natural/environmental-science";
+                    } else if (lessonIdNum >= 41 && lessonIdNum <= 50) {
+                      subjectPage = "/social/history";
+                    } else if (lessonIdNum >= 51 && lessonIdNum <= 60) {
+                      subjectPage = "/social/economics";
+                    } else if (lessonIdNum >= 61 && lessonIdNum <= 70) {
+                      subjectPage = "/social/human-geography";
+                    } else if (lessonIdNum >= 71 && lessonIdNum <= 80) {
+                      subjectPage = "/social/psychology";
+                    }
+                    setTimeout(() => {
+                      navigate(subjectPage, { replace: true });
+                    }, 500);
                   }}
                 >
                   ✓ Complete & Save Lesson
@@ -3582,35 +3635,29 @@ export default function Lesson() {
                   onClick={() => {
                     try {
                       console.log("🎯 Return to Lesson Grid button clicked");
-                      console.log("📌 Current lesson ID:", lesson?.id);
-                      
-                      // Get the subject page based on lesson category or subjectName from location state
-                      const subjectPageMap = {
-                        biology: "/biology",
-                        Biology: "/biology",
-                        chemistry: "/chemistry",
-                        Chemistry: "/chemistry",
-                        physics: "/physics",
-                        Physics: "/physics",
-                        environmental: "/environmental-science",
-                        "Environmental Science": "/environmental-science",
-                        history: "/history",
-                        History: "/history",
-                        economics: "/economics",
-                        Economics: "/economics",
-                        geography: "/human-geography",
-                        "Human Geography": "/human-geography",
-                        psychology: "/psychology",
-                        Psychology: "/psychology",
-                      };
-                      
-                      // Try to get from location state first, then fall back to lesson category
-                      const subjectName = location.state?.subjectName || lesson?.category || "biology";
-                      const subjectPage = subjectPageMap[subjectName] || "/biology";
-                      
+                      const lessonIdNum = parseInt(currentLesson?.id || currentLesson?.lesson_number);
+                      let subjectPage = "/";
+                      if (lessonIdNum >= 1 && lessonIdNum <= 10) {
+                        subjectPage = "/natural/biology";
+                      } else if (lessonIdNum >= 11 && lessonIdNum <= 20) {
+                        subjectPage = "/natural/chemistry";
+                      } else if (lessonIdNum >= 21 && lessonIdNum <= 30) {
+                        subjectPage = "/natural/physics";
+                      } else if (lessonIdNum >= 31 && lessonIdNum <= 40) {
+                        subjectPage = "/natural/environmental-science";
+                      } else if (lessonIdNum >= 41 && lessonIdNum <= 50) {
+                        subjectPage = "/social/history";
+                      } else if (lessonIdNum >= 51 && lessonIdNum <= 60) {
+                        subjectPage = "/social/economics";
+                      } else if (lessonIdNum >= 61 && lessonIdNum <= 70) {
+                        subjectPage = "/social/human-geography";
+                      } else if (lessonIdNum >= 71 && lessonIdNum <= 80) {
+                        subjectPage = "/social/psychology";
+                      } else {
+                        // fallback to home if lessonIdNum is not in any range
+                        subjectPage = "/";
+                      }
                       console.log("📚 Navigating to subject page:", subjectPage);
-                      console.log("📊 Subject name:", subjectName);
-                      
                       navigate(subjectPage, { replace: false });
                     } catch (error) {
                       console.error("❌ Error navigating to subject page:", error);

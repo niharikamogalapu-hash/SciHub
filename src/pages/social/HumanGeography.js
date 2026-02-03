@@ -7,6 +7,7 @@ import "../../styles/Lesson.css";
 // Human Geography lessons with videos
 const HUMAN_GEOGRAPHY_LESSONS = [
   {
+    id: 61,
     lesson_number: 1,
     title: "Tools of the Geographer",
     videos: [
